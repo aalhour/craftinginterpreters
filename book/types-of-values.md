@@ -67,7 +67,7 @@ When we get to adding classes to the language, each class the user defines
 doesn't need its own entry in this enum. As far as the VM is concerned, every
 instance of a class is the same type: "instance".
 
-In other word's, this is the VM's notion of "type", not the user's.
+In other words, this is the VM's notion of "type", not the user's.
 
 </aside>
 
@@ -480,7 +480,7 @@ prefix `!` expression. We just need to slot it into the parsing table:
 
 ^code table-not (1 before, 1 after)
 
-Because I knew were going to do this, the `unary()` function already has a
+Because I knew we were going to do this, the `unary()` function already has a
 switch on the token type to figure out which bytecode instruction to output. We
 merely add another case:
 

@@ -357,7 +357,7 @@ add after <em>evaluate</em>()</div>
 <pre><span></span>  <span class="nd">@Override</span>                                              
   <span class="kd">public</span> <span class="n">Void</span> <span class="nf">visitExpressionStmt</span><span class="o">(</span><span class="n">Stmt</span><span class="o">.</span><span class="na">Expression</span> <span class="n">stmt</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">evaluate</span><span class="o">(</span><span class="n">stmt</span><span class="o">.</span><span class="na">expression</span><span class="o">);</span>                           
-    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> <span class="c1">// [void]                               </span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> <span name="void"></span>
   <span class="o">}</span>                                                      
 </pre></div>
 
@@ -973,7 +973,7 @@ expression:</p>
 <p>In some other languages, like Pascal, Python, and Go, assignment is a statement.</p>
 </aside>
 <div class="codehilite"><pre><span></span><span class="n">expression</span> <span class="err">→</span> <span class="n">assignment</span> <span class="p">;</span>
-<span class="n">assignment</span> <span class="err">→</span> <span class="n">identifier</span> <span class="s">&quot;=&quot;</span> <span class="n">assignment</span>
+<span class="n">assignment</span> <span class="err">→</span> <span class="vg">IDENTIFIER</span> <span class="s">&quot;=&quot;</span> <span class="n">assignment</span>
            <span class="err">|</span> <span class="n">equality</span> <span class="p">;</span>
 </pre></div>
 
