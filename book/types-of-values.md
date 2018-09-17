@@ -86,7 +86,7 @@ looks like a struct except that all of its fields overlap in memory:
 <aside name="sum">
 
 If you're familiar with a language in the ML family, structs and unions in C
-roughly mirror the difference between sum and product types, between tuples
+roughly mirror the difference between product and sum types, between tuples
 and algebraic data types.
 
 </aside>
@@ -254,7 +254,7 @@ For unary negate, the check looks like this:
 
 ^code op-negate (1 before, 1 after)
 
-First, we check to see if the value on top of the stack is a number. If we not,
+First, we check to see if the value on top of the stack is a number. If it's not,
 we report the runtime error and <span name="halt">stop</span> the interpreter.
 Otherwise, we keep going. Only after this validation do we unwrap the operand,
 negate it, wrap the result and push it.
@@ -547,12 +547,26 @@ user-visible behavior.
 The expression `a != b` has the same semantics as `!(a == b)`, so the compiler
 is free to compile the former as if it were the latter. Instead of a dedicated
 `OP_NOT_EQUAL` instruction, it can output an `OP_EQUAL` followed by an `OP_NOT`.
-Likewise, `a <= b` is the same as `!(a > b)` and `a >= b` is `!(a < b)`. Thus,
-we only need three new instructions.
+Likewise, `a <= b` is the <span name="same">same</span> as `!(a > b)` and `a >=
+b` is `!(a < b)`. Thus, we only need three new instructions.
+
+<aside name="same" class="bottom">
+
+*Is* `a <= b` always the same as `!(a > b)`? According to [IEEE 754][], all
+comparison operators return false when an operand is NaN. That means `NaN <= 1`
+is false and `NaN > 1` is also false. But our desugaring assumes the latter is
+always the negation of the former.
+
+For the book, we won't get hung up on this, but these kinds of details will
+matter in your real language implementations.
+
+[ieee 754]: https://en.wikipedia.org/wiki/IEEE_754
+
+</aside>
 
 Over in the parser, though, we do have six new operators to slot into the parse
 table. We use the same `binary()` parser function from before. Here's the row
-for `==`:
+for `!=`:
 
 ^code table-equal (1 before, 1 after)
 

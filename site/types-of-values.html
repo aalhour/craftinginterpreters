@@ -189,7 +189,7 @@ lets you optimize this by defining a <span name="sum">union</span>. A union
 looks like a struct except that all of its fields overlap in memory:</p>
 <aside name="sum">
 <p>If you&rsquo;re familiar with a language in the ML family, structs and unions in C
-roughly mirror the difference between sum and product types, between tuples
+roughly mirror the difference between product and sum types, between tuples
 and algebraic data types.</p>
 </aside>
 <p><img src="image/types-of-values/union.png" alt="A union with two fields overlapping in memory." /></p>
@@ -384,7 +384,7 @@ replace 1 line</div>
 
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>(), replace 1 line</div>
 
-<p>First, we check to see if the value on top of the stack is a number. If we not,
+<p>First, we check to see if the value on top of the stack is a number. If it&rsquo;s not,
 we report the runtime error and <span name="halt">stop</span> the interpreter.
 Otherwise, we keep going. Only after this validation do we unwrap the operand,
 negate it, wrap the result and push it.</p>
@@ -808,11 +808,19 @@ user-visible behavior.</p>
 <p>The expression <code>a != b</code> has the same semantics as <code>!(a == b)</code>, so the compiler
 is free to compile the former as if it were the latter. Instead of a dedicated
 <code>OP_NOT_EQUAL</code> instruction, it can output an <code>OP_EQUAL</code> followed by an <code>OP_NOT</code>.
-Likewise, <code>a &lt;= b</code> is the same as <code>!(a &gt; b)</code> and <code>a &gt;= b</code> is <code>!(a &lt; b)</code>. Thus,
-we only need three new instructions.</p>
+Likewise, <code>a &lt;= b</code> is the <span name="same">same</span> as <code>!(a &gt; b)</code> and <code>a &gt;=
+b</code> is <code>!(a &lt; b)</code>. Thus, we only need three new instructions.</p>
+<aside class="bottom" name="same">
+<p><em>Is</em> <code>a &lt;= b</code> always the same as <code>!(a &gt; b)</code>? According to <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a>, all
+comparison operators return false when an operand is NaN. That means <code>NaN &lt;= 1</code>
+is false and <code>NaN &gt; 1</code> is also false. But our desugaring assumes the latter is
+always the negation of the former.</p>
+<p>For the book, we won&rsquo;t get hung up on this, but these kinds of details will
+matter in your real language implementations.</p>
+</aside>
 <p>Over in the parser, though, we do have six new operators to slot into the parse
 table. We use the same <code>binary()</code> parser function from before. Here&rsquo;s the row
-for <code>==</code>:</p>
+for <code>!=</code>:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="p">{</span> <span class="n">unary</span><span class="p">,</span>    <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_BANG      </span>
 </pre><div class="source-file"><em>compiler.c</em><br>
 replace 1 line</div>
