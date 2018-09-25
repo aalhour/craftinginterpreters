@@ -230,13 +230,13 @@ the layout looks like this:</p>
 because it reads nicely, almost like a cast, when you pull the value out.</p>
 </aside>
 <p><img src="image/types-of-values/value.png" alt="The full value struct, with the type and as fields next to each other in memory." /></p>
-<p>The type tag comes first followed by the union. You&rsquo;re probably wondering why we
-need a full eight bytes for the type tag when it only needs to store a number
-between zero and three. We <em>could</em> pack the enum into a single byte, or even a
-bit field. But most architectures prefer values be aligned to their size. Since
-the union field contains an eight-byte double, the compiler will <span
-name="pad">pad</span> the type field out to eight bytes to keep that double on
-the nearest eight-byte boundary.</p>
+<p>The four-byte type tag comes first, then the union. Most architectures prefer
+values be aligned to their size. Since the union field contains an eight-byte
+double, the compiler adds four bytes of <span name="pad">padding</span> after
+the type field to keep that double on the nearest eight-byte boundary. That
+means we&rsquo;re effectively spending eight bytes on the type tag, which only needs
+to represent a number between zero and three. We could stuff the enum in a
+smaller size, but all that would do is increase the padding.</p>
 <aside name="pad">
 <p>We could move the tag field <em>after</em> the union, but that doesn&rsquo;t help much
 either. Whenever we create an array of values<span class="em">&mdash;</span>which is where most of our
@@ -883,7 +883,7 @@ in <em>run</em>()</div>
 There&rsquo;s enough complexity that it makes sense to shunt that logic over to a
 separate function. That function always returns a C <code>bool</code>, so we can safely
 wrap the result in a <code>BOOL_VAL</code>. The function relates to values, so it lives
-over in the value module:</p>
+over in the &ldquo;value&rdquo; module:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="p">}</span> <span class="n">ValueArray</span><span class="p">;</span>                          
 <br></pre><div class="source-file"><em>value.h</em><br>
 add after struct <em>ValueArray</em></div>
