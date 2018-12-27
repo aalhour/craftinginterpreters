@@ -486,9 +486,9 @@ add after <em>advance</em>()</div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, add after <em>advance</em>()</div>
 
-<p>It&rsquo;s similar to <code>advance()</code> in that reads the next token. But it also validates
-that the token has an expected type. If not, it reports an error. This function
-is the foundation of most syntax errors in the compiler.</p>
+<p>It&rsquo;s similar to <code>advance()</code> in that it reads the next token. But it also
+validates that the token has an expected type. If not, it reports an error. This
+function is the foundation of most syntax errors in the compiler.</p>
 <p>OK, that&rsquo;s enough on the front end for now.</p>
 <h2><a href="#emitting-bytecode" name="emitting-bytecode"><small>17&#8202;.&#8202;3</small> Emitting Bytecode</a></h2>
 <p>After we parse and understand a piece of the user&rsquo;s program, the next step is to
@@ -609,12 +609,12 @@ even have Booleans. For this chapter, we&rsquo;re only going to worry about:</p>
 we&rsquo;ll also assemble the requirements for the table-driven parser that calls
 them.</p>
 <h3><a href="#parsers-for-tokens" name="parsers-for-tokens"><small>17&#8202;.&#8202;4&#8202;.&#8202;1</small> Parsers for tokens</a></h3>
-<p>Imagine if every expression in Lox is only a single token. Each token type maps
-to a different kind of expression. We define a function for each that outputs
-the appropriate bytecode for that expression. Then we build an array of function
-pointers. The indexes in the array correspond to the <code>TokenType</code> enum values,
-and the function at that index is the code to compile an expression of that
-token type.</p>
+<p>Imagine that every expression in Lox is only a single token. Each token type
+maps to a different kind of expression. We define a function for each that
+outputs the appropriate bytecode for that expression. Then we build an array of
+function pointers. The indexes in the array correspond to the <code>TokenType</code> enum
+values, and the function at that index is the code to compile an expression of
+that token type.</p>
 <p>To add support for number literals, we store a pointer to the following function
 at the <code>TOKEN_NUMBER</code> index in the array:</p>
 <div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
@@ -1061,8 +1061,8 @@ add after <em>unary</em>()</div>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_CLASS           </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_ELSE            </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_FALSE           </span>
-  <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_FUN             </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_FOR             </span>
+  <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_FUN             </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_IF              </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_NIL             </span>
   <span class="p">{</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_OR</span> <span class="p">},</span>         <span class="c1">// TOKEN_OR              </span>

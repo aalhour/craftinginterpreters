@@ -1,6 +1,12 @@
 ^title Strings
 ^part A Bytecode Virtual Machine
 
+> "Ah? A small aversion to menial labor?" The doctor cocked an eyebrow.
+> "Understandable, but misplaced. One should treasure those hum-drum
+> tasks that keep the body occupied but leave the mind and heart unfettered."
+>
+> <cite>Tad Williams</cite>
+
 Our little VM can represent three types of values right now: numbers, Booleans,
 and `nil`. Those types have two important things in common: they're immutable
 and they're small. Numbers are the largest, and they still fit into two 64-bit
@@ -23,7 +29,7 @@ to store the length, strings couldn't be any longer than 255 characters.
 
 </aside>
 
-We need a way to support values who size varies, sometimes greatly. This is
+We need a way to support values whose size varies, sometimes greatly. This is
 exactly what dynamic allocation on the heap is designed for. We can allocate as
 many bytes as we need. We get back a pointer that we'll use to keep track of the
 value as it flows through the VM.
@@ -274,7 +280,7 @@ count:
 Once we have the array, we copy over the characters from the lexeme and
 terminate it.
 
-<aside name="terminator">
+<aside name="terminator" class="bottom">
 
 We need to terminate it explicitly ourselves because the lexeme points at a
 range of characters inside the monolithic source string and isn't terminated.
@@ -327,7 +333,7 @@ that there is room for the extra payload fields needed by the specific object
 type being created.
 
 Then it initializes the Obj state -- right now, that's just the type tag. This
-function returns to `copyString()` which finishes initializing the ObjString
+function returns to `allocateString()` which finishes initializing the ObjString
 fields. <span name="viola">*Voilà*</span>, we can compile and execute string
 literals.
 
@@ -465,7 +471,7 @@ Behold this innocuous-seeming expression:
 "st" + "ri" + "ng"
 ```
 
-When the compiler chrews through this, it allocates an ObjString for each of
+When the compiler chews through this, it allocates an ObjString for each of
 those three string literals and stores them in the chunk's constant table and
 generates this <span name="stack">bytecode</span>:
 
@@ -519,7 +525,7 @@ But that underestimates how *hard* it is to add a garbage collector later. The
 collector *must* ensure it can find every bit of memory that *is* still being
 used so that it doesn't collect live data. There are hundreds of places a
 language implementation can squirrel away a reference to some object. If you
-don't find all of them, you've got really painful to track down GC bugs.
+don't find all of them, you get nightmarish bugs.
 
 I've seen language implementations die because it was too hard to get the GC in
 later. If your language needs GC, get it working as soon as you can. It's a

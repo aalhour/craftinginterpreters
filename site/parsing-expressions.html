@@ -414,7 +414,7 @@ and larger chunks of syntax.</p>
 <aside name="descent">
 <p>It&rsquo;s called &ldquo;recursive <em>descent</em>&rdquo; because it walks <em>down</em> the grammar.
 Confusingly, we also use direction metaphorically when talking about &ldquo;high&rdquo; and
-&ldquo;low&rdquo; precedence, but the orientation is reversed. In a top-down grammar, you
+&ldquo;low&rdquo; precedence, but the orientation is reversed. In a top-down parser, you
 reach the lowest-precedence expressions first because they may in turn contain
 subexpressions of higher precedence.</p>
 <p><img alt="Top-down grammar rules in order of increasing precedence." src="image/parsing-expressions/direction.png" /></p>
@@ -693,8 +693,8 @@ add after <em>multiplication</em>()</div>
 
 <p>Again, we look at the <span name="current">current<span> token to see how to
 parse. If it&rsquo;s a <code>!</code> or <code>-</code>, we must have a unary expression. In that case, we
-grab the token, and then recursively call <code>unary()</code> again to the parse the
-operand. Wrap that all up in a unary expression syntax tree and we&rsquo;re done.</p>
+grab the token, and then recursively call <code>unary()</code> again to parse the operand.
+Wrap that all up in a unary expression syntax tree and we&rsquo;re done.</p>
 <aside name="current">
 <p>The fact that the parser looks ahead at upcoming tokens to decide how to parse
 puts recursive descent into the category of <strong>predictive parsers</strong>.</p>

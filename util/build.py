@@ -122,7 +122,7 @@ def format_code(language, length, lines):
 
   markup += '```'
 
-  html = markdown.markdown(markup, ['extra', 'codehilite'])
+  html = markdown.markdown(markup, extensions=['extra', 'codehilite'])
 
   if leading_newlines > 0:
     html = html.replace('<pre>', '<pre>' + ('<br>' * leading_newlines))
@@ -381,7 +381,7 @@ def format_file(path, skip_up_to_date, dependencies_mod):
   contents = contents.replace('<aside', '<aside markdown="1"')
   contents = contents.replace('<div class="challenges">', '<div class="challenges" markdown="1">')
   contents = contents.replace('<div class="design-note">', '<div class="design-note" markdown="1">')
-  body = markdown.markdown(contents, ['extra', 'codehilite', 'smarty'])
+  body = markdown.markdown(contents, extensions=['extra', 'codehilite', 'smarty'])
 
   # Turn aside markers in code into spans.
   # <span class="c1">// [repl]</span>
@@ -546,14 +546,14 @@ else:
   estimated_word_count = total_words + (empty_chapters * average_word_count)
   percent_finished = total_words * 100 // estimated_word_count
 
-  first_writing_day = datetime.date(2016, 9, 30)
-  today = datetime.date.today()
-  writing_days = (today - first_writing_day).days
-  estimated_writing_days = int(writing_days / (percent_finished / 100))
-  estimated_end_date = today + datetime.timedelta(days=estimated_writing_days)
+  # Commenting out since it's soul-crushing.
+  # first_writing_day = datetime.date(2016, 9, 30)
+  # today = datetime.date.today()
+  # writing_days = (today - first_writing_day).days
+  # estimated_writing_days = int(writing_days / (percent_finished / 100))
+  # estimated_end_date = today + datetime.timedelta(days=estimated_writing_days)
 
-  print("{}/~{} words, {}% done ({})".format(
+  print("{}/~{} words, {}% done".format(
       total_words,
       estimated_word_count,
-      percent_finished,
-      estimated_end_date))
+      percent_finished))

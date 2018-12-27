@@ -115,6 +115,12 @@
   <p class="small">(I post about once a month. Don&#8217;t worry, I won&#8217;t spam you.)</p>
 </div>
 
+<blockquote>
+<p>&ldquo;Ah? A small aversion to menial labor?&rdquo; The doctor cocked an eyebrow.
+&ldquo;Understandable, but misplaced. One should treasure those hum-drum
+tasks that keep the body occupied but leave the mind and heart unfettered.&rdquo;</p>
+<p><cite>Tad Williams</cite></p>
+</blockquote>
 <p>Our little VM can represent three types of values right now: numbers, Booleans,
 and <code>nil</code>. Those types have two important things in common: they&rsquo;re immutable
 and they&rsquo;re small. Numbers are the largest, and they still fit into two 64-bit
@@ -131,7 +137,7 @@ C, Pascal strings start with a length value. Since UCSD used only a single byte
 to store the length, strings couldn&rsquo;t be any longer than 255 characters.</p>
 <p><img src="image/strings/pstring.png" alt="The Pascal string 'hello' with a length byte of 5 preceding it."></p>
 </aside>
-<p>We need a way to support values who size varies, sometimes greatly. This is
+<p>We need a way to support values whose size varies, sometimes greatly. This is
 exactly what dynamic allocation on the heap is designed for. We can allocate as
 many bytes as we need. We get back a pointer that we&rsquo;ll use to keep track of the
 value as it flows through the VM.</p>
@@ -296,7 +302,7 @@ strings is defined in a separate struct. Again we need to forward-declare it:</p
 <p>The definition lives alongside Obj:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="p">};</span>                 
 </pre><div class="source-file"><em>object.h</em><br>
-add after enum <em>ObjType</em></div>
+add after struct <em>sObj</em></div>
 <pre class="insert"><br><span></span><span class="k">struct</span> <span class="n">sObjString</span> <span class="p">{</span>
   <span class="n">Obj</span> <span class="n">obj</span><span class="p">;</span>         
   <span class="kt">int</span> <span class="n">length</span><span class="p">;</span>      
@@ -305,7 +311,7 @@ add after enum <em>ObjType</em></div>
 </pre><pre class="insert-after"><br><span></span><span class="cp">#endif             </span>
 </pre></div>
 
-<div class="source-file-narrow"><em>object.h</em>, add after enum <em>ObjType</em></div>
+<div class="source-file-narrow"><em>object.h</em>, add after struct <em>sObj</em></div>
 
 <p>A string object contains an array of characters. Those are stored in a separate
 heap-allocated array so that we only set aside as much room as needed for each
@@ -355,14 +361,15 @@ safe, we add another macro:</p>
 <p>It takes a Value, not a raw <code>Obj*</code> because most code in the VM works with
 Values. It relies on this inline function:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="p">};</span>                                                       
-<br></pre><div class="source-file"><em>object.h</em></div>
+<br></pre><div class="source-file"><em>object.h</em><br>
+add after struct <em>sObjString</em></div>
 <pre class="insert"><span></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">bool</span> <span class="nf">isObjType</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">,</span> <span class="n">ObjType</span> <span class="n">type</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="n">IS_OBJ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">AS_OBJ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">==</span> <span class="n">type</span><span class="p">;</span>   
 <span class="p">}</span>                                                        
 <br></pre><pre class="insert-after"><span></span><span class="cp">#endif                                                   </span>
 </pre></div>
 
-<div class="source-file-narrow"><em>object.h</em></div>
+<div class="source-file-narrow"><em>object.h</em>, add after struct <em>sObjString</em></div>
 
 <p>Pop quiz: Why not just put the body of this function right in the macro? What&rsquo;s
 different about this one compared to the others? Right, it&rsquo;s because the body
@@ -426,12 +433,13 @@ Since it doesn&rsquo;t, we can take the characters as they are.</p>
 </aside>
 <p>To create the string, we use <code>copyString()</code>, which is declared in <code>object.h</code>:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="p">};</span>                                                       
-<br></pre><div class="source-file"><em>object.h</em></div>
+<br></pre><div class="source-file"><em>object.h</em><br>
+add after struct <em>sObjString</em></div>
 <pre class="insert"><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">copyString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">);</span>    
 <br></pre><pre class="insert-after"><span></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">bool</span> <span class="nf">isObjType</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">,</span> <span class="n">ObjType</span> <span class="n">type</span><span class="p">)</span> <span class="p">{</span>
 </pre></div>
 
-<div class="source-file-narrow"><em>object.h</em></div>
+<div class="source-file-narrow"><em>object.h</em>, add after struct <em>sObjString</em></div>
 
 <p>Which the compiler needs to include:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#define clox_compiler_h</span>
@@ -480,7 +488,7 @@ count:</p>
 
 <p>Once we have the array, we copy over the characters from the lexeme and
 terminate it.</p>
-<aside name="terminator">
+<aside class="bottom" name="terminator">
 <p>We need to terminate it explicitly ourselves because the lexeme points at a
 range of characters inside the monolithic source string and isn&rsquo;t terminated.</p>
 <p>Since ObjString stores the length explicitly, we <em>could</em> leave the character
@@ -548,7 +556,7 @@ They will pay off in later chapters when we reuse them.</p>
 that there is room for the extra payload fields needed by the specific object
 type being created.</p>
 <p>Then it initializes the Obj state<span class="em">&mdash;</span>right now, that&rsquo;s just the type tag. This
-function returns to <code>copyString()</code> which finishes initializing the ObjString
+function returns to <code>allocateString()</code> which finishes initializing the ObjString
 fields. <span name="viola"><em>Voil&agrave;</em></span>, we can compile and execute string
 literals.</p>
 <aside name="viola">
@@ -716,14 +724,15 @@ always, we carefully ensure the string is terminated.</p>
 <p>Finally, we produce an ObjString to contain those characters. This time we use a
 new function, <code>takeString()</code>:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="p">};</span>                                                   
-<br></pre><div class="source-file"><em>object.h</em></div>
+<br></pre><div class="source-file"><em>object.h</em><br>
+add after struct <em>sObjString</em></div>
 <pre class="insert"><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">takeString</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">);</span>      
 </pre><pre class="insert-after"><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">copyString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">);</span>
 
 <span class="kt">void</span> <span class="nf">printObject</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">);</span>                       
 </pre></div>
 
-<div class="source-file-narrow"><em>object.h</em></div>
+<div class="source-file-narrow"><em>object.h</em>, add after struct <em>sObjString</em></div>
 
 <p>The implementation looks like:</p>
 <div class="codehilite"><div class="source-file"><em>object.c</em><br>
@@ -750,7 +759,7 @@ ownership of the string you give it.</p>
 </pre></div>
 
 
-<p>When the compiler chrews through this, it allocates an ObjString for each of
+<p>When the compiler chews through this, it allocates an ObjString for each of
 those three string literals and stores them in the chunk&rsquo;s constant table and
 generates this <span name="stack">bytecode</span>:</p>
 <aside name="stack">
@@ -793,7 +802,7 @@ reaching the end of the program, so this gets you surprisingly far.</p>
 collector <em>must</em> ensure it can find every bit of memory that <em>is</em> still being
 used so that it doesn&rsquo;t collect live data. There are hundreds of places a
 language implementation can squirrel away a reference to some object. If you
-don&rsquo;t find all of them, you&rsquo;ve got really painful to track down GC bugs.</p>
+don&rsquo;t find all of them, you get nightmarish bugs.</p>
 <p>I&rsquo;ve seen language implementations die because it was too hard to get the GC in
 later. If your language needs GC, get it working as soon as you can. It&rsquo;s a
 cross-cutting concern that touches the entire codebase.</p>
@@ -813,12 +822,12 @@ the chain:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="k">struct</span> <span class="n">sObj</span> <span class="p">{</span>       
   <span class="n">ObjType</span> <span class="n">type</span><span class="p">;</span>     
 </pre><div class="source-file"><em>object.h</em><br>
-add after enum <em>ObjType</em></div>
+in struct <em>sObj</em></div>
 <pre class="insert"><span></span>  <span class="k">struct</span> <span class="n">sObj</span><span class="o">*</span> <span class="n">next</span><span class="p">;</span>
 </pre><pre class="insert-after"><span></span><span class="p">};</span>                  
 </pre></div>
 
-<div class="source-file-narrow"><em>object.h</em>, add after enum <em>ObjType</em></div>
+<div class="source-file-narrow"><em>object.h</em>, in struct <em>sObj</em></div>
 
 <p>The VM stores a pointer to the head of the list:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">Value</span><span class="o">*</span> <span class="n">stackTop</span><span class="p">;</span>

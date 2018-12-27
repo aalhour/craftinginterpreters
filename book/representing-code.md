@@ -451,14 +451,14 @@ Our scanner used a single Token class to represent all kinds of lexemes. To
 distinguish the different kinds -- think the number `123` versus the string
 `"123"` -- we included a simple TokenType enum.
 
-Syntax trees are not so <span name="token-data">homogenous</span>. Unary
+Syntax trees are not so <span name="token-data">homogeneous</span>. Unary
 expressions have a single operand, binary expressions have two, and literals
 have none. We *could* mush that all together into a single Expression class with
 an arbitrary list of children. Some compilers do.
 
 <aside name="token-data">
 
-Tokens aren't entirely homogenous either. Tokens for literals store the value
+Tokens aren't entirely homogeneous either. Tokens for literals store the value
 but other kinds of lexemes don't need that state. I have seen scanners that use
 different classes for literals and other kinds of lexemes, but I figured I'd
 keep things simpler.
@@ -645,9 +645,10 @@ if (expr instanceof Expr.Binary) {
 } else // ...
 ```
 
-That's verbose and slow. Also, the Java compiler won't tell us when we forget to
-add support for some new expression class. With an enum, we get a compile
-error when a switch is missing a case.
+But all of those sequential type tests are slow. Expression types whose names
+are alphabetically later would take longer to execute because they'd fall
+through more if cases before finding the right type. That's not my idea of an
+elegant solution.
 
 We have a family of classes and we need to associate a chunk of behavior with
 each one. The natural solution in an object-oriented language like Java is to

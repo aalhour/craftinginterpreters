@@ -265,9 +265,9 @@ There's one last parsing function, another old friend from jlox:
 
 ^code consume
 
-It's similar to `advance()` in that reads the next token. But it also validates
-that the token has an expected type. If not, it reports an error. This function
-is the foundation of most syntax errors in the compiler.
+It's similar to `advance()` in that it reads the next token. But it also
+validates that the token has an expected type. If not, it reports an error. This
+function is the foundation of most syntax errors in the compiler.
 
 OK, that's enough on the front end for now.
 
@@ -345,12 +345,12 @@ them.
 
 ### Parsers for tokens
 
-Imagine if every expression in Lox is only a single token. Each token type maps
-to a different kind of expression. We define a function for each that outputs
-the appropriate bytecode for that expression. Then we build an array of function
-pointers. The indexes in the array correspond to the `TokenType` enum values,
-and the function at that index is the code to compile an expression of that
-token type.
+Imagine that every expression in Lox is only a single token. Each token type
+maps to a different kind of expression. We define a function for each that
+outputs the appropriate bytecode for that expression. Then we build an array of
+function pointers. The indexes in the array correspond to the `TokenType` enum
+values, and the function at that index is the code to compile an expression of
+that token type.
 
 To add support for number literals, we store a pointer to the following function
 at the `TOKEN_NUMBER` index in the array:

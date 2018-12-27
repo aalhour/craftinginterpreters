@@ -336,29 +336,14 @@ static void initCompiler(Compiler* compiler, int scopeDepth,
 //> Calls and Functions not-yet
 
   switch (type) {
+//> Methods and Initializers not-yet
+    case TYPE_INITIALIZER:
+    case TYPE_METHOD:
+//< Methods and Initializers not-yet
     case TYPE_FUNCTION:
       current->function->name = copyString(parser.previous.start,
                                            parser.previous.length);
       break;
-
-//> Methods and Initializers not-yet
-    case TYPE_INITIALIZER:
-    case TYPE_METHOD: {
-      int length = currentClass->name.length +
-                   parser.previous.length + 1;
-
-      char* chars = ALLOCATE(char, length + 1);
-      memcpy(chars, currentClass->name.start,
-             currentClass->name.length);
-      chars[currentClass->name.length] = '.';
-      memcpy(chars + currentClass->name.length + 1,
-             parser.previous.start, parser.previous.length);
-      chars[length] = '\0';
-
-      current->function->name = takeString(chars, length);
-      break;
-    }
-//< Methods and Initializers not-yet
     case TYPE_TOP_LEVEL:
       current->function->name = NULL;
       break;
@@ -997,8 +982,8 @@ ParseRule rules[] = {
 //> Types of Values table-false
   { literal,  NULL,    PREC_NONE },       // TOKEN_FALSE
 //< Types of Values table-false
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_FUN
   { NULL,     NULL,    PREC_NONE },       // TOKEN_FOR
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_FUN
   { NULL,     NULL,    PREC_NONE },       // TOKEN_IF
 /* Compiling Expressions rules < Types of Values table-nil
   { NULL,     NULL,    PREC_NONE },       // TOKEN_NIL
