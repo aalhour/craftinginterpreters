@@ -3,7 +3,7 @@
 
 > In the middle of the journey of our life I found myself within a dark woods
 > where the straight way was lost.
-> <cite>Dante Alighieri</cite>
+> <cite>Dante Alighieri, <em>Inferno</em></cite>
 
 This chapter is exciting for not one, not two, but *three* reasons. First, it
 provides the final segment of our VM's execution pipeline. Once in place, we can
@@ -444,7 +444,7 @@ function to compile the `!` operator in [the next chapter][next].
 As in `grouping()`, we recursively call `expression()` to compile the operand.
 After that, we emit the bytecode to perform the negation. It might seem a little
 weird to write the negate instruction *after* its operand's bytecode since the
-`-` appears on the left, but think about in terms of order of execution:
+`-` appears on the left, but think about it in terms of order of execution:
 
 1. We evaluate the operand first which leaves its value on the stack.
 
@@ -580,7 +580,7 @@ parser functions with token types. In the rows for `TOKEN_PLUS`, `TOKEN_MINUS`,
 ^code binary
 
 When a prefix parser function is called, the leading token has already been
-consumed. An infix parser function is even more *in media res* -- the left-hand
+consumed. An infix parser function is even more *in medias res* -- the left-hand
 operand has already been compiled and the subsequent infix operator consumed.
 
 The fact that the left operand gets compiled first works out fine. It means at

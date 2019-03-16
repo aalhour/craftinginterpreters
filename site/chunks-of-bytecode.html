@@ -237,8 +237,9 @@ representation.</p>
 indirection out of the way. Right down to the metal. Machine code. It even
 <em>sounds</em> fast. <em>&ldquo;Machine code.&rdquo;</em></p>
 <p>Compiling directly to the native instruction set the chip supports is what the
-fastest languages do, and has been since the early days when engineers actually
-<span name="hand">hand-wrote</span> programs in machine code.</p>
+fastest languages do. Targeting native code has been the most efficient option
+since way back in the early days when engineers actually <span
+name="hand">hand-wrote</span> programs in machine code.</p>
 <aside name="hand">
 <p>Yes, they actually wrote machine code by hand. On punched cards. Which,
 presumably, they punched <em>with their fists</em>.</p>
@@ -803,8 +804,8 @@ create new file</div>
 <p>To disassemble a chunk, we print a little header (so we can tell <em>which</em> chunk
 we&rsquo;re looking at) and then crank through the bytecode, disassembling each
 instruction. The way we iterate through the code is a little odd. Instead of
-incrementing <code>i</code> in the loop, we let <code>disassembleInstruction()</code> do it for us.
-When we call that function, after disassembling the instruction at the given
+incrementing <code>offset</code> in the loop, we let <code>disassembleInstruction()</code> do it for
+us. When we call that function, after disassembling the instruction at the given
 offset, it returns the offset of the <em>next</em> instruction. This is because, as
 we&rsquo;ll see later, instructions can have different sizes.</p>
 <p>The core of the &ldquo;debug&rdquo; module is this function:</p>
@@ -1041,7 +1042,7 @@ in struct <em>Chunk</em></div>
 
 <div class="source-file-narrow"><em>chunk.c</em></div>
 
-<p>Ah, C, and it&rsquo;s Stone Age modularity story. Where were we? Right. When we
+<p>Ah, C, and its Stone Age modularity story. Where were we? Right. When we
 initialize a new chunk, we initialize its constant list too:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">chunk</span><span class="o">-&gt;</span><span class="n">code</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>               
 </pre><div class="source-file"><em>chunk.c</em><br>

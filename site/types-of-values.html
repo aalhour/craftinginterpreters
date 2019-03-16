@@ -113,7 +113,7 @@
 <p>When you are a Bear of Very Little Brain, and you Think of Things, you find
 sometimes that a Thing which seemed very Thingish inside you is quite
 different when it gets out into the open and has other people looking at it.</p>
-<p><cite>A.A. Milne</cite></p>
+<p><cite>A.A. Milne, <em>Winnie-the-Pooh</em></cite></p>
 </blockquote>
 <p>The past few chapters were huge, packed full of complex techniques and pages of
 code. In this chapter, there&rsquo;s only one new concept to learn and a scattering of
@@ -436,10 +436,16 @@ add after <em>resetStack</em>()</div>
 
 <p>You&rsquo;ve certainly <em>called</em> variadic functions<span class="em">&mdash;</span>ones that take a varying number
 of arguments<span class="em">&mdash;</span>in C before: <code>printf()</code> is one. But you may not have <em>defined</em>
-your own. This book isn&rsquo;t a C tutorial, so I&rsquo;ll skim it here, but basically the
-<code>...</code> and <code>va_list</code> stuff let us pass an arbitrary number of arguments to
-<code>runtimeError()</code>. It forwards those on to <code>vfprintf()</code>, which is the flavor of
-<code>printf()</code> that takes an explicit <code>va_list</code>.</p>
+your own. This book isn&rsquo;t a C <span name="tutorial">tutorial</span>, so I&rsquo;ll
+skim over it here, but basically the <code>...</code> and <code>va_list</code> stuff let us pass an
+arbitrary number of arguments to <code>runtimeError()</code>. It forwards those on to
+<code>vfprintf()</code>, which is the flavor of <code>printf()</code> that takes an explicit
+<code>va_list</code>.</p>
+<aside name="tutorial">
+<p>If you are looking for a C tutorial, I love &ldquo;<a href="https://www.cs.princeton.edu/~bwk/cbook.html">The C Programming Language</a>&rdquo;,
+usually called &ldquo;K&amp;R&rdquo; in honor of its authors. It&rsquo;s not entirely up to date, but
+the quality of the writing more than makes up for it.</p>
+</aside>
 <p>Callers can pass a format string to <code>runtimeError()</code> followed by a number of
 arguments, just like they can when calling <code>printf()</code> directly. <code>runtimeError()</code>
 then formats and prints those arguments. We won&rsquo;t take advantage of that in this
@@ -642,7 +648,7 @@ in <em>run</em>()</div>
 
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
-<p>This is pretty self-explanatory. Each instructions summons the appropriate value
+<p>This is pretty self-explanatory. Each instruction summons the appropriate value
 and pushes it onto the stack. We shouldn&rsquo;t forget our disassembler either:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">case</span> <span class="nl">OP_CONSTANT</span><span class="p">:</span>                                          
       <span class="k">return</span> <span class="n">constantInstruction</span><span class="p">(</span><span class="s">&quot;OP_CONSTANT&quot;</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
@@ -785,7 +791,7 @@ and comparison operators too: <code>==</code>, <code>!=</code>, <code>&lt;</code
 all of the operators that return Boolean results except the logical operators
 <code>and</code> and <code>or</code>. Since those need to short-circuit<span class="em">&mdash;</span>basically do a little
 control flow<span class="em">&mdash;</span>we aren&rsquo;t ready for them yet.</p>
-<p>Here&rsquo;s the new instructions for those operators:</p>
+<p>Here are the new instructions for those operators:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">OP_FALSE</span><span class="p">,</span>  
 </pre><div class="source-file"><em>chunk.h</em><br>
 in enum <em>OpCode</em></div>

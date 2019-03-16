@@ -113,7 +113,7 @@
 
 <blockquote>
 <p>Hash, x. There is no definition for this word<span class="em">&mdash;</span>nobody knows what hash is.</p>
-<p><cite>Ambrose Bierce, The Unabridged Devil&rsquo;s Dictionary</cite></p>
+<p><cite>Ambrose Bierce, <em>The Unabridged Devil&rsquo;s Dictionary</em></cite></p>
 </blockquote>
 <p>Before we can add variables to our burgeoning virtual machine, we need some way
 to look up a value given a variable&rsquo;s name. Later, when we add classes, we&rsquo;ll
@@ -122,8 +122,8 @@ these problems and others is a hash table.</p>
 <p>You probably already know what a hash table is, even if you don&rsquo;t know it by
 that name. If you&rsquo;re a Java programmer, you call them &ldquo;HashMaps&rdquo;. C# and Python
 users call them &ldquo;dictionaries&rdquo;. In C++, it&rsquo;s an &ldquo;unordered map&rdquo;. &ldquo;Objects&rdquo; in
-JavaScript and &ldquo;tables&rdquo; Lua are hash tables under the hood, which is what gives
-them their flexibility.</p>
+JavaScript and &ldquo;tables&rdquo; in Lua are hash tables under the hood, which is what
+gives them their flexibility.</p>
 <p>A hash table, whatever your language calls it, associates a set of <em>keys</em> with a
 set of <em>values</em>. Each key/value pair is an <em>entry</em> in the table. Given a key,
 you can look up its corresponding value. You can add new key/value pairs and
@@ -197,8 +197,8 @@ storage locations. What if we loosened it a little and allowed variables up to
 <p>Again, this restriction isn&rsquo;t so crazy. Early linkers for C only treated the
 first six characters of external identifiers as meaningful. Everything after
 that was ignored. If you&rsquo;ve ever wondered why the C standard library is so
-enamored of abbreviation<span class="em">&mdash;</span>looking at you, <code>creat()</code><span class="em">&mdash;</span>it turns out it wasn&rsquo;t
-entirely because of the small screens (or teletypes!) of the day.</p>
+enamored of abbreviation<span class="em">&mdash;</span>looking at you, <code>strncmp()</code><span class="em">&mdash;</span>it turns out it
+wasn&rsquo;t entirely because of the small screens (or teletypes!) of the day.</p>
 </aside>
 <p>That&rsquo;s small enough that we can pack all eight characters into a 64-bit integer
 and easily turn the string into a number. We can then use it as an array index.
@@ -207,8 +207,8 @@ Memory&rsquo;s gotten cheaper over time, but not quite <em>that</em> cheap. Even
 make an array that big, it would be heinously wasteful. Almost every bucket will
 be empty unless users start writing way bigger Lox programs than we&rsquo;ve
 anticipated.</p>
-<p>Even though our variable keys cover the full 64 numeric range, we clearly don&rsquo;t
-need an array that that large. Instead, we&rsquo;ll allocate an array with enough
+<p>Even though our variable keys cover the full 64-bit numeric range, we clearly don&rsquo;t
+need an array that large. Instead, we&rsquo;ll allocate an array with enough
 capacity for the entries we need, but still some reasonable size. We map the
 full 64-bit keys down to that smaller range by taking the value modulo the size
 of the array.</p>
@@ -232,12 +232,12 @@ by the array size will end up in the same bucket. Keys can <strong>collide</stro
 example, if we try to add &ldquo;jam&rdquo;, it also ends up in bucket 2:</p>
 <p><img src="image/hash-tables/collision.png" alt="'Bagel' and 'jam' both end up in bucket index 2." /></p>
 <p>We do have some control of this by tuning the array size. The bigger the array,
-the fewer indexes that get mapped to the same bucket and the fewer collisions
-that are likely to occur. Hash table implementers track this collision
-likelihood by measuring the table&rsquo;s <strong>load factor</strong>. It&rsquo;s defined as the number
-of entries divided by the number of buckets. So a hash table with five entries
-and an array of 16 elements has a load factor of 0.3125. The higher the load
-factor, the greater the chance of collisions.</p>
+the fewer the indexes that get mapped to the same bucket and the fewer the
+collisions that are likely to occur. Hash table implementers track this
+collision likelihood by measuring the table&rsquo;s <strong>load factor</strong>. It&rsquo;s defined as
+the number of entries divided by the number of buckets. So a hash table with
+five entries and an array of 16 elements has a load factor of 0.3125. The higher
+the load factor, the greater the chance of collisions.</p>
 <p>One way we mitigate collisions is by resizing the array. Just like the dynamic
 arrays we implemented earlier, we reallocate and grow the hash table&rsquo;s array as
 it fills up. Unlike a regular dynamic array, though, we won&rsquo;t wait until the
@@ -250,8 +250,8 @@ increases, the chance of collision increases very quickly. We can pick a large
 array size to reduce that, but it&rsquo;s a losing game. Say we wanted to store a
 hundred items in a hash table. To keep the chance of collision below a
 still-pretty-high 10%, we need an array with at least 47,015 elements. To get
-the chance below 1% requires an array with 492,555 elements, over 4,000 thousand
-empty buckets for each one in use.</p>
+the chance below 1% requires an array with 492,555 elements, over 4,000 empty
+buckets for each one in use.</p>
 <p>A low load factor can make collisions <span name="pigeon">rarer</span>, but the
 <a href="https://en.wikipedia.org/wiki/Pigeonhole_principle"><em>pigeonhole principle</em></a> tells us we can never eliminate them entirely.
 If you&rsquo;ve got five pet pigeons and four holes to put them in, at least one hole
@@ -527,7 +527,7 @@ items. We don&rsquo;t need to check for <code>NULL</code> here since <code>FREE_
 handles that gracefully.</p>
 <h3><a href="#hashing-strings" name="hashing-strings"><small>20&#8202;.&#8202;4&#8202;.&#8202;1</small> Hashing strings</a></h3>
 <p>Before we can start putting entries in the table, we need to, well, hash them.
-To ensure that the entries get distributed as uniformly throughout the array, we
+To ensure that the entries get distributed uniformly throughout the array, we
 want a good hash function that looks at all of the bits of the key string. If it
 only, say, looked at the first few characters, then a series of strings that all
 shared the same prefix would end up colliding in the same bucket.</p>
@@ -655,11 +655,12 @@ if a new entry was added. Here&rsquo;s the implementation:</p>
 add after <em>freeTable</em>()</div>
 <pre><span></span><span class="kt">bool</span> <span class="nf">tableSet</span><span class="p">(</span><span class="n">Table</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">ObjString</span><span class="o">*</span> <span class="n">key</span><span class="p">,</span> <span class="n">Value</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>       
   <span class="n">Entry</span><span class="o">*</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">findEntry</span><span class="p">(</span><span class="n">table</span><span class="o">-&gt;</span><span class="n">entries</span><span class="p">,</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
-  <span class="kt">bool</span> <span class="n">isNewKey</span> <span class="o">=</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">;</span>                            
-  <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">;</span>                                              
-  <span class="n">entry</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
 
+  <span class="kt">bool</span> <span class="n">isNewKey</span> <span class="o">=</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">;</span>                            
   <span class="k">if</span> <span class="p">(</span><span class="n">isNewKey</span><span class="p">)</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">++</span><span class="p">;</span>                                  
+
+  <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">;</span>                                              
+  <span class="n">entry</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>                                          
   <span class="k">return</span> <span class="n">isNewKey</span><span class="p">;</span>                                               
 <span class="p">}</span>                                                                
 </pre></div>
@@ -669,9 +670,9 @@ add after <em>freeTable</em>()</div>
 <p>Most of the interesting logic is in <code>findEntry()</code> which we&rsquo;ll get to soon. That
 function&rsquo;s job is to take a key and figure out which bucket in the array it
 should go in. It returns a pointer to that bucket<span class="em">&mdash;</span>the Entry in the array.</p>
-<p>Once we have that, inserting is straightforward. We copy the key and value into
-the corresponding fields in the entry. Then we update the hash table&rsquo;s size,
-taking care to not increase the count if we overwrote an already-present key.</p>
+<p>Once we have that, inserting is straightforward. We update the hash table&rsquo;s
+size, taking care to not increase the count if we overwrote an already-present
+key. Then we copy the key and value into the corresponding fields in the entry.</p>
 <p>We&rsquo;re missing a little something here, though. We haven&rsquo;t actually allocated the
 entry array yet. Oops! Before we can insert anything, we need to make sure we
 have an array, and that it&rsquo;s big enough:</p>
@@ -804,8 +805,8 @@ add after <em>findEntry</em>()</div>
 it initializes every element to be an empty bucket and then stores the array
 (and its capacity) in the hash table&rsquo;s main struct. This code is fine for when
 we insert the very first entry into the table, and we require the first
-allocation of the array. But what about when we already one and we need to grow
-it?</p>
+allocation of the array. But what about when we already have one and we need to
+grow it?</p>
 <p>Back when we were doing a dynamic array, we could just use <code>realloc()</code> and let
 the C standard library copy everything over. That doesn&rsquo;t work for a hash table.
 Remember that to choose the bucket for each entry, we take its hash key <em>modulo
@@ -900,7 +901,7 @@ add after <em>freeTable</em>()</div>
 <p>You pass in a table and a key. If it finds an entry with that key, it returns
 <code>true</code>, otherwise it returns <code>false</code>. If the entry exists, it stores the
 resulting value in the <code>value</code> output parameter.</p>
-<p>Since <code>findEntries()</code> already does the hard work, the implementation isn&rsquo;t too
+<p>Since <code>findEntry()</code> already does the hard work, the implementation isn&rsquo;t too
 bad:</p>
 <div class="codehilite"><div class="source-file"><em>table.c</em><br>
 add after <em>findEntry</em>()</div>
@@ -918,7 +919,7 @@ add after <em>findEntry</em>()</div>
 <div class="source-file-narrow"><em>table.c</em>, add after <em>findEntry</em>()</div>
 
 <p>Obviously, if the table doesn&rsquo;t even have a bucket array, we definitely won&rsquo;t
-find the entry, so we check for that first. Otherwise, we let <code>findEntries()</code>
+find the entry, so we check for that first. Otherwise, we let <code>findEntry()</code>
 work its magic. That returns a pointer to a bucket. If the bucket is empty<span class="em">&mdash;</span>which we detect by seeing if the key is <code>NULL</code><span class="em">&mdash;</span>then it didn&rsquo;t find an entry
 with our key. If it does return a non-empty entry, then that&rsquo;s our match. We
 take its value and copy it to the output parameter so the caller can get it.
@@ -1039,10 +1040,10 @@ in <em>findEntry</em>()</div>
 
 <div class="source-file-narrow"><em>table.c</em>, in <em>findEntry</em>()</div>
 
-<p>If we reach a truly empty entry then then the key isn&rsquo;t present. In that case,
-if we have passed a tombstone, we return its bucket instead of the later empty
-one. If we&rsquo;re calling <code>findEntry()</code> in order to insert a node, that lets us
-treat the tombstone bucket as empty and reuse it for the new entry.</p>
+<p>If we reach a truly empty entry, then the key isn&rsquo;t present. In that case, if we
+have passed a tombstone, we return its bucket instead of the later empty one. If
+we&rsquo;re calling <code>findEntry()</code> in order to insert a node, that lets us treat the
+tombstone bucket as empty and reuse it for the new entry.</p>
 <p>Reusing tombstone slots automatically like this helps reduce the number of
 tombstones wasting space in the bucket array. In typical use cases where there
 is a mixture of insertions and deletions, the number of tombstones grows for a
@@ -1055,9 +1056,10 @@ eventually hit an empty bucket.</p>
 <p>So we need to be thoughtful about how tombstones interact with the table&rsquo;s load
 factor and resizing. The key question is, when calculating the load factor,
 should we treat tombstones like full buckets or empty ones?</p>
-<p>If we treat them like full buckets, then we may end up with a bigger array than
-we probably need because it artificially inflates the load factor. There are
-tombstones we could reuse, but they aren&rsquo;t treated as unused so we end up
+<h3><a href="#counting-tombstones" name="counting-tombstones"><small>20&#8202;.&#8202;4&#8202;.&#8202;6</small> Counting tombstones</a></h3>
+<p>If we treat tombstones like full buckets, then we may end up with a bigger array
+than we probably need because it artificially inflates the load factor. There
+are tombstones we could reuse, but they aren&rsquo;t treated as unused so we end up
 growing the array prematurely.</p>
 <p>But if we treat tombstones like empty buckets and <em>don&rsquo;t</em> include them in the
 load factor, then we run the risk of ending up with <em>no</em> actual empty buckets to
@@ -1065,7 +1067,20 @@ terminate a lookup. An infinite loop is a much worse problem than a few extra
 array slots, so for load factor, we consider tombstones to be full buckets.</p>
 <p>That&rsquo;s why we don&rsquo;t reduce the count when deleting an entry in the previous
 code. The count is no longer the number of entries in the hash table, it&rsquo;s the
-number of entries plus tombstones.</p>
+number of entries plus tombstones. That implies that we only increment the count
+during insertion if the new entry goes into an entirely empty bucket:</p>
+<div class="codehilite"><pre class="insert-before"><br><span></span>  <span class="kt">bool</span> <span class="n">isNewKey</span> <span class="o">=</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">;</span>                  
+</pre><div class="source-file"><em>table.c</em><br>
+in <em>tableSet</em>()<br>
+replace 1 line</div>
+<pre class="insert"><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">isNewKey</span> <span class="o">&amp;&amp;</span> <span class="n">IS_NIL</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">))</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">count</span><span class="o">++</span><span class="p">;</span>
+</pre><pre class="insert-after"><br><span></span>  <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">;</span>                                    
+</pre></div>
+
+<div class="source-file-narrow"><em>table.c</em>, in <em>tableSet</em>(), replace 1 line</div>
+
+<p>If we are replacing a tombstone with a new entry, the bucket has already been
+accounted for and the count doesn&rsquo;t change.</p>
 <p>When we resize the array, we allocate a new array and re-insert all of the
 existing entries into it. During that process, we <em>don&rsquo;t</em> copy the tombstones
 over. They don&rsquo;t add any value since we&rsquo;re rebuilding the probe sequences
@@ -1220,7 +1235,7 @@ in <em>allocateString</em>()</div>
 the strings and those are all we care about, so we just use <code>nil</code> for the
 values.</p>
 <p>This gets a string into the table assuming that it&rsquo;s unique, but we need to
-actually check for duplication before we get here. We do that in two the
+actually check for duplication before we get here. We do that in the two
 higher-level functions that call <code>allocateString()</code>. Here&rsquo;s one:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">uint32_t</span> <span class="n">hash</span> <span class="o">=</span> <span class="n">hashString</span><span class="p">(</span><span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">);</span>                       
 </pre><div class="source-file"><em>object.c</em><br>
@@ -1244,7 +1259,7 @@ in <em>takeString</em>()</div>
 <pre class="insert"><span></span>  <span class="n">ObjString</span><span class="o">*</span> <span class="n">interned</span> <span class="o">=</span> <span class="n">tableFindString</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">strings</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span>
                                         <span class="n">hash</span><span class="p">);</span>                     
   <span class="k">if</span> <span class="p">(</span><span class="n">interned</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>                                          
-    <span class="n">FREE_ARRAY</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">);</span>                               
+    <span class="n">FREE_ARRAY</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>                           
     <span class="k">return</span> <span class="n">interned</span><span class="p">;</span>                                               
   <span class="p">}</span>                                                                
 <br></pre><pre class="insert-after"><span></span>  <span class="k">return</span> <span class="nf">allocateString</span><span class="p">(</span><span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">hash</span><span class="p">);</span>                      
@@ -1281,29 +1296,30 @@ add after <em>tableAddAll</em>()</div>
 <p>The implementation looks like this:</p>
 <div class="codehilite"><div class="source-file"><em>table.c</em><br>
 add after <em>tableAddAll</em>()</div>
-<pre><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">tableFindString</span><span class="p">(</span><span class="n">Table</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">,</span> 
-                           <span class="kt">uint32_t</span> <span class="n">hash</span><span class="p">)</span> <span class="p">{</span>                             
-  <span class="c1">// If the table is empty, we definitely won&#39;t find it.                </span>
+<pre><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">tableFindString</span><span class="p">(</span><span class="n">Table</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">,</span>
+                           <span class="kt">uint32_t</span> <span class="n">hash</span><span class="p">)</span> <span class="p">{</span>                            
+  <span class="c1">// If the table is empty, we definitely won&#39;t find it.               </span>
   <span class="k">if</span> <span class="p">(</span><span class="n">table</span><span class="o">-&gt;</span><span class="n">entries</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 
-  <span class="c1">// Figure out where to insert it in the table. Use open addressing and</span>
-  <span class="c1">// basic linear probing.                                              </span>
-  <span class="kt">uint32_t</span> <span class="n">index</span> <span class="o">=</span> <span class="n">hash</span> <span class="o">%</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span>                              
+  <span class="kt">uint32_t</span> <span class="n">index</span> <span class="o">=</span> <span class="n">hash</span> <span class="o">%</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span>                             
 
-  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>                                                            
-    <span class="n">Entry</span><span class="o">*</span> <span class="n">entry</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">table</span><span class="o">-&gt;</span><span class="n">entries</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>                              
+  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>                                                           
+    <span class="n">Entry</span><span class="o">*</span> <span class="n">entry</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">table</span><span class="o">-&gt;</span><span class="n">entries</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>                             
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>                                
-    <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">==</span> <span class="n">length</span> <span class="o">&amp;&amp;</span>                                 
-        <span class="n">memcmp</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="o">-&gt;</span><span class="n">chars</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>                
-      <span class="c1">// We found it.                                                   </span>
-      <span class="k">return</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="p">;</span>                                                
-    <span class="p">}</span>                                                                   
+    <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>                                          
+      <span class="c1">// Stop if we find an empty non-tombstone entry.                 </span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">IS_NIL</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">))</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>                           
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">==</span> <span class="n">length</span> <span class="o">&amp;&amp;</span>                         
+        <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="o">-&gt;</span><span class="n">hash</span> <span class="o">==</span> <span class="n">hash</span> <span class="o">&amp;&amp;</span>                                    
+        <span class="n">memcmp</span><span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="o">-&gt;</span><span class="n">chars</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>               
+      <span class="c1">// We found it.                                                  </span>
+      <span class="k">return</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span><span class="p">;</span>                                               
+    <span class="p">}</span>                                                                  
 
-    <span class="c1">// Try the next slot.                                               </span>
-    <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span>                              
-  <span class="p">}</span>                                                                     
-<span class="p">}</span>                                                                       
+    <span class="c1">// Try the next slot.                                              </span>
+    <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">capacity</span><span class="p">;</span>                             
+  <span class="p">}</span>                                                                    
+<span class="p">}</span>                                                                      
 </pre></div>
 
 <div class="source-file-narrow"><em>table.c</em>, add after <em>tableAddAll</em>()</div>
@@ -1312,7 +1328,10 @@ add after <em>tableAddAll</em>()</div>
 there&rsquo;s a couple of key differences. First, we pass in the raw character array
 of the key we&rsquo;re looking for instead of an ObjString. At the point that we call
 this, we haven&rsquo;t created an ObjString yet.</p>
-<p>Second, when checking to see if we found the key, we do an actual
+<p>Second, when checking to see if we found the key, we look at the actual strings.
+First, we see if they have the same hash. That&rsquo;s quick to check and if the
+hashes aren&rsquo;t equal, the strings definitely aren&rsquo;t the same.</p>
+<p>Finally, just in case there is a hash collision, we do an actual
 character-by-character string comparison. This is the one place in the VM where
 we actually test strings for textual equality. We do it here to deduplicate
 strings and then the rest of the VM can take for granted that any two strings at

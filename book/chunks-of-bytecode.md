@@ -156,8 +156,9 @@ indirection out of the way. Right down to the metal. Machine code. It even
 *sounds* fast. *"Machine code."*
 
 Compiling directly to the native instruction set the chip supports is what the
-fastest languages do, and has been since the early days when engineers actually
-<span name="hand">hand-wrote</span> programs in machine code.
+fastest languages do. Targeting native code has been the most efficient option
+since way back in the early days when engineers actually <span
+name="hand">hand-wrote</span> programs in machine code.
 
 <aside name="hand">
 
@@ -594,8 +595,8 @@ Here's a start at the implementation file:
 To disassemble a chunk, we print a little header (so we can tell *which* chunk
 we're looking at) and then crank through the bytecode, disassembling each
 instruction. The way we iterate through the code is a little odd. Instead of
-incrementing `i` in the loop, we let `disassembleInstruction()` do it for us.
-When we call that function, after disassembling the instruction at the given
+incrementing `offset` in the loop, we let `disassembleInstruction()` do it for
+us. When we call that function, after disassembling the instruction at the given
 offset, it returns the offset of the *next* instruction. This is because, as
 we'll see later, instructions can have different sizes.
 
@@ -761,7 +762,7 @@ And another include over in the "chunk.c" implementation file:
 
 ^code chunk-c-include-value (1 before, 2 after)
 
-Ah, C, and it's Stone Age modularity story. Where were we? Right. When we
+Ah, C, and its Stone Age modularity story. Where were we? Right. When we
 initialize a new chunk, we initialize its constant list too:
 
 ^code chunk-init-constant-array (1 before, 1 after)

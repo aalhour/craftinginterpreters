@@ -116,7 +116,7 @@
 degrees and in the most natural way but, when you are right in the midst of
 it, you are suddenly astonished and ask yourself how in the world it all came
 about.</p>
-<p><cite>Thor Heyerdahl</cite></p>
+<p><cite>Thor Heyerdahl, <em>Kon-Tiki</em></cite></p>
 </blockquote>
 <p>Oh, no! Our language implementation is taking on water! Way back when we <a href="statements-and-state.html">added
 variables and blocks</a>, we had scoping nice and tight. But when we
@@ -535,9 +535,9 @@ add after <em>resolve</em>()</div>
 
 <div class="source-file-narrow"><em>lox/Resolver.java</em>, add after <em>resolve</em>()</div>
 
-<p>Lexical scopes nest and in both the interpreter and the resolver. They behave
-like a stack. The interpreter implements that stack using a linked list<span class="em">&mdash;</span>the
-chain of Environment objects. In the resolver, we use an actual Java Stack:</p>
+<p>Lexical scopes nest in both the interpreter and the resolver. They behave like a
+stack. The interpreter implements that stack using a linked list<span class="em">&mdash;</span>the chain of
+Environment objects. In the resolver, we use an actual Java Stack:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Interpreter</span> <span class="n">interpreter</span><span class="o">;</span>                           
 </pre><div class="source-file"><em>lox/Resolver.java</em><br>
 in class <em>Resolver</em></div>

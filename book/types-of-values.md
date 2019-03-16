@@ -5,7 +5,7 @@
 > sometimes that a Thing which seemed very Thingish inside you is quite
 > different when it gets out into the open and has other people looking at it.
 >
-> <cite>A.A. Milne</cite>
+> <cite>A.A. Milne, <em>Winnie-the-Pooh</em></cite>
 
 The past few chapters were huge, packed full of complex techniques and pages of
 code. In this chapter, there's only one new concept to learn and a scattering of
@@ -292,10 +292,21 @@ out of over the remainder of the book:
 
 You've certainly *called* variadic functions -- ones that take a varying number
 of arguments -- in C before: `printf()` is one. But you may not have *defined*
-your own. This book isn't a C tutorial, so I'll skim it here, but basically the
-`...` and `va_list` stuff let us pass an arbitrary number of arguments to
-`runtimeError()`. It forwards those on to `vfprintf()`, which is the flavor of
-`printf()` that takes an explicit `va_list`.
+your own. This book isn't a C <span name="tutorial">tutorial</span>, so I'll
+skim over it here, but basically the `...` and `va_list` stuff let us pass an
+arbitrary number of arguments to `runtimeError()`. It forwards those on to
+`vfprintf()`, which is the flavor of `printf()` that takes an explicit
+`va_list`.
+
+<aside name="tutorial">
+
+If you are looking for a C tutorial, I love "[The C Programming Language][kr]",
+usually called "K&R" in honor of its authors. It's not entirely up to date, but
+the quality of the writing more than makes up for it.
+
+[kr]: https://www.cs.princeton.edu/~bwk/cbook.html
+
+</aside>
 
 Callers can pass a format string to `runtimeError()` followed by a number of
 arguments, just like they can when calling `printf()` directly. `runtimeError()`
@@ -443,7 +454,7 @@ matter of taste.
 
 ^code interpret-literals (5 before, 1 after)
 
-This is pretty self-explanatory. Each instructions summons the appropriate value
+This is pretty self-explanatory. Each instruction summons the appropriate value
 and pushes it onto the stack. We shouldn't forget our disassembler either:
 
 ^code disassemble-literals (2 before, 1 after)
@@ -530,7 +541,7 @@ all of the operators that return Boolean results except the logical operators
 `and` and `or`. Since those need to short-circuit -- basically do a little
 control flow -- we aren't ready for them yet.
 
-Here's the new instructions for those operators:
+Here are the new instructions for those operators:
 
 ^code comparison-ops (1 before, 1 after)
 

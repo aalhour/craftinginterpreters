@@ -6,7 +6,7 @@
 > it, you are suddenly astonished and ask yourself how in the world it all came
 > about.
 >
-> <cite>Thor Heyerdahl</cite>
+> <cite>Thor Heyerdahl, <em>Kon-Tiki</em></cite>
 
 Oh, no! Our language implementation is taking on water! Way back when we [added
 variables and blocks][statements], we had scoping nice and tight. But when we
@@ -444,9 +444,9 @@ like so:
 
 ^code begin-scope
 
-Lexical scopes nest and in both the interpreter and the resolver. They behave
-like a stack. The interpreter implements that stack using a linked list -- the
-chain of Environment objects. In the resolver, we use an actual Java Stack:
+Lexical scopes nest in both the interpreter and the resolver. They behave like a
+stack. The interpreter implements that stack using a linked list -- the chain of
+Environment objects. In the resolver, we use an actual Java Stack:
 
 ^code scopes-field (1 before, 2 after)
 

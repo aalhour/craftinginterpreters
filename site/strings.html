@@ -119,7 +119,7 @@
 <p>&ldquo;Ah? A small aversion to menial labor?&rdquo; The doctor cocked an eyebrow.
 &ldquo;Understandable, but misplaced. One should treasure those hum-drum
 tasks that keep the body occupied but leave the mind and heart unfettered.&rdquo;</p>
-<p><cite>Tad Williams</cite></p>
+<p><cite>Tad Williams, <em>The Dragonbone Chair</em></cite></p>
 </blockquote>
 <p>Our little VM can represent three types of values right now: numbers, Booleans,
 and <code>nil</code>. Those types have two important things in common: they&rsquo;re immutable
@@ -637,11 +637,21 @@ arrays contain the same characters, regardless of whether they are two separate
 objects or the exact same one. This does mean that string equality is slower
 than equality on other types since it has to walk the whole string. We&rsquo;ll revise
 that <a href="hash-tables.html">later</a>, but this gives us the right semantics for now.</p>
-<p>In order to call <code>memcmp()</code>, we need an include:</p>
+<p>Finally, in order to use <code>memcmp()</code> and the new stuff in the &ldquo;object&rdquo; module, we
+need a couple of includes:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt; </span><span class="cp"></span>
 </pre><div class="source-file"><em>value.c</em></div>
 <pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
 </pre><pre class="insert-after"><br><span></span><span class="cp">#include</span> <span class="cpf">&quot;memory.h&quot;</span><span class="cp"></span>
+</pre></div>
+
+<div class="source-file-narrow"><em>value.c</em></div>
+
+<p>And:</p>
+<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<br></pre><div class="source-file"><em>value.c</em></div>
+<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;object.h&quot;</span><span class="cp"></span>
+</pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;memory.h&quot;</span><span class="cp"></span>
 </pre></div>
 
 <div class="source-file-narrow"><em>value.c</em></div>
@@ -1064,7 +1074,7 @@ confusing Unicode <em>also</em> has a single code point that looks like &ldquo;Ã
 back &ldquo;v&rdquo; or &ldquo;Â¨&rdquo;? The former means they are thinking of each code point and
 its combining characters as a single unit<span class="em">&mdash;</span>what Unicode calls an <em>extended
 grapheme cluster</em><span class="em">&mdash;</span>the latter means they are thinking in individual code
-points. Which is what your users expect?</p>
+points. Which do your users expect?</p>
 </li>
 <li>
 <p><strong>How is a single unit represented in memory?</strong> Most systems using ASCII
@@ -1102,7 +1112,7 @@ string encoding.</p>
 </li>
 <li>
 <p>UTF-8 is memory efficient and supports the whole Unicode range, but it&rsquo;s
-    variable-length encoding make it slow to access arbitrary code points.</p>
+    variable-length encoding makes it slow to access arbitrary code points.</p>
 </li>
 <li>
 <p>UTF-16 is worse than all of them<span class="em">&mdash;</span>an ugly consequence of Unicode

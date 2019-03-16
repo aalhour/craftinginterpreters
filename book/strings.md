@@ -5,7 +5,7 @@
 > "Understandable, but misplaced. One should treasure those hum-drum
 > tasks that keep the body occupied but leave the mind and heart unfettered."
 >
-> <cite>Tad Williams</cite>
+> <cite>Tad Williams, <em>The Dragonbone Chair</em></cite>
 
 Our little VM can represent three types of values right now: numbers, Booleans,
 and `nil`. Those types have two important things in common: they're immutable
@@ -395,9 +395,14 @@ that [later][hash], but this gives us the right semantics for now.
 
 [hash]: hash-tables.html
 
-In order to call `memcmp()`, we need an include:
+Finally, in order to use `memcmp()` and the new stuff in the "object" module, we
+need a couple of includes:
 
 ^code value-include-string (1 before, 2 after)
+
+And:
+
+^code value-include-object (2 before, 1 after)
 
 ### Concatenation
 
@@ -718,7 +723,7 @@ There are two facets to a string encoding:
     back "v" or "¨"? The former means they are thinking of each code point and
     its combining characters as a single unit -- what Unicode calls an *extended
     grapheme cluster* -- the latter means they are thinking in individual code
-    points. Which is what your users expect?
+    points. Which do your users expect?
 
 2.  **How is a single unit represented in memory?** Most systems using ASCII
     gave a single byte to each character and left the high bit unused. Unicode
@@ -758,7 +763,7 @@ string encoding.
     values where a full 32 bits aren't needed.
 
 *   UTF-8 is memory efficient and supports the whole Unicode range, but it's
-    variable-length encoding make it slow to access arbitrary code points.
+    variable-length encoding makes it slow to access arbitrary code points.
 
 *   UTF-16 is worse than all of them -- an ugly consequence of Unicode
     outgrowing its earlier 16-bit range. It's less memory efficient than UTF-8,

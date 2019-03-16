@@ -3,7 +3,7 @@
 
 > Hash, x. There is no definition for this word -- nobody knows what hash is.
 >
-> <cite>Ambrose Bierce, The Unabridged Devil's Dictionary</cite>
+> <cite>Ambrose Bierce, <em>The Unabridged Devil's Dictionary</em></cite>
 
 Before we can add variables to our burgeoning virtual machine, we need some way
 to look up a value given a variable's name. Later, when we add classes, we'll
@@ -13,8 +13,8 @@ these problems and others is a hash table.
 You probably already know what a hash table is, even if you don't know it by
 that name. If you're a Java programmer, you call them "HashMaps". C# and Python
 users call them "dictionaries". In C++, it's an "unordered map". "Objects" in
-JavaScript and "tables" Lua are hash tables under the hood, which is what gives
-them their flexibility.
+JavaScript and "tables" in Lua are hash tables under the hood, which is what
+gives them their flexibility.
 
 A hash table, whatever your language calls it, associates a set of *keys* with a
 set of *values*. Each key/value pair is an *entry* in the table. Given a key,
@@ -114,8 +114,8 @@ storage locations. What if we loosened it a little and allowed variables up to
 Again, this restriction isn't so crazy. Early linkers for C only treated the
 first six characters of external identifiers as meaningful. Everything after
 that was ignored. If you've ever wondered why the C standard library is so
-enamored of abbreviation -- looking at you, `creat()` -- it turns out it wasn't
-entirely because of the small screens (or teletypes!) of the day.
+enamored of abbreviation -- looking at you, `strncmp()` -- it turns out it
+wasn't entirely because of the small screens (or teletypes!) of the day.
 
 </aside>
 
@@ -127,8 +127,8 @@ make an array that big, it would be heinously wasteful. Almost every bucket will
 be empty unless users start writing way bigger Lox programs than we've
 anticipated.
 
-Even though our variable keys cover the full 64 numeric range, we clearly don't
-need an array that that large. Instead, we'll allocate an array with enough
+Even though our variable keys cover the full 64-bit numeric range, we clearly don't
+need an array that large. Instead, we'll allocate an array with enough
 capacity for the entries we need, but still some reasonable size. We map the
 full 64-bit keys down to that smaller range by taking the value modulo the size
 of the array.
@@ -159,12 +159,12 @@ example, if we try to add "jam", it also ends up in bucket 2:
 <img src="image/hash-tables/collision.png" alt="'Bagel' and 'jam' both end up in bucket index 2." />
 
 We do have some control of this by tuning the array size. The bigger the array,
-the fewer indexes that get mapped to the same bucket and the fewer collisions
-that are likely to occur. Hash table implementers track this collision
-likelihood by measuring the table's **load factor**. It's defined as the number
-of entries divided by the number of buckets. So a hash table with five entries
-and an array of 16 elements has a load factor of 0.3125. The higher the load
-factor, the greater the chance of collisions.
+the fewer the indexes that get mapped to the same bucket and the fewer the
+collisions that are likely to occur. Hash table implementers track this
+collision likelihood by measuring the table's **load factor**. It's defined as
+the number of entries divided by the number of buckets. So a hash table with
+five entries and an array of 16 elements has a load factor of 0.3125. The higher
+the load factor, the greater the chance of collisions.
 
 One way we mitigate collisions is by resizing the array. Just like the dynamic
 arrays we implemented earlier, we reallocate and grow the hash table's array as
@@ -180,8 +180,8 @@ increases, the chance of collision increases very quickly. We can pick a large
 array size to reduce that, but it's a losing game. Say we wanted to store a
 hundred items in a hash table. To keep the chance of collision below a
 still-pretty-high 10%, we need an array with at least 47,015 elements. To get
-the chance below 1% requires an array with 492,555 elements, over 4,000 thousand
-empty buckets for each one in use.
+the chance below 1% requires an array with 492,555 elements, over 4,000 empty
+buckets for each one in use.
 
 [birthday]: https://en.wikipedia.org/wiki/Birthday_problem
 
@@ -465,7 +465,7 @@ handles that gracefully.
 ### Hashing strings
 
 Before we can start putting entries in the table, we need to, well, hash them.
-To ensure that the entries get distributed as uniformly throughout the array, we
+To ensure that the entries get distributed uniformly throughout the array, we
 want a good hash function that looks at all of the bits of the key string. If it
 only, say, looked at the first few characters, then a series of strings that all
 shared the same prefix would end up colliding in the same bucket.
@@ -544,9 +544,9 @@ Most of the interesting logic is in `findEntry()` which we'll get to soon. That
 function's job is to take a key and figure out which bucket in the array it
 should go in. It returns a pointer to that bucket -- the Entry in the array.
 
-Once we have that, inserting is straightforward. We copy the key and value into
-the corresponding fields in the entry. Then we update the hash table's size,
-taking care to not increase the count if we overwrote an already-present key.
+Once we have that, inserting is straightforward. We update the hash table's
+size, taking care to not increase the count if we overwrote an already-present
+key. Then we copy the key and value into the corresponding fields in the entry.
 
 We're missing a little something here, though. We haven't actually allocated the
 entry array yet. Oops! Before we can insert anything, we need to make sure we
@@ -646,8 +646,8 @@ It creates a bucket array with `capacity` entries. After it allocates the array,
 it initializes every element to be an empty bucket and then stores the array
 (and its capacity) in the hash table's main struct. This code is fine for when
 we insert the very first entry into the table, and we require the first
-allocation of the array. But what about when we already one and we need to grow
-it?
+allocation of the array. But what about when we already have one and we need to
+grow it?
 
 Back when we were doing a dynamic array, we could just use `realloc()` and let
 the C standard library copy everything over. That doesn't work for a hash table.
@@ -704,13 +704,13 @@ You pass in a table and a key. If it finds an entry with that key, it returns
 `true`, otherwise it returns `false`. If the entry exists, it stores the
 resulting value in the `value` output parameter.
 
-Since `findEntries()` already does the hard work, the implementation isn't too
+Since `findEntry()` already does the hard work, the implementation isn't too
 bad:
 
 ^code table-get
 
 Obviously, if the table doesn't even have a bucket array, we definitely won't
-find the entry, so we check for that first. Otherwise, we let `findEntries()`
+find the entry, so we check for that first. Otherwise, we let `findEntry()`
 work its magic. That returns a pointer to a bucket. If the bucket is empty --
 which we detect by seeing if the key is `NULL` -- then it didn't find an entry
 with our key. If it does return a non-empty entry, then that's our match. We
@@ -807,10 +807,10 @@ The first time we pass a tombstone, we store it in this local variable:
 
 ^code find-entry-tombstone (1 before, 1 after)
 
-If we reach a truly empty entry then then the key isn't present. In that case,
-if we have passed a tombstone, we return its bucket instead of the later empty
-one. If we're calling `findEntry()` in order to insert a node, that lets us
-treat the tombstone bucket as empty and reuse it for the new entry.
+If we reach a truly empty entry, then the key isn't present. In that case, if we
+have passed a tombstone, we return its bucket instead of the later empty one. If
+we're calling `findEntry()` in order to insert a node, that lets us treat the
+tombstone bucket as empty and reuse it for the new entry.
 
 Reusing tombstone slots automatically like this helps reduce the number of
 tombstones wasting space in the bucket array. In typical use cases where there
@@ -827,9 +827,11 @@ So we need to be thoughtful about how tombstones interact with the table's load
 factor and resizing. The key question is, when calculating the load factor,
 should we treat tombstones like full buckets or empty ones?
 
-If we treat them like full buckets, then we may end up with a bigger array than
-we probably need because it artificially inflates the load factor. There are
-tombstones we could reuse, but they aren't treated as unused so we end up
+### Counting tombstones
+
+If we treat tombstones like full buckets, then we may end up with a bigger array
+than we probably need because it artificially inflates the load factor. There
+are tombstones we could reuse, but they aren't treated as unused so we end up
 growing the array prematurely.
 
 But if we treat tombstones like empty buckets and *don't* include them in the
@@ -839,7 +841,13 @@ array slots, so for load factor, we consider tombstones to be full buckets.
 
 That's why we don't reduce the count when deleting an entry in the previous
 code. The count is no longer the number of entries in the hash table, it's the
-number of entries plus tombstones.
+number of entries plus tombstones. That implies that we only increment the count
+during insertion if the new entry goes into an entirely empty bucket:
+
+^code set-increment-count (2 before, 2 after)
+
+If we are replacing a tombstone with a new entry, the bucket has already been
+accounted for and the count doesn't change.
 
 When we resize the array, we allocate a new array and re-insert all of the
 existing entries into it. During that process, we *don't* copy the tombstones
@@ -975,7 +983,7 @@ the strings and those are all we care about, so we just use `nil` for the
 values.
 
 This gets a string into the table assuming that it's unique, but we need to
-actually check for duplication before we get here. We do that in two the
+actually check for duplication before we get here. We do that in the two
 higher-level functions that call `allocateString()`. Here's one:
 
 ^code copy-string-intern (1 before, 2 after)
@@ -1013,7 +1021,11 @@ there's a couple of key differences. First, we pass in the raw character array
 of the key we're looking for instead of an ObjString. At the point that we call
 this, we haven't created an ObjString yet.
 
-Second, when checking to see if we found the key, we do an actual
+Second, when checking to see if we found the key, we look at the actual strings.
+First, we see if they have the same hash. That's quick to check and if the
+hashes aren't equal, the strings definitely aren't the same.
+
+Finally, just in case there is a hash collision, we do an actual
 character-by-character string comparison. This is the one place in the VM where
 we actually test strings for textual equality. We do it here to deduplicate
 strings and then the rest of the VM can take for granted that any two strings at

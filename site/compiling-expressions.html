@@ -122,7 +122,7 @@
 <blockquote>
 <p>In the middle of the journey of our life I found myself within a dark woods
 where the straight way was lost.
-<cite>Dante Alighieri</cite></p>
+<cite>Dante Alighieri, <em>Inferno</em></cite></p>
 </blockquote>
 <p>This chapter is exciting for not one, not two, but <em>three</em> reasons. First, it
 provides the final segment of our VM&rsquo;s execution pipeline. Once in place, we can
@@ -736,7 +736,7 @@ function to compile the <code>!</code> operator in <a href="types-of-values.html
 <p>As in <code>grouping()</code>, we recursively call <code>expression()</code> to compile the operand.
 After that, we emit the bytecode to perform the negation. It might seem a little
 weird to write the negate instruction <em>after</em> its operand&rsquo;s bytecode since the
-<code>-</code> appears on the left, but think about in terms of order of execution:</p>
+<code>-</code> appears on the left, but think about it in terms of order of execution:</p>
 <ol>
 <li>
 <p>We evaluate the operand first which leaves its value on the stack.</p>
@@ -808,11 +808,11 @@ add after struct <em>Parser</em></div>
   <span class="n">PREC_COMPARISON</span><span class="p">,</span>  <span class="c1">// &lt; &gt; &lt;= &gt;=</span>
   <span class="n">PREC_TERM</span><span class="p">,</span>        <span class="c1">// + -      </span>
   <span class="n">PREC_FACTOR</span><span class="p">,</span>      <span class="c1">// * /      </span>
-  <span class="n">PREC_UNARY</span><span class="p">,</span>       <span class="c1">// ! - +    </span>
+  <span class="n">PREC_UNARY</span><span class="p">,</span>       <span class="c1">// ! -      </span>
   <span class="n">PREC_CALL</span><span class="p">,</span>        <span class="c1">// . () []  </span>
   <span class="n">PREC_PRIMARY</span>                  
 <span class="p">}</span> <span class="n">Precedence</span><span class="p">;</span>                   
-</pre><pre class="insert-after"><br><span></span><span class="n">Parser</span> <span class="n">parser</span><span class="p">;</span>                  
+</pre><pre class="insert-after"><br><br><span></span>
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, add after struct <em>Parser</em></div>
@@ -919,7 +919,7 @@ add after <em>endCompiler</em>()</div>
 <div class="source-file-narrow"><em>compiler.c</em>, add after <em>endCompiler</em>()</div>
 
 <p>When a prefix parser function is called, the leading token has already been
-consumed. An infix parser function is even more <em>in media res</em><span class="em">&mdash;</span>the left-hand
+consumed. An infix parser function is even more <em>in medias res</em><span class="em">&mdash;</span>the left-hand
 operand has already been compiled and the subsequent infix operator consumed.</p>
 <p>The fact that the left operand gets compiled first works out fine. It means at
 runtime, that code gets executed first. When it runs, the value it produces will
@@ -1001,7 +1001,7 @@ given token because all prefix operators in Lox have the same precedence.</p>
 </aside>
 <p>We wrap these three properties in a little struct which represents a single row
 in the parser table:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="p">}</span> <span class="n">Precedence</span><span class="p">;</span>           
+<div class="codehilite"><pre class="insert-before"><br><span></span>
 </pre><div class="source-file"><em>compiler.c</em><br>
 add after enum <em>Precedence</em></div>
 <pre class="insert"><br><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>        
@@ -1021,10 +1021,10 @@ type that takes no arguments and returns nothing:</p>
 typedef. I understand the intent behind the syntax<span class="em">&mdash;</span>the whole &ldquo;declaration
 reflects use&rdquo; thing<span class="em">&mdash;</span>but I think it was a failed syntactic experiment.</p>
 </aside>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="p">}</span> <span class="n">Precedence</span><span class="p">;</span>             
+<div class="codehilite"><pre class="insert-before"><br><span></span>
 </pre><div class="source-file"><em>compiler.c</em><br>
 add after enum <em>Precedence</em></div>
-<pre class="insert"><br><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">ParseFn</span><span class="p">)();</span>
+<pre class="insert"><span></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">ParseFn</span><span class="p">)();</span>
 </pre><pre class="insert-after"><br><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>          
 </pre></div>
 
