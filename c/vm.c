@@ -33,6 +33,7 @@ static Value clockNative(int argCount, Value* args) {
 }
 //< Calls and Functions not-yet
 //> reset-stack
+
 static void resetStack() {
   vm.stackTop = vm.stack;
 //> Calls and Functions not-yet
@@ -368,29 +369,9 @@ static void defineMethod(ObjString* name) {
   ObjClass* klass = AS_CLASS(peek(1));
   tableSet(&klass->methods, name, method);
   pop();
+  pop();
 }
 //< Methods and Initializers not-yet
-/* Classes and Instances not-yet < Superclasses not-yet
-
-static void createClass(ObjString* name) {
-  ObjClass* klass = newClass(name);
-*/
-//> Classes and Instances not-yet
-//> Superclasses not-yet
-
-static void createClass(ObjString* name, ObjClass* superclass) {
-  ObjClass* klass = newClass(name, superclass);
-//< Superclasses not-yet
-  push(OBJ_VAL(klass));
-//> Superclasses not-yet
-
-  // Inherit methods.
-  if (superclass != NULL) {
-    tableAddAll(&superclass->methods, &klass->methods);
-  }
-//< Superclasses not-yet
-}
-//< Classes and Instances not-yet
 //> Types of Values is-falsey
 static bool isFalsey(Value value) {
   return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
@@ -432,7 +413,7 @@ static InterpretResult run() {
 /* A Virtual Machine read-constant < Calls and Functions not-yet
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 */
-/* Jumping Forward and Back not-yet < Calls and Functions not-yet
+/* Jumping Back and Forth read-short < Calls and Functions not-yet
 #define READ_SHORT() \
     (vm.ip += 2, (uint16_t)((vm.ip[-2] << 8) | vm.ip[-1]))
 */
@@ -525,22 +506,24 @@ static InterpretResult run() {
 //> Global Variables interpret-pop
       case OP_POP: pop(); break;
 //< Global Variables interpret-pop
-//> Local Variables not-yet
+//> Local Variables interpret-get-local
 
       case OP_GET_LOCAL: {
         uint8_t slot = READ_BYTE();
-/* Local Variables not-yet < Calls and Functions not-yet
-        push(vm.stack[slot]);
+/* Local Variables interpret-get-local < Calls and Functions not-yet
+        push(vm.stack[slot]); // [slot]
 */
 //> Calls and Functions not-yet
         push(frame->slots[slot]);
 //< Calls and Functions not-yet
         break;
       }
+//< Local Variables interpret-get-local
+//> Local Variables interpret-set-local
 
       case OP_SET_LOCAL: {
         uint8_t slot = READ_BYTE();
-/* Local Variables not-yet < Calls and Functions not-yet
+/* Local Variables interpret-set-local < Calls and Functions not-yet
         vm.stack[slot] = peek(0);
 */
 //> Calls and Functions not-yet
@@ -548,7 +531,7 @@ static InterpretResult run() {
 //< Calls and Functions not-yet
         break;
       }
-//< Local Variables not-yet
+//< Local Variables interpret-set-local
 //> Global Variables interpret-get-global
 
       case OP_GET_GLOBAL: {
@@ -576,6 +559,7 @@ static InterpretResult run() {
       case OP_SET_GLOBAL: {
         ObjString* name = READ_STRING();
         if (tableSet(&vm.globals, name, peek(0))) {
+          tableDelete(&vm.globals, name); // [delete]
           runtimeError("Undefined variable '%s'.", name->chars);
           return INTERPRET_RUNTIME_ERROR;
         }
@@ -720,10 +704,10 @@ static InterpretResult run() {
       }
         
 //< Global Variables interpret-print
-//> Jumping Forward and Back not-yet
+//> Jumping Back and Forth op-jump
       case OP_JUMP: {
         uint16_t offset = READ_SHORT();
-/* Jumping Forward and Back not-yet < Calls and Functions not-yet
+/* Jumping Back and Forth op-jump < Calls and Functions not-yet
         vm.ip += offset;
 */
 //> Calls and Functions not-yet
@@ -732,9 +716,11 @@ static InterpretResult run() {
         break;
       }
 
+//< Jumping Back and Forth op-jump
+//> Jumping Back and Forth op-jump-if-false
       case OP_JUMP_IF_FALSE: {
         uint16_t offset = READ_SHORT();
-/* Jumping Forward and Back not-yet < Calls and Functions not-yet
+/* Jumping Back and Forth op-jump-if-false < Calls and Functions not-yet
         if (isFalsey(peek(0))) vm.ip += offset;
 */
 //> Calls and Functions not-yet
@@ -742,10 +728,12 @@ static InterpretResult run() {
 //< Calls and Functions not-yet
         break;
       }
+//< Jumping Back and Forth op-jump-if-false
+//> Jumping Back and Forth op-loop
 
       case OP_LOOP: {
         uint16_t offset = READ_SHORT();
-/* Jumping Forward and Back not-yet < Calls and Functions not-yet
+/* Jumping Back and Forth op-loop < Calls and Functions not-yet
         vm.ip -= offset;
 */
 //> Calls and Functions not-yet
@@ -753,7 +741,7 @@ static InterpretResult run() {
 //< Calls and Functions not-yet
         break;
       }
-//< Jumping Forward and Back not-yet
+//< Jumping Back and Forth op-loop
 //> Calls and Functions not-yet
 
       case OP_CALL_0:
@@ -879,24 +867,21 @@ static InterpretResult run() {
 //> Classes and Instances not-yet
 
       case OP_CLASS:
-/* Classes and Instances not-yet < Superclasses not-yet
-        createClass(READ_STRING());
-*/
-//> Superclasses not-yet
-        createClass(READ_STRING(), NULL);
-//< Superclasses not-yet
+        push(OBJ_VAL(newClass(READ_STRING())));
         break;
 //< Classes and Instances not-yet
 //> Superclasses not-yet
 
-      case OP_SUBCLASS: {
-        Value superclass = peek(0);
+      case OP_INHERIT: {
+        Value superclass = peek(1);
         if (!IS_CLASS(superclass)) {
           runtimeError("Superclass must be a class.");
           return INTERPRET_RUNTIME_ERROR;
         }
-
-        createClass(READ_STRING(), AS_CLASS(superclass));
+        
+        ObjClass* subclass = AS_CLASS(peek(0));
+        tableAddAll(&AS_CLASS(superclass)->methods, &subclass->methods);
+        pop(); // Subclass.
         break;
       }
 //< Superclasses not-yet
@@ -910,9 +895,9 @@ static InterpretResult run() {
   }
 
 #undef READ_BYTE
-//> Jumping Forward and Back not-yet
+//> Jumping Back and Forth undef-read-short
 #undef READ_SHORT
-//< Jumping Forward and Back not-yet
+//< Jumping Back and Forth undef-read-short
 //> undef-read-constant
 #undef READ_CONSTANT
 //< undef-read-constant

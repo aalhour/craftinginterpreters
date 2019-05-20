@@ -11,8 +11,8 @@
 The [previous chapter][hash] was a long exploration of one big, deep,
 fundamental computer science data structure. Heavy on theory and concept. There
 may have been some discussion of big-O notation and algorithms. This chapter has
-fewer intellectual pretensions. There's no large idea to learn. Instead, it's a
-handful of straightforward engineering tasks. Once we've completed them, our
+fewer intellectual pretensions. There are no large ideas to learn. Instead, it's
+a handful of straightforward engineering tasks. Once we've completed them, our
 virtual machine will support variables.
 
 Actually, it will only support *global* variables. Locals are coming in the
@@ -609,6 +609,15 @@ The main difference is what happens when the key doesn't already exist in the
 globals hash table. If the variable hasn't been defined yet, it's a runtime
 error to try to assign to it. Lox [doesn't do implicit variable
 declaration][implicit].
+
+<aside name="delete">
+
+The call to `tableSet()` stores the value in the global variable table even if
+the variable wasn't previously defined. That fact is visible in a REPL session,
+since it keeps running even after the runtime error is reported. So we also take
+care to delete that zombie value from the table.
+
+</aside>
 
 The other difference is that setting a variable doesn't pop the value off the
 stack. Remember, assignment is an expression, so it needs to leave that value

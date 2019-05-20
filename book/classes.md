@@ -994,7 +994,7 @@ traversing the syntax tree. It starts out `NONE` which means we aren't in one.
 
 When we begin to resolve a class declaration, we change that:
 
-^code set-current-class (1 before, 2 after)
+^code set-current-class (1 before, 1 after)
 
 As with `currentFunction`, we store the previous value of the field in a local
 variable. This lets us piggyback onto the JVM to keep a stack of `currentClass`
@@ -1307,6 +1307,7 @@ them better? We language nerds have a tendency to fetishize minimalism.
 Personally, I think simplicity is only part of the equation. What we really want
 to give the user is *power*, which I define as:
 
+    :::text
     power = breadth × ease ÷ complexity
 
 None of these are precise numeric measures. I'm using math as analogy here, not

@@ -53,14 +53,14 @@ static int simpleInstructionN(const char* name, int n, int offset) {
   return offset + 1;
 }
 //< Calls and Functions not-yet
-//> Local Variables not-yet
+//> Local Variables byte-instruction
 static int byteInstruction(const char* name, Chunk* chunk, int offset) {
   uint8_t slot = chunk->code[offset + 1];
   printf("%-16s %4d\n", name, slot);
-  return offset + 2;
+  return offset + 2; // [debug]
 }
-//< Local Variables not-yet
-//> Jumping Forward and Back not-yet
+//< Local Variables byte-instruction
+//> Jumping Back and Forth jump-instruction
 static int jumpInstruction(const char* name, int sign, Chunk* chunk,
                            int offset) {
   uint16_t jump = (uint16_t)(chunk->code[offset + 1] << 8);
@@ -68,7 +68,7 @@ static int jumpInstruction(const char* name, int sign, Chunk* chunk,
   printf("%-16s %4d -> %d\n", name, offset, offset + 3 + sign * jump);
   return offset + 3;
 }
-//< Jumping Forward and Back not-yet
+//< Jumping Back and Forth jump-instruction
 //> disassemble-instruction
 int disassembleInstruction(Chunk* chunk, int offset) {
   printf("%04d ", offset);
@@ -98,12 +98,12 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     case OP_POP:
       return simpleInstruction("OP_POP", offset);
 //< Global Variables disassemble-pop
-//> Local Variables not-yet
+//> Local Variables disassemble-local
     case OP_GET_LOCAL:
       return byteInstruction("OP_GET_LOCAL", chunk, offset);
     case OP_SET_LOCAL:
       return byteInstruction("OP_SET_LOCAL", chunk, offset);
-//< Local Variables not-yet
+//< Local Variables disassemble-local
 //> Global Variables disassemble-get-global
     case OP_GET_GLOBAL:
       return constantInstruction("OP_GET_GLOBAL", chunk, offset);
@@ -162,14 +162,16 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     case OP_PRINT:
       return simpleInstruction("OP_PRINT", offset);
 //< Global Variables disassemble-print
-//> Jumping Forward and Back not-yet
+//> Jumping Back and Forth disassemble-jump
     case OP_JUMP:
       return jumpInstruction("OP_JUMP", 1, chunk, offset);
     case OP_JUMP_IF_FALSE:
       return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
+//< Jumping Back and Forth disassemble-jump
+//> Jumping Back and Forth disassemble-loop
     case OP_LOOP:
       return jumpInstruction("OP_LOOP", -1, chunk, offset);
-//< Jumping Forward and Back not-yet
+//< Jumping Back and Forth disassemble-loop
 //> Calls and Functions not-yet
     case OP_CALL_0:
     case OP_CALL_1:
@@ -240,8 +242,8 @@ int disassembleInstruction(Chunk* chunk, int offset) {
       return constantInstruction("OP_CLASS", chunk, offset);
 //< Classes and Instances not-yet
 //> Superclasses not-yet
-    case OP_SUBCLASS:
-      return constantInstruction("OP_SUBCLASS", chunk, offset);
+    case OP_INHERIT:
+      return simpleInstruction("OP_INHERIT", offset);
 //< Superclasses not-yet
 //> Methods and Initializers not-yet
     case OP_METHOD:

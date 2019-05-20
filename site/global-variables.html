@@ -119,8 +119,8 @@ again.</p>
 <p>The <a href="hash-tables.html">previous chapter</a> was a long exploration of one big, deep,
 fundamental computer science data structure. Heavy on theory and concept. There
 may have been some discussion of big-O notation and algorithms. This chapter has
-fewer intellectual pretensions. There&rsquo;s no large idea to learn. Instead, it&rsquo;s a
-handful of straightforward engineering tasks. Once we&rsquo;ve completed them, our
+fewer intellectual pretensions. There are no large ideas to learn. Instead, it&rsquo;s
+a handful of straightforward engineering tasks. Once we&rsquo;ve completed them, our
 virtual machine will support variables.</p>
 <p>Actually, it will only support <em>global</em> variables. Locals are coming in the
 <a href="local-variables.html">next chapter</a>. In jlox, we managed to cram them both into a single chapter,
@@ -413,8 +413,8 @@ in <em>disassembleInstruction</em>()</div>
 add after <em>expression</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">expressionStatement</span><span class="p">()</span> <span class="p">{</span>                        
   <span class="n">expression</span><span class="p">();</span>                                            
-  <span class="n">emitByte</span><span class="p">(</span><span class="n">OP_POP</span><span class="p">);</span>                                        
   <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;;&#39; after expression.&quot;</span><span class="p">);</span>
+  <span class="n">emitByte</span><span class="p">(</span><span class="n">OP_POP</span><span class="p">);</span>                                        
 <span class="p">}</span>                                                          
 </pre></div>
 
@@ -788,11 +788,11 @@ add after <em>string</em>()</div>
 pointless now but will become more useful in later chapters. I promise.</p>
 <div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
 add after <em>string</em>()</div>
-<pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">namedVariable</span><span class="p">(</span><span class="n">Token</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>  
-  <span class="kt">int</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
+<pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">namedVariable</span><span class="p">(</span><span class="n">Token</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>   
+  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
 
-  <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_GET_GLOBAL</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">arg</span><span class="p">);</span>
-<span class="p">}</span>                                        
+  <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_GET_GLOBAL</span><span class="p">,</span> <span class="n">arg</span><span class="p">);</span>          
+<span class="p">}</span>                                         
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, add after <em>string</em>()</div>
@@ -892,7 +892,7 @@ be used as an assignment target, we look for a subsequent <code>=</code> token. 
 one, we compile it as an assignment or setter instead of a variable access or
 getter.</p>
 <p>We don&rsquo;t have setters to worry about yet, so all we need to handle is variables:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">int</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>     
+<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span> 
 </pre><div class="source-file"><em>compiler.c</em><br>
 in <em>namedVariable</em>()<br>
 replace 2 lines</div>
@@ -927,6 +927,7 @@ in <em>run</em>()</div>
 <pre class="insert"><br><span></span>      <span class="k">case</span> <span class="nl">OP_SET_GLOBAL</span><span class="p">:</span> <span class="p">{</span>                                     
         <span class="n">ObjString</span><span class="o">*</span> <span class="n">name</span> <span class="o">=</span> <span class="n">READ_STRING</span><span class="p">();</span>                        
         <span class="k">if</span> <span class="p">(</span><span class="n">tableSet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">globals</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">peek</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span> <span class="p">{</span>             
+          <span class="n">tableDelete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">globals</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span> <span name="delete"></span>
           <span class="n">runtimeError</span><span class="p">(</span><span class="s">&quot;Undefined variable &#39;%s&#39;.&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">-&gt;</span><span class="n">chars</span><span class="p">);</span>
           <span class="k">return</span> <span class="n">INTERPRET_RUNTIME_ERROR</span><span class="p">;</span>                       
         <span class="p">}</span>                                                       
@@ -941,6 +942,12 @@ in <em>run</em>()</div>
 globals hash table. If the variable hasn&rsquo;t been defined yet, it&rsquo;s a runtime
 error to try to assign to it. Lox <a href="statements-and-state.html#design-note">doesn&rsquo;t do implicit variable
 declaration</a>.</p>
+<aside name="delete">
+<p>The call to <code>tableSet()</code> stores the value in the global variable table even if
+the variable wasn&rsquo;t previously defined. That fact is visible in a REPL session,
+since it keeps running even after the runtime error is reported. So we also take
+care to delete that zombie value from the table.</p>
+</aside>
 <p>The other difference is that setting a variable doesn&rsquo;t pop the value off the
 stack. Remember, assignment is an expression, so it needs to leave that value
 there in case the assignment is nested inside some larger expression.</p>
@@ -1023,18 +1030,18 @@ replace 3 lines</div>
 function <em>namedVariable</em>()<br>
 replace 1 line</div>
 <pre class="insert"><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">namedVariable</span><span class="p">(</span><span class="n">Token</span> <span class="n">name</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">canAssign</span><span class="p">)</span> <span class="p">{</span>
-</pre><pre class="insert-after"><span></span>  <span class="kt">int</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>                 
+</pre><pre class="insert-after"><span></span>  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>             
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, function <em>namedVariable</em>(), replace 1 line</div>
 
 <p>And then uses it:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">int</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>  
+<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
 <br></pre><div class="source-file"><em>compiler.c</em><br>
 in <em>namedVariable</em>()<br>
 replace 1 line</div>
-<pre class="insert"><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">canAssign</span> <span class="o">&amp;&amp;</span> <span class="n">match</span><span class="p">(</span><span class="n">TOKEN_EQUAL</span><span class="p">))</span> <span class="p">{</span>
-</pre><pre class="insert-after"><span></span>    <span class="n">expression</span><span class="p">();</span>                       
+<pre class="insert"><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">canAssign</span> <span class="o">&amp;&amp;</span> <span class="n">match</span><span class="p">(</span><span class="n">TOKEN_EQUAL</span><span class="p">))</span> <span class="p">{</span>  
+</pre><pre class="insert-after"><span></span>    <span class="n">expression</span><span class="p">();</span>                         
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, in <em>namedVariable</em>(), replace 1 line</div>

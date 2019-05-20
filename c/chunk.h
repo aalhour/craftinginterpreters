@@ -20,10 +20,12 @@ typedef enum {
 //> Global Variables pop-op
   OP_POP,
 //< Global Variables pop-op
-//> Local Variables not-yet
+//> Local Variables get-local-op
   OP_GET_LOCAL,
+//< Local Variables get-local-op
+//> Local Variables set-local-op
   OP_SET_LOCAL,
-//< Local Variables not-yet
+//< Local Variables set-local-op
 //> Global Variables get-global-op
   OP_GET_GLOBAL,
 //< Global Variables get-global-op
@@ -64,11 +66,15 @@ typedef enum {
 //> Global Variables op-print
   OP_PRINT,
 //< Global Variables op-print
-//> Jumping Forward and Back not-yet
+//> Jumping Back and Forth jump-op
   OP_JUMP,
+//< Jumping Back and Forth jump-op
+//> Jumping Back and Forth jump-if-false-op
   OP_JUMP_IF_FALSE,
+//< Jumping Back and Forth jump-if-false-op
+//> Jumping Back and Forth loop-op
   OP_LOOP,
-//< Jumping Forward and Back not-yet
+//< Jumping Back and Forth loop-op
 //> Calls and Functions not-yet
   OP_CALL_0,
   OP_CALL_1,
@@ -111,7 +117,7 @@ typedef enum {
   OP_CLASS,
 //< Classes and Instances not-yet
 //> Superclasses not-yet
-  OP_SUBCLASS,
+  OP_INHERIT,
 //< Superclasses not-yet
 //> Methods and Initializers not-yet
   OP_METHOD

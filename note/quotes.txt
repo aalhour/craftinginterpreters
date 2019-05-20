@@ -322,9 +322,6 @@ Steve Miller
 “Show not what has been done, but what can be. How beautiful the world would be if there were a procedure for moving through labyrinths.”
 ― Umberto Eco, The Name of the Rose
 
-“The order that our mind imagines is like a net, or like a ladder, built to attain something. But afterward you must throw the ladder away, because you discover that, even if it was useful, it was meaningless.”
-― Umberto Eco, The Name of the Rose
-
 “There are no happy endings.
 Endings are the saddest part,
 So just give me a happy middle
@@ -362,3 +359,9 @@ And a very happy start.”
 Famous, adj. Conspicuously miserable.
 Dictionary, n. A malevolent literary device for cramping the growth of a language and making it hard and inelastic. This dictionary, however, is a most useful work.”
 ― Ambrose Bierce, The Unabridged Devil's Dictionary
+
+And as imagination bodies forth
+The forms of things unknown, the poet's pen
+Turns them to shapes and gives to airy nothing
+A local habitation and a name.”
+― Shakespeare William Shakespeare, A Midsummer Night's Dream
