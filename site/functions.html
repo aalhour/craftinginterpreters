@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -156,15 +157,16 @@ that starts with <code>(</code>.</p>
 <p>This &ldquo;operator&rdquo; has higher precedence than any other operator, even the unary
 ones. So we slot it into the grammar by having the <code>unary</code> rule bubble up to a
 new <code>call</code> rule:</p>
+<p><span name="curry"></span></p>
 <div class="codehilite"><pre><span></span><span class="n">unary</span> <span class="err">→</span> <span class="p">(</span> <span class="s">&quot;!&quot;</span> <span class="err">|</span> <span class="s">&quot;-&quot;</span> <span class="p">)</span> <span class="n">unary</span> <span class="err">|</span> <span class="n">call</span> <span class="p">;</span>
 <span class="n">call</span>  <span class="err">→</span> <span class="n">primary</span> <span class="p">(</span> <span class="s">&quot;(&quot;</span> <span class="n">arguments</span><span class="err">?</span> <span class="s">&quot;)&quot;</span> <span class="p">)</span><span class="o">*</span> <span class="p">;</span>
 </pre></div>
 
 
-<p>This rule matches a primary expression followed by zero or <span
-name="curry">more</span> function calls. If there are no parentheses, this
-parses a bare primary expression. Otherwise, each call is recognized by a pair
-of parentheses with an optional list of arguments inside. The argument list grammar is:</p>
+<p>This rule matches a primary expression followed by zero or more function calls.
+If there are no parentheses, this parses a bare primary expression. Otherwise,
+each call is recognized by a pair of parentheses with an optional list of
+arguments inside. The argument list grammar is:</p>
 <aside name="curry">
 <p>The rule uses <code>*</code> to allow matching a series of calls like <code>fn(1)(2)(3)</code>. Code
 like that isn&rsquo;t common in C-style languages, but it is in the family of
@@ -218,7 +220,7 @@ replace 1 line</div>
 
 <div class="source-file-narrow"><em>lox/Parser.java</em>, in <em>unary</em>(), replace 1 line</div>
 
-<p>That looks like this:</p>
+<p>Its definition is:</p>
 <div class="codehilite"><div class="source-file"><em>lox/Parser.java</em><br>
 add after <em>unary</em>()</div>
 <pre><span></span>  <span class="kd">private</span> <span class="n">Expr</span> <span class="nf">call</span><span class="o">()</span> <span class="o">{</span>         
@@ -238,13 +240,13 @@ add after <em>unary</em>()</div>
 
 <div class="source-file-narrow"><em>lox/Parser.java</em>, add after <em>unary</em>()</div>
 
-<p>It doesn&rsquo;t quite line up with the grammar rules. I moved a few things around to
-make the code cleaner<span class="em">&mdash;</span>one of the luxuries we have with a hand-written parser.
-But it&rsquo;s roughly similar to how we parse infix operators. First, it parses a
-primary expression, the &ldquo;left operand&rdquo; to the call. Then, each time it sees a
-<code>(</code>, it calls <code>finishCall()</code> to parse the call expression using the previously
-parsed expression as the callee. The returned expression becomes the new <code>expr</code>
-and it loops to see if the result is itself called.</p>
+<p>The code here doesn&rsquo;t quite line up with the grammar rules. I moved a few things
+around to make the code cleaner<span class="em">&mdash;</span>one of the luxuries we have with a
+hand-written parser. But it&rsquo;s roughly similar to how we parse infix operators.
+First, we parse a primary expression, the &ldquo;left operand&rdquo; to the call. Then, each
+time we see a <code>(</code>, we call <code>finishCall()</code> to parse the call expression using the
+previously parsed expression as the callee. The returned expression becomes the
+new <code>expr</code> and we loop to see if the result is itself called.</p>
 <p>The <code>while (true)</code> and the explicit <code>break</code> look dumb. It would be simpler as
 <code>while (match(LEFT_PAREN))</code>. It will make sense later when we add more code to
 this function to handle properties on objects.</p>
@@ -268,18 +270,18 @@ add after <em>unary</em>()</div>
 <div class="source-file-narrow"><em>lox/Parser.java</em>, add after <em>unary</em>()</div>
 
 <p>This is more or less the <code>arguments</code> grammar rule translated to code, except
-that it also handles the zero-argument case. It does that first, by seeing if
-the next token is <code>)</code>. If it is, it doesn&rsquo;t try to parse any arguments.</p>
-<p>Otherwise, it parses an expression, then looks for a comma indicating that there
-is another argument after that. It keeps doing that as long as it finds commas
-after each expression. When it doesn&rsquo;t find a comma, then the argument list
-must be done and it consumes the expected closing parenthesis. Finally, it wraps
-the callee and those arguments up into a call expression.</p>
+that we also handle the zero-argument case. We check for that case first by
+seeing if the next token is <code>)</code>. If it is, we don&rsquo;t try to parse any arguments.</p>
+<p>Otherwise, we parse an expression, then look for a comma indicating that there
+is another argument after that. We keep doing that as long as we find commas
+after each expression. When we don&rsquo;t find a comma, then the argument list must
+be done and we consume the expected closing parenthesis. Finally, we wrap the
+callee and those arguments up into a call expression.</p>
 <h3><a href="#maximum-argument-counts" name="maximum-argument-counts"><small>10&#8202;.&#8202;1&#8202;.&#8202;1</small> Maximum argument counts</a></h3>
 <p>Right now, the loop where we parse arguments has no bound. If you want to call a
 function and pass a million arguments to it, the parser would have no problem
 with it. Do we want to limit that?</p>
-<p>Other languages have different approaches. The C standard says a conforming
+<p>Other languages have various approaches. The C standard says a conforming
 implementation has to support <em>at least</em> 127 arguments to a function, but
 doesn&rsquo;t say there&rsquo;s any upper limit. The Java specification says a method can
 accept <em>no more than</em> <span name="254">255</span> arguments.</p>
@@ -292,20 +294,17 @@ implicitly passed to the method, so it claims one of the slots.</p>
 number of arguments will simplify our bytecode interpreter in part three. We
 want our two interpreters to be compatible with each other, even in weird corner
 cases like this, so we&rsquo;ll add the same limit to jlox.</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="k">do</span> <span class="o">{</span>                                                    
+<div class="codehilite"><pre class="insert-before"><span></span>      <span class="k">do</span> <span class="o">{</span>                                                      
 </pre><div class="source-file"><em>lox/Parser.java</em><br>
 in <em>finishCall</em>()</div>
-<pre class="insert"><span></span>        <span class="k">if</span> <span class="o">(</span><span class="n">arguments</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="o">)</span> <span class="o">{</span>                          
-          <span class="n">error</span><span class="o">(</span><span class="n">peek</span><span class="o">(),</span> <span class="s">&quot;Cannot have more than 8 arguments.&quot;</span><span class="o">);</span>
-        <span class="o">}</span>                                                     
-</pre><pre class="insert-after"><span></span>        <span class="n">arguments</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">expression</span><span class="o">());</span>                          
+<pre class="insert"><span></span>        <span class="k">if</span> <span class="o">(</span><span class="n">arguments</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">255</span><span class="o">)</span> <span class="o">{</span>                          
+          <span class="n">error</span><span class="o">(</span><span class="n">peek</span><span class="o">(),</span> <span class="s">&quot;Cannot have more than 255 arguments.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>                                                       
+</pre><pre class="insert-after"><span></span>        <span class="n">arguments</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">expression</span><span class="o">());</span>                            
 </pre></div>
 
 <div class="source-file-narrow"><em>lox/Parser.java</em>, in <em>finishCall</em>()</div>
 
-<p>Yeah, <em>eight</em> is gratuitously low. I picked that mainly to minimize some boring
-copy/paste code in the C interpreter. You could go up to probably 32 or so
-without any problems if you feel like it. It&rsquo;s your language.</p>
 <p>Note that the code here <em>reports</em> an error if it encounters too many arguments,
 but it doesn&rsquo;t <em>throw</em> the error. Throwing it is how we kick into panic mode
 which is what we want if the parser is in a confused state and doesn&rsquo;t know
@@ -332,7 +331,7 @@ add after <em>visitBinaryExpr</em>()</div>
     <span class="n">Object</span> <span class="n">callee</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">(</span><span class="n">expr</span><span class="o">.</span><span class="na">callee</span><span class="o">);</span>
 
     <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">arguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>         
-    <span class="k">for</span> <span class="o">(</span><span class="n">Expr</span> <span class="n">argument</span> <span class="o">:</span> <span class="n">expr</span><span class="o">.</span><span class="na">arguments</span><span class="o">)</span> <span class="o">{</span> <span name="in-order"></span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">Expr</span> <span class="n">argument</span> <span class="o">:</span> <span class="n">expr</span><span class="o">.</span><span class="na">arguments</span><span class="o">)</span> <span class="o">{</span> <span name="in-order">&#8203;</span>
       <span class="n">arguments</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">evaluate</span><span class="o">(</span><span class="n">argument</span><span class="o">));</span>                
     <span class="o">}</span>                                                   
 
@@ -343,13 +342,13 @@ add after <em>visitBinaryExpr</em>()</div>
 
 <div class="source-file-narrow"><em>lox/Interpreter.java</em>, add after <em>visitBinaryExpr</em>()</div>
 
-<p>First, it evaluates the expression for the callee. Typically, this expression is
+<p>First, we evaluate the expression for the callee. Typically, this expression is
 just an identifier that looks up the function by its name, but it could be
-anything. Then it evaluates each of the argument expressions in order and stores
+anything. Then we evaluate each of the argument expressions in order and store
 the resulting values in a list.</p>
 <aside name="in-order">
 <p>This is another one of those subtle semantic choices. Since argument expressions
-may have side effects, the order they are evaluated may be user visible. Even
+may have side effects, the order they are evaluated could be user visible. Even
 so, some languages like Scheme and C don&rsquo;t specify an order. This gives
 compilers freedom to reorder them for efficiency, but means users may be
 unpleasantly surprised if arguments aren&rsquo;t evaluated in the order they expect.</p>
@@ -379,7 +378,7 @@ create new file</div>
 
 <div class="source-file-narrow"><em>lox/LoxCallable.java</em>, create new file</div>
 
-<p>We pass it the interpreter in case the class implementing <code>call()</code> needs it. We
+<p>We pass in the interpreter in case the class implementing <code>call()</code> needs it. We
 also give it the list of evaluated argument values. The implementer&rsquo;s job is
 then to return the value that the call expression produces.</p>
 <h3><a href="#call-type-errors" name="call-type-errors"><small>10&#8202;.&#8202;1&#8202;.&#8202;3</small> Call type errors</a></h3>
@@ -531,8 +530,8 @@ tell time. There&rsquo;s no way to do that now<span class="em">&mdash;</span>you
 &ldquo;from scratch&rdquo; without access to the underlying clock on the computer.</p>
 <p>So we&rsquo;ll add <code>clock()</code>, a native function that returns the number of seconds
 that have passed since some fixed point in time. The difference between two
-calls to this tell you how much time elapsed between the two calls.</p>
-<p>This function is defined in the global scope, so lets ensure the interpreter has
+successive invocations tell you how much time elapsed between the two calls.
+This function is defined in the global scope, so lets ensure the interpreter has
 access to that:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="kd">class</span> <span class="nc">Interpreter</span> <span class="kd">implements</span> <span class="n">Expr</span><span class="o">.</span><span class="na">Visitor</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;,</span> <span class="n">Stmt</span><span class="o">.</span><span class="na">Visitor</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="o">{</span>
 </pre><div class="source-file"><em>lox/Interpreter.java</em><br>
@@ -580,7 +579,7 @@ seconds.</p>
 <p>In Lox, functions and variables occupy the same namespace. In Common Lisp, the
 two live in their own worlds. A function and variable with the same name don&rsquo;t
 collide. If you call the name, it looks up the function. If you refer to it, it
-looks up the variable. This does requires jumping through some hoops when you do
+looks up the variable. This does require jumping through some hoops when you do
 want to refer to a function as a first-class value.</p>
 <p>Richard P. Gabriel and Kent Pitman coined the terms &ldquo;Lisp-1&rdquo; to refer to
 languages like Scheme that put functions and variables in the same namespace and
@@ -691,8 +690,8 @@ in <em>function</em>()</div>
     <span class="n">List</span><span class="o">&lt;</span><span class="n">Token</span><span class="o">&gt;</span> <span class="n">parameters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>                       
     <span class="k">if</span> <span class="o">(!</span><span class="n">check</span><span class="o">(</span><span class="n">RIGHT_PAREN</span><span class="o">))</span> <span class="o">{</span>                                        
       <span class="k">do</span> <span class="o">{</span>                                                            
-        <span class="k">if</span> <span class="o">(</span><span class="n">parameters</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="o">)</span> <span class="o">{</span>                                 
-          <span class="n">error</span><span class="o">(</span><span class="n">peek</span><span class="o">(),</span> <span class="s">&quot;Cannot have more than 8 parameters.&quot;</span><span class="o">);</span>       
+        <span class="k">if</span> <span class="o">(</span><span class="n">parameters</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">255</span><span class="o">)</span> <span class="o">{</span>                               
+          <span class="n">error</span><span class="o">(</span><span class="n">peek</span><span class="o">(),</span> <span class="s">&quot;Cannot have more than 255 parameters.&quot;</span><span class="o">);</span>     
         <span class="o">}</span>
 
         <span class="n">parameters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="n">IDENTIFIER</span><span class="o">,</span> <span class="s">&quot;Expect parameter name.&quot;</span><span class="o">));</span>
@@ -784,17 +783,9 @@ of a language implementation. Functions are deeply tied to that.</p>
 those parameters<span class="em">&mdash;</span>no other code outside of the function can see them. This
 means each function gets its own environment where it stores those variables.</p>
 <p>Further, this environment must be created dynamically. Each function <em>call</em> gets
-its own environment. Otherwise, <span name="fortran">recursion</span> would
-break. If there are multiple calls to the same function in play at the same
-time, each needs its <em>own</em> environment, even though they are all calls to the
-same function.</p>
-<aside name="fortran">
-<p>Early versions of Fortran did not support recursion. This let compilers
-statically allocate memory for each function&rsquo;s parameters, since only one set of
-them would ever be needed for any given function declaration.</p>
-<p>Imagine using <code>static</code> for all of your local variables in C, and you have the
-idea.</p>
-</aside>
+its own environment. Otherwise, recursion would break. If there are multiple
+calls to the same function in play at the same time, each needs its <em>own</em>
+environment, even though they are all calls to the same function.</p>
 <p>For example, here&rsquo;s a convoluted way to count to three:</p>
 <div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="n">count</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="n">count</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
@@ -1028,7 +1019,7 @@ return statement:</p>
 </pre></div>
 
 
-<p>The Java callstack currently looks roughly like this:</p>
+<p>The Java call stack currently looks roughly like this:</p>
 <div class="codehilite"><pre><span></span>Interpreter.visitReturnStmt()
 Interpreter.visitIfStmt()
 Interpreter.executeBlock()
@@ -1085,8 +1076,8 @@ and not actual error handling, we don&rsquo;t need overhead like stack traces.</
 <aside name="exception">
 <p>For the record, I&rsquo;m not generally a fan of using exceptions for control flow.
 But inside a heavily recursive tree-walk interpreter, it&rsquo;s the way to go. Since
-our own syntax tree evaluation is so heavily tied to the Java callstack, we&rsquo;re
-pressed to do some heavyweight callstack manipulation occasionally, and
+our own syntax tree evaluation is so heavily tied to the Java call stack, we&rsquo;re
+pressed to do some heavyweight call stack manipulation occasionally, and
 exceptions are a powerful tool for that.</p>
 </aside>
 <p>We want this to unwind all the way to where the function call began, the
@@ -1252,45 +1243,13 @@ scope. The runtime environment chain matches the textual nesting of the source
 code like we want. The end result looks like this:</p>
 <p><img src="image/functions/closure.png" alt="The environment chain with the closure." /></p>
 <p>Now, as you can see, the interpreter can still find <code>i</code> when it needs to because
-it&rsquo;s in the middle of the environment chain.</p>
-<p>Try running that <code>makeCounter()</code> example now. It works! We have made Lox
-dramatically more powerful. Functions let us abstract over, reuse, and compose
-code. But, in addition, with closures, we can abstract and compose <span
-name="poor"><em>data</em></span>.</p>
-<p>This may be surprising, but you can use a closure to represent arbitrary data
-structures (though the resulting code does look kind of funny). Since a closure
-contains an environment<span class="em">&mdash;</span>a Java Map in our implementation<span class="em">&mdash;</span>it <em>is</em> a data
-structure.</p>
-<aside name="poor">
-<p>One of my favorite nuggets of programming language lore is <a href="http://people.csail.mit.edu/gregs/ll1-discuss-archive-html/msg03277.html">this delightful
-koan</a> from Anton van Straaten that perfectly sums up the eternal debate
-between object-oriented and functional programmers about whose model is most
-fundamental.</p>
-</aside>
-<p>Of course, we will add more natural support for first-class data structures when
-we add classes. But even now, it&rsquo;s possible to define a function that works
-like an object. Cogitate on this:</p>
-<div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="n">makePoint</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">fun</span> <span class="n">closure</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method</span> <span class="o">==</span> <span class="s">&quot;x&quot;</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method</span> <span class="o">==</span> <span class="s">&quot;y&quot;</span><span class="p">)</span> <span class="k">return</span> <span class="n">y</span><span class="p">;</span>
-    <span class="k">print</span> <span class="s">&quot;unknown method &quot;</span> <span class="o">+</span> <span class="n">method</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="k">return</span> <span class="n">closure</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">var</span> <span class="n">point</span> <span class="o">=</span> <span class="n">makePoint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-<span class="k">print</span> <span class="n">point</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span> <span class="c1">// &quot;2&quot;.</span>
-<span class="k">print</span> <span class="n">point</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">);</span> <span class="c1">// &quot;3&quot;.</span>
-</pre></div>
-
-
-<p>We have crossed a real threshold today. Lox is much more powerful than the
-rudimentary arithmetic calculator it used to be. Alas, in our rush to cram
-closures in, we have let a tiny bit of dynamic scoping leak into the
-interpreter. In the next chapter, we will explore more deeply into lexical scope
-and close that hole.</p>
+it&rsquo;s in the middle of the environment chain. Try running that <code>makeCounter()</code>
+example now. It works!</p>
+<p>Functions let us abstract over, reuse, and compose code. Lox is much more
+powerful than the rudimentary arithmetic calculator it used to be. Alas, in our
+rush to cram closures in, we have let a tiny bit of dynamic scoping leak into
+the interpreter. In the next chapter, we will explore more deeply into lexical
+scope and close that hole.</p>
 <div class="challenges">
 <h2><a href="#challenges" name="challenges">Challenges</a></h2>
 

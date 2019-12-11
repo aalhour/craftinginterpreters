@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -114,7 +115,9 @@
 </div>
 
 <blockquote>
-<p>The order that our mind imagines is like a net, or like a ladder, built to attain something. But afterward you must throw the ladder away, because you discover that, even if it was useful, it was meaningless.</p>
+<p>The order that our mind imagines is like a net, or like a ladder, built to
+attain something. But afterward you must throw the ladder away, because you
+discover that, even if it was useful, it was meaningless.</p>
 <p><cite>Umberto Eco, <em>The Name of the Rose</em></cite></p>
 </blockquote>
 <p>It&rsquo;s taken a while to get here, but we&rsquo;re finally ready to add control flow to
@@ -122,7 +125,8 @@ our virtual machine. In the tree-walk interpreter we built for jlox, we
 implemented Lox&rsquo;s control flow in terms of Java&rsquo;s. To execute a Lox if
 statement, we used a Java if statement to run the chosen branch. That works, but
 isn&rsquo;t entirely satisfying. By what magic does the <em>JVM</em> or a native CPU
-implement if statements? Now that we have our own bytecode VM to hack on, we can answer that.</p>
+implement if statements? Now that we have our own bytecode VM to hack on, we can
+answer that.</p>
 <p>When we talk about &ldquo;control flow&rdquo;, what are we referring to? By &ldquo;flow&rdquo; we mean
 the way execution moves through the text of the program. Almost like there is a
 little robot inside the computer wandering through our program, executing each
@@ -135,7 +139,8 @@ The VM&rsquo;s <code>ip</code> field stores the address of the current bytecode 
 value of that field is exactly &ldquo;where we are&rdquo; in the program.</p>
 <p>Execution proceeds normally by incrementing the <code>ip</code>. But we can mutate that
 value however we want to. So in order to implement control flow, all that&rsquo;s
-necessary is to change the <code>ip</code> in more interesting ways. The simplest control flow construct is an if statement with no else clause:</p>
+necessary is to change the <code>ip</code> in more interesting ways. The simplest control
+flow construct is an if statement with no else clause:</p>
 <div class="codehilite"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="k">print</span><span class="p">(</span><span class="s">&quot;condition was truthy&quot;</span><span class="p">);</span>
 </pre></div>
 
@@ -188,7 +193,7 @@ add after <em>expressionStatement</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">ifStatement</span><span class="p">()</span> <span class="p">{</span>                                            
   <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_LEFT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;(&#39; after &#39;if&#39;.&quot;</span><span class="p">);</span>                 
   <span class="n">expression</span><span class="p">();</span>                                                        
-  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after condition.&quot;</span><span class="p">);</span> <span name="paren"></span>
+  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after condition.&quot;</span><span class="p">);</span> <span name="paren">&#8203;</span>
 
   <span class="kt">int</span> <span class="n">thenJump</span> <span class="o">=</span> <span class="n">emitJump</span><span class="p">(</span><span class="n">OP_JUMP_IF_FALSE</span><span class="p">);</span>                           
   <span class="n">statement</span><span class="p">();</span>                                                         
@@ -343,9 +348,9 @@ then branch.</p>
 <p>I said we wouldn&rsquo;t use C&rsquo;s if statement to implement Lox&rsquo;s control flow, but we
 do use one here to determine whether or not to offset the instruction pointer.
 But we aren&rsquo;t really using C for <em>control flow</em>. If we wanted to, we could do
-the same thing purely arithmatically. Let&rsquo;s assume we have a function <code>falsey()</code>
-that takes a Lox Value and returns 1 if it&rsquo;s falsey or 0 otherwise. Then we could implement the jump
-instruction like:</p>
+the same thing purely arithmetically. Let&rsquo;s assume we have a function <code>falsey()</code>
+that takes a Lox Value and returns 1 if it&rsquo;s falsey or 0 otherwise. Then we
+could implement the jump instruction like:</p>
 <div class="codehilite"><pre><span></span><span class="k">case</span> <span class="nl">OP_JUMP_IF_FALSE</span><span class="p">:</span> <span class="p">{</span>
   <span class="kt">uint16_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">READ_SHORT</span><span class="p">();</span>
   <span class="n">vm</span><span class="p">.</span><span class="n">ip</span> <span class="o">+=</span> <span class="n">falsey</span><span class="p">()</span> <span class="o">*</span> <span class="n">offset</span><span class="p">;</span>
@@ -364,7 +369,7 @@ the stack. We&rsquo;ll clean that up soon. Ignoring that for the moment, we do h
 working if statement in Lox now, with only one little instruction required to
 support it at runtime in the VM.</p>
 <h3><a href="#else-clauses" name="else-clauses"><small>23&#8202;.&#8202;1&#8202;.&#8202;1</small> Else clauses</a></h3>
-<p>A if statement without support for else clauses is like Morticia Addams without
+<p>An if statement without support for else clauses is like Morticia Addams without
 Gomez. So, after we compile the then branch, we look for an <code>else</code> keyword. If
 we find one, we compile the else branch:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">patchJump</span><span class="p">(</span><span class="n">thenJump</span><span class="p">);</span>               
@@ -506,13 +511,13 @@ so we&rsquo;ll have to grind it out ourselves.</p>
 <p>My enduring love of Depeche Mode notwithstanding.</p>
 </aside>
 <h2><a href="#logical-operators" name="logical-operators"><small>23&#8202;.&#8202;2</small> Logical Operators</a></h2>
-<p>You probably remember this from jlox, but the logical operators <code>&amp;&amp;</code> and <code>||</code>
+<p>You probably remember this from jlox, but the logical operators <code>and</code> and <code>or</code>
 aren&rsquo;t just another pair of binary operators like <code>+</code> and <code>-</code>. Because they
 short-circuit and may not evaluate their right operand depending on the value of
 the left one, they work more like control flow expressions.</p>
 <p>They&rsquo;re basically a little variation on an if statement with an else clause. The
 easiest way to explain them is to just show you the compiler code and the
-control flow it produces in the resulting bytecode. Starting with <code>&amp;&amp;</code>, we hook
+control flow it produces in the resulting bytecode. Starting with <code>and</code>, we hook
 it into the expression parsing table here:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="p">{</span> <span class="n">number</span><span class="p">,</span>   <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_NUMBER</span>
 </pre><div class="source-file"><em>compiler.c</em><br>
@@ -540,15 +545,15 @@ add after <em>defineVariable</em>()</div>
 
 <p>At the point this is called, the left-hand side expression has already been
 compiled. That means at runtime, its value will be on top of the stack. If that
-value is falsey, then we know the entire <code>&amp;&amp;</code> must be false, so we skip the
+value is falsey, then we know the entire <code>and</code> must be false, so we skip the
 right operand and leave the left-hand side value as the result of the entire
-expression. Otherwise, we discard the left-hand value and the result of the <code>&amp;&amp;</code>
-expression is the result of evaluating the right operand.</p>
+expression. Otherwise, we discard the left-hand value and the result of the
+<code>and</code> expression is the result of evaluating the right operand.</p>
 <p>Those four lines of code right there produce exactly that. The flow looks like
 this:</p>
-<p><img src="image/jumping-back-and-forth/and.png" alt="Flowchart of the compiled bytecode of an '&&' expression." /></p>
+<p><img src="image/jumping-back-and-forth/and.png" alt="Flowchart of the compiled bytecode of an 'and' expression." /></p>
 <p>Now you can see why <code>OP_JUMP_IF_FALSE</code> <span name="instr">leaves</span> the
-value on top of the stack. When the left-hand side of the <code>&amp;&amp;</code> is falsey, that
+value on top of the stack. When the left-hand side of the <code>and</code> is falsey, that
 value sticks around to become the result of the entire expression.</p>
 <aside name="instr">
 <p>We&rsquo;ve got plenty of space left in our opcode range, so we could have separate
@@ -558,7 +563,7 @@ VM, it&rsquo;s worth exploring adding more specialized instructions and see how 
 affect performance.</p>
 </aside>
 <h3><a href="#logical-or-operator" name="logical-or-operator"><small>23&#8202;.&#8202;2&#8202;.&#8202;1</small> Logical or operator</a></h3>
-<p>The <code>||</code> operator is a little more complex. First we add it to the parse table:</p>
+<p>The <code>or</code> operator is a little more complex. First we add it to the parse table:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>  <span class="p">{</span> <span class="n">literal</span><span class="p">,</span>  <span class="nb">NULL</span><span class="p">,</span>    <span class="n">PREC_NONE</span> <span class="p">},</span>       <span class="c1">// TOKEN_NIL  </span>
 </pre><div class="source-file"><em>compiler.c</em><br>
 replace 1 line</div>
@@ -585,7 +590,7 @@ add after <em>number</em>()</div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, add after <em>number</em>()</div>
 
-<p>In an <code>||</code> expression, if the left-hand side is <em>truthy</em>, then we skip over the
+<p>In an <code>or</code> expression, if the left-hand side is <em>truthy</em>, then we skip over the
 right operand. Thus we need to jump when a value is truthy. We could add a
 separate instruction, but just to show how our compiler is free to map the
 language&rsquo;s semantics to whatever instruction sequence it wants, I implemented it
@@ -594,10 +599,10 @@ in terms of the jump instructions we already have.</p>
 That statement is an unconditional jump over the code for the right operand.
 This little dance effectively does a jump when the value is truthy. The flow
 looks like this:</p>
-<p><img src="image/jumping-back-and-forth/or.png" alt="Flowchart of the compiled bytecode of an '||' expression." /></p>
+<p><img src="image/jumping-back-and-forth/or.png" alt="Flowchart of the compiled bytecode of a logical or expression." /></p>
 <p>If I&rsquo;m honest with you, this isn&rsquo;t the best way to do this. There are more
-instructions to dispatch and more overhead. There&rsquo;s no good reason why <code>||</code>
-should be slower than <code>&amp;&amp;</code>. But it is kind of fun to see that it&rsquo;s possible to
+instructions to dispatch and more overhead. There&rsquo;s no good reason why <code>or</code>
+should be slower than <code>and</code>. But it is kind of fun to see that it&rsquo;s possible to
 implement both operators without adding any new instructions. Forgive me my
 indulgences.</p>
 <p>OK, those are the three <em>branching</em> constructs in Lox. By that, I mean, these
@@ -642,7 +647,7 @@ add after <em>printStatement</em>()</div>
 <p>Most of this mirrors if statements<span class="em">&mdash;</span>we compile the condition expression,
 surrounded by mandatory parentheses. That&rsquo;s followed by a jump instruction that
 skips over the subsequent body statement if the condition is falsey.</p>
-<p>We patch the jump after compiling the body, and take care to <span
+<p>We patch the jump after compiling the body and take care to <span
 name="pop">pop</span> the condition value from the stack on either path. The
 only difference from an if statement is the loop. That looks like this:</p>
 <aside name="pop">
@@ -787,19 +792,19 @@ in <em>statement</em>()</div>
 like <code>for (;;)</code>, then we could implement it like this:</p>
 <div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
 add after <em>expressionStatement</em>()</div>
-<pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">forStatement</span><span class="p">()</span> <span class="p">{</span>                                
-  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_LEFT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;(&#39; after &#39;for&#39;.&quot;</span><span class="p">);</span>     
+<pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">forStatement</span><span class="p">()</span> <span class="p">{</span>                                  
+  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_LEFT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;(&#39; after &#39;for&#39;.&quot;</span><span class="p">);</span>       
   <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;;&#39;.&quot;</span><span class="p">);</span>
 
-  <span class="kt">int</span> <span class="n">loopStart</span> <span class="o">=</span> <span class="n">currentChunk</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span>                    
+  <span class="kt">int</span> <span class="n">loopStart</span> <span class="o">=</span> <span class="n">currentChunk</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span>                      
 
-  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;;&#39;.&quot;</span><span class="p">);</span>                  
-  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after for clauses.&quot;</span><span class="p">);</span>
+  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;;&#39;.&quot;</span><span class="p">);</span>                    
+  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after for clauses.&quot;</span><span class="p">);</span>
 
-  <span class="n">statement</span><span class="p">();</span>                                              
+  <span class="n">statement</span><span class="p">();</span>                                                
 
-  <span class="n">emitLoop</span><span class="p">(</span><span class="n">loopStart</span><span class="p">);</span>                                      
-<span class="p">}</span>                                                           
+  <span class="n">emitLoop</span><span class="p">(</span><span class="n">loopStart</span><span class="p">);</span>                                        
+<span class="p">}</span>                                                             
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, add after <em>expressionStatement</em>()</div>
@@ -819,10 +824,10 @@ the body, so it&rsquo;s straightforward:</p>
 </pre><div class="source-file"><em>compiler.c</em><br>
 in <em>forStatement</em>()<br>
 replace 1 line</div>
-<pre class="insert"><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_VAR</span><span class="p">))</span> <span class="p">{</span>                              
-    <span class="n">varDeclaration</span><span class="p">();</span>                                  
-  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">))</span> <span class="p">{</span>                 
+<pre class="insert"><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">))</span> <span class="p">{</span>                        
     <span class="c1">// No initializer.                                 </span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_VAR</span><span class="p">))</span> <span class="p">{</span>                       
+    <span class="n">varDeclaration</span><span class="p">();</span>                                  
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                                             
     <span class="n">expressionStatement</span><span class="p">();</span>                             
   <span class="p">}</span>                                                    
@@ -834,7 +839,7 @@ replace 1 line</div>
 <p>The syntax is a little complex since we allow either a variable declaration or
 an expression. We use the presence of the <code>var</code> keyword to tell which we have.
 For the expression case, we call <code>expressionStatement()</code> instead of
-<code>expression()</code>. That looks for a semicolon, which we need here too, and almost
+<code>expression()</code>. That looks for a semicolon, which we need here too, and also
 emits an <code>OP_POP</code> instruction to discard the value. We don&rsquo;t want the
 initializer to leave anything on the stack.</p>
 <p>If a for statement declares a variable, that variable should be scoped to the
@@ -873,7 +878,7 @@ replace 1 line</div>
     <span class="n">exitJump</span> <span class="o">=</span> <span class="n">emitJump</span><span class="p">(</span><span class="n">OP_JUMP_IF_FALSE</span><span class="p">);</span>                       
     <span class="n">emitByte</span><span class="p">(</span><span class="n">OP_POP</span><span class="p">);</span> <span class="c1">// Condition.                              </span>
   <span class="p">}</span>                                                              
-<br></pre><pre class="insert-after"><span></span>  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_SEMICOLON</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after for clauses.&quot;</span><span class="p">);</span>     
+<br></pre><pre class="insert-after"><span></span>  <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_RIGHT_PAREN</span><span class="p">,</span> <span class="s">&quot;Expect &#39;)&#39; after for clauses.&quot;</span><span class="p">);</span>   
 </pre></div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, in <em>forStatement</em>(), replace 1 line</div>
@@ -898,8 +903,8 @@ in <em>forStatement</em>()</div>
 
 <div class="source-file-narrow"><em>compiler.c</em>, in <em>forStatement</em>()</div>
 
-<p>We only do this when there is a condition clause. If there isn&rsquo;t, there&rsquo;s no jump
-to patch and no condition to pop.</p>
+<p>We only do this when there is a condition clause. If there isn&rsquo;t, there&rsquo;s no
+jump to patch and no condition to pop.</p>
 <h3><a href="#increment-clause" name="increment-clause"><small>23&#8202;.&#8202;4&#8202;.&#8202;3</small> Increment clause</a></h3>
 <p>I&rsquo;ve saved the best for last, the increment clause. It&rsquo;s pretty convoluted. It
 appears textually before the body, but executes <em>after</em> it. If we parsed to an
@@ -945,7 +950,7 @@ main loop that takes us back to the top of the for loop<span class="em">&mdash;<
 condition expression if there is one. That loop happens right after the
 increment, since the increment executes at the end of each loop iteration.</p>
 <p>Then we change <code>loopStart</code> to point to the offset where the increment expression
-begins. Later, when emit the loop instruction after the body statement, this
+begins. Later, when we emit the loop instruction after the body statement, this
 will cause it to jump up to the <em>increment</em> expression instead of the top of the
 loop like it does when there is no increment. This is how we stitch the
 increment in to run after the body.</p>
@@ -991,9 +996,10 @@ statements are done.</p>
 </pre></div>
 
 
-<p>A continue statement jumps to the top of the nearest enclosing loop. In a
-for loop, this skips evaluating the increment clause, if there is one. It&rsquo;s
-a compile-time error to have a continue statement not enclosed in a loop.</p>
+<p>A continue statement jumps directly to the top of the nearest enclosing
+loop, skipping the rest of the loop body. Inside a for loop, a continue
+jumps to the increment clause, if there is one. It&rsquo;s a compile-time error to
+have a continue statement not enclosed in a loop.</p>
 <p>Make sure to think about scope. What should happen to local variables
 declared inside the body of the loop or in blocks nested inside the loop
 when a continue is executed?</p>
@@ -1022,7 +1028,7 @@ case, the monster is <em>under</em> the mask. We all know goto is evil. But&hell
 don&rsquo;t think most programmers around today have seen that first hand. It&rsquo;s been a
 long time since that style was common. These days, it&rsquo;s a boogie man we invoke
 in scary stories around the campfire.</p>
-<p>The reason we rarely confront that monster in person is because Edsger Dijktra
+<p>The reason we rarely confront that monster in person is because Edsger Dijkstra
 slayed it with his famous letter &ldquo;Goto Considered Harmful&rdquo;, published in
 <em>Communications of the ACM</em>. Debate around structured programming had been
 fierce for some time with adherents on both sides, but I think Dijkstra deserves
@@ -1034,7 +1040,8 @@ to do so. It&rsquo;s a seminal piece of computer science lore, one of our tribe&
 ancestral songs. Also, it&rsquo;s a nice short bit of practice for reading academic CS
 <span name="style">writing</span>, which is a useful skill to develop.</p>
 <aside name="style">
-<p>That is, if you can get past Dijkstra&rsquo;s insufferable faux-modest self-aggrandizing writing style:</p>
+<p>That is, if you can get past Dijkstra&rsquo;s insufferable faux-modest
+self-aggrandizing writing style:</p>
 <blockquote>
 <p>More recently I discovered why the use of the go to statement has such
 disastrous effects&hellip; . At that time I did not attach too much importance to
@@ -1054,7 +1061,7 @@ I&rsquo;m with him. His general argument is something like this:</p>
 </li>
 <li>
 <p>We&rsquo;re better at reasoning about static things than dynamic things. (He
-    doesn&rsquo;t provide any evidence to support this claim, but I accept with it.)</p>
+    doesn&rsquo;t provide any evidence to support this claim, but I accept it.)</p>
 </li>
 <li>
 <p>Thus, the more we can make the dynamic execution of the program reflect its
@@ -1062,7 +1069,7 @@ I&rsquo;m with him. His general argument is something like this:</p>
 </li>
 </ol>
 <p>This is a good start. Drawing our attention to the separation between the code
-we write and the code as its runs inside the machine is an interesting insight.
+we write and the code as it runs inside the machine is an interesting insight.
 Then he tries to define a &ldquo;correspondence&rdquo; between program text and execution.
 For someone who spent literally his entire career advocating greater rigor in
 programming, his definition is pretty hand-wavey. He says:</p>
@@ -1081,7 +1088,7 @@ other computer to be able to stop it exactly as far along as the first one was?<
 just need to know the point after the last statement you executed. Basically a
 breakpoint, the <code>ip</code> in our VM, or the line number in an error message.</p>
 <p>Adding branching control flow like if and switch doesn&rsquo;t add any more to this.
-Even if the marker points inside a branch, we can still tell we are.</p>
+Even if the marker points inside a branch, we can still tell where we are.</p>
 <p>Once you add function calls, you need something more. You could have paused the
 first computer in the middle of a function, but that function may be called from
 multiple places. To pause the second machine at exactly the same point in <em>the
@@ -1089,7 +1096,7 @@ entire program&rsquo;s</em> execution, you need to pause it on the <em>right</em
 function.</p>
 <p>So you need to know not just the current statement, but, for function calls that
 haven&rsquo;t returned yet, you need to know the locations of the callsites. In other
-words, a callstack, though I don&rsquo;t think that word existed when Dijkstra wrote
+words, a call stack, though I don&rsquo;t think that term existed when Dijkstra wrote
 this. Groovy.</p>
 <p>He notes that loops make things harder. If you pause in the middle of a loop
 body, you don&rsquo;t know how many iterations have run. So he says you also need to
@@ -1135,7 +1142,8 @@ bad. Much of that could and should be turned into clearer code by using
 structured control flow.</p>
 <p>By eliminating goto completely from languages, you&rsquo;re definitely prevented from
 writing bad code using gotos. It may be that forcing users to use structured
-control flow and making it an uphill battle to write goto-like code using those constructs is a net win for all of our productivity.</p>
+control flow and making it an uphill battle to write goto-like code using those
+constructs is a net win for all of our productivity.</p>
 <p>But I do wonder sometimes if we threw out the baby with the bathwater. In the
 absence of goto, we often resort to more complex structured patterns. The
 &ldquo;switch inside a loop&rdquo; is a classic one. Another is using a guard variable to
@@ -1178,7 +1186,7 @@ exit out of a series of nested loops:</p>
 
 <aside name="break">
 <p>You could do this without <code>break</code> statements<span class="em">&mdash;</span>themselves a limited goto-ish
-construct<span class="em">&mdash;</span>by inserting <code>!found &amp;&amp;</code> at the beginning of the condition clause
+construct<span class="em">&mdash;</span>by inserting <code>!found and</code> at the beginning of the condition clause
 of each loop.</p>
 </aside>
 <p>I guess what I really don&rsquo;t like is that we&rsquo;re making language design and

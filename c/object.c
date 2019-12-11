@@ -19,21 +19,21 @@
 static Obj* allocateObject(size_t size, ObjType type) {
   Obj* object = (Obj*)reallocate(NULL, 0, size);
   object->type = type;
-//> Garbage Collection not-yet
-  object->isDark = false;
-//< Garbage Collection not-yet
+//> Garbage Collection init-is-marked
+  object->isMarked = false;
+//< Garbage Collection init-is-marked
 //> add-to-list
   
   object->next = vm.objects;
   vm.objects = object;
 //< add-to-list
-//> Garbage Collection not-yet
+//> Garbage Collection debug-log-allocate
 
-#ifdef DEBUG_TRACE_GC
-  printf("%p allocate %ld for %d\n", object, size, type);
+#ifdef DEBUG_LOG_GC
+  printf("%p allocate %ld for %d\n", (void*)object, size, type);
 #endif
 
-//< Garbage Collection not-yet
+//< Garbage Collection debug-log-allocate
   return object;
 }
 //< allocate-object
@@ -58,37 +58,37 @@ ObjClass* newClass(ObjString* name) {
   return klass;
 }
 //< Classes and Instances not-yet
-//> Closures not-yet
-
+//> Closures new-closure
 ObjClosure* newClosure(ObjFunction* function) {
-  // Allocate the upvalue array first so it doesn't cause the closure
-  // to get collected.
+//> allocate-upvalue-array
   ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*, function->upvalueCount);
   for (int i = 0; i < function->upvalueCount; i++) {
     upvalues[i] = NULL;
   }
 
+//< allocate-upvalue-array
   ObjClosure* closure = ALLOCATE_OBJ(ObjClosure, OBJ_CLOSURE);
   closure->function = function;
+//> init-upvalue-fields
   closure->upvalues = upvalues;
   closure->upvalueCount = function->upvalueCount;
+//< init-upvalue-fields
   return closure;
 }
-//< Closures not-yet
-//> Calls and Functions not-yet
-
+//< Closures new-closure
+//> Calls and Functions new-function
 ObjFunction* newFunction() {
   ObjFunction* function = ALLOCATE_OBJ(ObjFunction, OBJ_FUNCTION);
 
   function->arity = 0;
-//> Closures not-yet
+//> Closures init-upvalue-count
   function->upvalueCount = 0;
-//< Closures not-yet
+//< Closures init-upvalue-count
   function->name = NULL;
   initChunk(&function->chunk);
   return function;
 }
-//< Calls and Functions not-yet
+//< Calls and Functions new-function
 //> Classes and Instances not-yet
 
 ObjInstance* newInstance(ObjClass* klass) {
@@ -98,14 +98,13 @@ ObjInstance* newInstance(ObjClass* klass) {
   return instance;
 }
 //< Classes and Instances not-yet
-//> Calls and Functions not-yet
-
+//> Calls and Functions new-native
 ObjNative* newNative(NativeFn function) {
   ObjNative* native = ALLOCATE_OBJ(ObjNative, OBJ_NATIVE);
   native->function = function;
   return native;
 }
-//< Calls and Functions not-yet
+//< Calls and Functions new-native
 
 /* Strings allocate-string < Hash Tables allocate-string
 static ObjString* allocateString(char* chars, int length) {
@@ -122,14 +121,14 @@ static ObjString* allocateString(char* chars, int length,
   string->hash = hash;
 //< Hash Tables allocate-store-hash
 
-//> Garbage Collection not-yet
+//> Garbage Collection push-string
   push(OBJ_VAL(string));
-//< Garbage Collection not-yet
+//< Garbage Collection push-string
 //> Hash Tables allocate-store-string
   tableSet(&vm.strings, string, NIL_VAL);
-//> Garbage Collection not-yet
+//> Garbage Collection pop-string
   pop();
-//< Garbage Collection not-yet
+//< Garbage Collection pop-string
 
 //< Hash Tables allocate-store-string
   return string;
@@ -188,17 +187,30 @@ ObjString* copyString(const char* chars, int length) {
   return allocateString(heapChars, length, hash);
 //< Hash Tables copy-string-allocate
 }
-//> Closures not-yet
-
+//> Closures new-upvalue
 ObjUpvalue* newUpvalue(Value* slot) {
   ObjUpvalue* upvalue = ALLOCATE_OBJ(ObjUpvalue, OBJ_UPVALUE);
+//> init-closed
   upvalue->closed = NIL_VAL;
-  upvalue->value = slot;
+//< init-closed
+  upvalue->location = slot;
+//> init-next
   upvalue->next = NULL;
-
+//< init-next
   return upvalue;
 }
-//< Closures not-yet
+//< Closures new-upvalue
+//> Calls and Functions print-function-helper
+static void printFunction(ObjFunction* function) {
+//> print-script
+  if (function->name == NULL) {
+    printf("<script>");
+    return;
+  }
+//< print-script
+  printf("<fn %s>", function->name->chars);
+}
+//< Calls and Functions print-function-helper
 //> print-object
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
@@ -209,38 +221,37 @@ void printObject(Value value) {
 //< Classes and Instances not-yet
 //> Methods and Initializers not-yet
     case OBJ_BOUND_METHOD:
-      printf("<fn %s>",
-             AS_BOUND_METHOD(value)->method->function->name->chars);
+      printFunction(AS_BOUND_METHOD(value)->method->function);
       break;
 //< Methods and Initializers not-yet
-//> Closures not-yet
+//> Closures print-closure
     case OBJ_CLOSURE:
-      printf("<fn %s>", AS_CLOSURE(value)->function->name->chars);
+      printFunction(AS_CLOSURE(value)->function);
       break;
-//< Closures not-yet
-//> Calls and Functions not-yet
+//< Closures print-closure
+//> Calls and Functions print-function
     case OBJ_FUNCTION:
-      printf("<fn %s>", AS_FUNCTION(value)->name->chars);
+      printFunction(AS_FUNCTION(value));
       break;
-//< Calls and Functions not-yet
+//< Calls and Functions print-function
 //> Classes and Instances not-yet
     case OBJ_INSTANCE:
       printf("%s instance", AS_INSTANCE(value)->klass->name->chars);
       break;
 //< Classes and Instances not-yet
-//> Calls and Functions not-yet
+//> Calls and Functions print-native
     case OBJ_NATIVE:
       printf("<native fn>");
       break;
-//< Calls and Functions not-yet
+//< Calls and Functions print-native
     case OBJ_STRING:
       printf("%s", AS_CSTRING(value));
       break;
-//> Closures not-yet
+//> Closures print-upvalue
     case OBJ_UPVALUE:
       printf("upvalue");
       break;
-//< Closures not-yet
+//< Closures print-upvalue
   }
 }
 //< print-object

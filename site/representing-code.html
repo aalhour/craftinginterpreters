@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -136,9 +137,11 @@ you manually evaluate an arithmetic expression like this:</p>
 </pre></div>
 
 
-<p>Because you understand the rules of precedence<span class="em">&mdash;</span>the old &ldquo;Please Excuse My Dear
-Aunt Sally&rdquo; stuff<span class="em">&mdash;</span>you know that the <code>*</code> is evaluated before the <code>+</code> or <code>-</code>.
-One way to visualize that precedence is using a tree. Leaf nodes are numbers, and interior nodes are operators with branches for each of their operands.</p>
+<p>Because you understand the order or operations<span class="em">&mdash;</span>the old &ldquo;<a href="https://en.wikipedia.org/wiki/Order_of_operations#Mnemonics">Please Excuse My
+Dear Aunt Sally</a>&rdquo; stuff<span class="em">&mdash;</span>you know that the <code>*</code> is evaluated before the
+<code>+</code> or <code>-</code>. One way to visualize that precedence is using a tree. Leaf nodes are
+numbers, and interior nodes are operators with branches for each of their
+operands.</p>
 <p>In order to evaluate an arithmetic node, you need to know the numeric values of
 its subtrees, so you have to evaluate those first. That means working your way
 from the leaves up to the root<span class="em">&mdash;</span>a <em>post-order</em> traversal:</p>
@@ -285,7 +288,7 @@ book. Sorry.</p>
 <span class="n">protein</span>    <span class="err">→</span> <span class="n">cooked</span> <span class="s">&quot;eggs&quot;</span> <span class="p">;</span>
 
 <span class="n">crispiness</span> <span class="err">→</span> <span class="s">&quot;really&quot;</span> <span class="p">;</span>
-<span class="n">crispiness</span> <span class="err">→</span> <span class="n">really</span> <span class="s">&quot;really&quot;</span> <span class="p">;</span>
+<span class="n">crispiness</span> <span class="err">→</span> <span class="s">&quot;really&quot;</span> <span class="n">crispiness</span> <span class="p">;</span>
 
 <span class="n">cooked</span>     <span class="err">→</span> <span class="s">&quot;scrambled&quot;</span> <span class="p">;</span>
 <span class="n">cooked</span>     <span class="err">→</span> <span class="s">&quot;poached&quot;</span> <span class="p">;</span>
@@ -333,7 +336,7 @@ simple regular grammar. A regular grammar can <em>repeat</em>, but it can&rsquo;
 <p>We could keep picking the first production for <code>breakfast</code> over and over again
 yielding all manner of breakfasts like &ldquo;bacon with sausage with scrambled eggs
 with bacon &hellip;&rdquo;. We won&rsquo;t though. This time we&rsquo;ll pick <code>bread</code>. There are three
-rules for that, each of which contains only a nonterminal. We&rsquo;ll pick &ldquo;English
+rules for that, each of which contains only a terminal. We&rsquo;ll pick &ldquo;English
 muffin&rdquo;.</p>
 <p>With that, every nonterminal in the string has been expanded until it finally
 contains only terminals and we&rsquo;re left with:</p>
@@ -346,7 +349,7 @@ refer to itself<span class="em">&mdash;</span>directly or indirectly<span class=
 pack an infinite number of strings into a finite grammar.</p>
 <h3><a href="#enhancing-our-notation" name="enhancing-our-notation"><small>5&#8202;.&#8202;1&#8202;.&#8202;2</small> Enhancing our notation</a></h3>
 <p>Stuffing an infinite set of strings in a handful of rules is pretty fantastic,
-but let&rsquo;s take it farther. Our notation works, but it&rsquo;s a little tedious. So,
+but let&rsquo;s take it further. Our notation works, but it&rsquo;s a little tedious. So,
 like any good language designer, we&rsquo;ll sprinkle some syntactic sugar on top. In
 addition to terminals and nonterminals, we&rsquo;ll allow a few other kinds of
 expressions in the body of a rule:</p>
@@ -403,7 +406,7 @@ recursion.</p>
 </li>
 </ul>
 <p>With all of that sugar, our breakfast grammar condenses down to:</p>
-<div class="codehilite"><pre><span></span><span class="n">breakfast</span> <span class="err">→</span> <span class="n">protein</span> <span class="p">(</span> <span class="s">&quot;with&quot;</span> <span class="n">breakfast</span> <span class="s">&quot;on the side&quot;</span> <span class="p">)</span><span class="err">?</span> <span class="p">;</span>
+<div class="codehilite"><pre><span></span><span class="n">breakfast</span> <span class="err">→</span> <span class="n">protein</span> <span class="p">(</span> <span class="s">&quot;with&quot;</span> <span class="n">breakfast</span> <span class="s">&quot;on the side&quot;</span> <span class="p">)</span><span class="err">?</span>
           <span class="err">|</span> <span class="n">bread</span> <span class="p">;</span>
 
 <span class="n">protein</span>   <span class="err">→</span> <span class="s">&quot;really&quot;</span><span class="o">+</span> <span class="s">&quot;crispy&quot;</span> <span class="s">&quot;bacon&quot;</span>
@@ -516,7 +519,7 @@ access the second operand of a unary expression.</p>
 <p>Something like:</p>
 <div class="codehilite"><pre><span></span><span class="kn">package</span> <span class="nn">com.craftinginterpreters.lox</span><span class="o">;</span>
 
-<span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Expr</span> <span class="o">{</span> <span name="expr"></span>
+<span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Expr</span> <span class="o">{</span> <span name="expr">&#8203;</span>
   <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Binary</span> <span class="kd">extends</span> <span class="n">Expr</span> <span class="o">{</span>
     <span class="n">Binary</span><span class="o">(</span><span class="n">Expr</span> <span class="n">left</span><span class="o">,</span> <span class="n">Token</span> <span class="n">operator</span><span class="o">,</span> <span class="n">Expr</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
       <span class="k">this</span><span class="o">.</span><span class="na">left</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
@@ -667,7 +670,7 @@ in <em>defineAst</em>()</div>
 <pre class="insert"><span></span>    <span class="c1">// The AST classes.                                     </span>
     <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">type</span> <span class="o">:</span> <span class="n">types</span><span class="o">)</span> <span class="o">{</span>                             
       <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">)[</span><span class="mi">0</span><span class="o">].</span><span class="na">trim</span><span class="o">();</span>         
-      <span class="n">String</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">)[</span><span class="mi">1</span><span class="o">].</span><span class="na">trim</span><span class="o">();</span> <span name="robust"></span>
+      <span class="n">String</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">type</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&quot;:&quot;</span><span class="o">)[</span><span class="mi">1</span><span class="o">].</span><span class="na">trim</span><span class="o">();</span> <span name="robust">&#8203;</span>
       <span class="n">defineType</span><span class="o">(</span><span class="n">writer</span><span class="o">,</span> <span class="n">baseName</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="n">fields</span><span class="o">);</span>      
     <span class="o">}</span>                                                       
 </pre><pre class="insert-after"><span></span>    <span class="n">writer</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;}&quot;</span><span class="o">);</span>                                    
@@ -854,7 +857,7 @@ previous night&rsquo;s revelry.</p>
 them, decorating them, etc.<span class="em">&mdash;</span>without having to add a new method to each class
 every time. Here&rsquo;s how we do it. First, we define a separate interface:</p>
 <div class="codehilite"><pre><span></span>  <span class="kd">interface</span> <span class="nc">PastryVisitor</span> <span class="o">{</span>                          
-    <span class="kt">void</span> <span class="nf">visitBeignet</span><span class="o">(</span><span class="n">Beignet</span> <span class="n">beignet</span><span class="o">);</span> <span name="overload"></span>
+    <span class="kt">void</span> <span class="nf">visitBeignet</span><span class="o">(</span><span class="n">Beignet</span> <span class="n">beignet</span><span class="o">);</span> <span name="overload">&#8203;</span>
     <span class="kt">void</span> <span class="nf">visitCruller</span><span class="o">(</span><span class="n">Cruller</span> <span class="n">cruller</span><span class="o">);</span>              
   <span class="o">}</span>                                                  
 </pre></div>

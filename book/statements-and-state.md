@@ -71,7 +71,8 @@ from expressions. We start with the two simplest kinds:
     <aside name="print">
 
     I will note with only a modicum of defensiveness that BASIC and Python
-    have dedicated print statements and they are real languages.
+    have dedicated print statements and they are real languages. Granted,
+    Python did remove their print statement in 3.0...
 
     </aside>
 
@@ -148,6 +149,14 @@ temporary hack to get the last chapter up and running. Now that our grammar has
 the correct starting rule, `program`, we can turn `parse()` into the real deal:
 
 ^code parse
+
+<aside name="parse-error-handling">
+
+What about the code we had in here for catching `ParseError` exceptions? We'll
+put better parse error handling in place soon when we add support for additional
+statement types.
+
+</aside>
 
 It parses a series of statements, as many as it can find until it hits the end
 of the input. This is a pretty direct translation of the `program` rule into
@@ -338,16 +347,14 @@ if (monday) var beverage = "espresso";
 ```
 
 We *could* allow the latter, but it's confusing. What is the scope of that
-`beverage` variable? If it goes *past* the if, then it means in some cases, the
-variable exists and in others it doesn't. That makes it really hard for the
-compiler or a human to reason about the code. But if the variable *doesn't* live
-past the if, then what's the point of declaring it at all?
+`beverage` variable? Does it persist after the if statement? If so, what is its
+value on days other than Monday? Does the variable exist at all on those days?
 
-Code like this is weird, so C, Java, and friends all disallow it. Instead, it's
-as if there are two levels of <span name="brace">"precedence"</span> for
-statements. Some places where a statement is allowed -- like inside a block or
-at the top level -- allow any kind of statement, including declarations. Others
-only allow the "higher" precedence statements that don't declare names.
+Code like this is weird, so C, Java, and friends all disallow it. It's as if
+there are two levels of <span name="brace">"precedence"</span> for statements.
+Some places where a statement is allowed -- like inside a block or at the top
+level -- allow any kind of statement, including declarations. Others only allow
+the "higher" precedence statements that don't declare names.
 
 <aside name="brace">
 
@@ -417,17 +424,8 @@ The generated code for the new node is in [Appendix II][appendix-var-stmt].
 
 </aside>
 
-<span name="comma">It</span> stores the name token so we know what it's
-declaring, along with the initializer expression. (If there isn't an
-initializer, that's `null`.)
-
-<aside name="comma">
-
-The existing line for the Print statement is marked as being replaced because we
-need to add a comma at the end of it. Likewise in the next code snippet. Details
-matter!
-
-</aside>
+It stores the name token so we know what it's declaring, along with the
+initializer expression. (If there isn't an initializer, that's `null`.)
 
 Then we add an expression node for accessing a variable:
 
@@ -666,8 +664,8 @@ var a = "too late!";
 ```
 
 As with type errors in the expression evaluation code, we report a runtime error
-by throwing an exception, giving it the token for the variable so we can tell
-the user where in their code they messed up.
+by throwing an exception. The exception contains the variable's token so we can
+tell the user where in their code they messed up.
 
 ### Interpreting global variables
 
@@ -683,9 +681,10 @@ declaration statements:
 
 ^code visit-var
 
-If the variable has an initializer, it evaluates it. If not, we have another
-choice to make. We could make it a syntax error by *requiring* an initializer.
-Most languages don't, though, so it feels a little harsh to do so in Lox.
+If the variable has an initializer, we evaluate it. If not, we have another
+choice to make. We could have made this a syntax error in the parser by
+*requiring* an initializer. Most languages don't, though, so it feels a little
+harsh to do so in Lox.
 
 We could make it a runtime error. We'd let you define an uninitialized variable,
 but if you accessed before assigning to it, a runtime error would occur. It's
@@ -990,11 +989,11 @@ use it in programming languages, it usually means a thing you can figure out
 from source code itself without having to execute anything.
 
 Lexical scope came onto the scene with ALGOL. Earlier languages were often
-dynamically scoped. They believed dynamic scope was faster to execute. Today,
-thanks to early Scheme hackers, we know that isn't true. If anything, it's the
-opposite.
+dynamically scoped. Computer scientists back then believed dynamic scope was
+faster to execute. Today, thanks to early Scheme hackers, we know that isn't
+true. If anything, it's the opposite.
 
-Dynamic scope for variables lives on some corners. Emacs Lisp defaults to
+Dynamic scope for variables lives on in some corners. Emacs Lisp defaults to
 dynamic scope for variables. The [`binding`][binding] macro in Clojure provides
 it. The widely-disliked [`with` statement][with] in JavaScript turns properties
 on an object into dynamically-scoped variables.
@@ -1168,7 +1167,7 @@ given outer one.
 
 We don't have to touch the `define()` method -- a new variable is always
 declared in the current innermost scope. But variable lookup and assignment work
-with existing variables and they need to walk the chain to find it. First,
+with existing variables and they need to walk the chain to find them. First,
 lookup:
 
 ^code environment-get-enclosing (2 before, 3 after)
@@ -1179,8 +1178,8 @@ will ultimately walk the entire chain. Assignment rolls the same way:
 
 <aside name="recurse">
 
-It's faster to iteratively walk the chain, but I think the recursive solution is
-prettier. We'll do something *much* faster in clox.
+It's likely faster to iteratively walk the chain, but I think the recursive
+solution is prettier. We'll do something *much* faster in clox.
 
 </aside>
 
@@ -1202,9 +1201,9 @@ statement → exprStmt
 block     → "{" declaration* "}" ;
 ```
 
-It's a (possibly empty) series of statements or declarations surrounded by curly
-braces. A block is itself a statement and can appear anywhere a statement is
-allowed. Its <span name="block-ast">syntax tree</span> node looks like this:
+A block is a (possibly empty) series of statements or declarations surrounded by
+curly braces. A block is itself a statement and can appear anywhere a statement
+is allowed. The <span name="block-ast">syntax tree</span> node looks like this:
 
 ^code block-ast (1 before, 1 after)
 
@@ -1233,9 +1232,9 @@ All the real work happens here:
 
 ^code block
 
-It creates an empty list and then parses statements and adds them to the list
-until it reaches the end of the block, marked by the closing `}`. Note that the
-loop also has an explicit check for `isAtEnd()`. We have to be careful to avoid
+We create an empty list and then parse statements and add them to the list until
+we reach the end of the block, marked by the closing `}`. Note that the loop
+also has an explicit check for `isAtEnd()`. We have to be careful to avoid
 infinite loops, even when parsing invalid code. If the user forgot a closing
 `}`, the parser needs to not get stuck.
 
@@ -1261,12 +1260,12 @@ exception is thrown.
 
 <aside name="param">
 
-Explicitly changing and restoring a mutable `environment` field may seem a
-little inelegant. Another classic approach is to explicitly pass the environment
-as a parameter to each visit method. To "change" the enviroment, you pass a
-different one as you recurse down the tree. You don't have to restore the old
-one, since the new one lives on the Java stack and is implicitly discarded when
-the interpreter returns from the block's visit method.
+Manually changing and restoring a mutable `environment` field feels inelegant.
+Another classic approach is to explicitly pass the environment as a parameter to
+each visit method. To "change" the environment, you pass a different one as you
+recurse down the tree. You don't have to restore the old one, since the new one
+lives on the Java stack and is implicitly discarded when the interpreter returns
+from the block's visit method.
 
 I considered that for jlox, but it's kind of tedious and verbose adding an
 environment parameter to every single visit method.

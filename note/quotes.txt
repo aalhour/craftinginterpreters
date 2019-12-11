@@ -313,9 +313,6 @@ Steve Miller
 “You've got to work with your mistakes until they look intended. Understand?”
 ― Raymond Carver, Cathedral
 
-“As the man said, for every complex problem there’s a simple solution, and it’s wrong.”
-― Umberto Eco, Foucault's Pendulum
-
 “When you are on the dancefloor, there is nothing to do but dance.”
 ― Umberto Eco, The Mysterious Flame of Queen Loana
 
@@ -359,9 +356,3 @@ And a very happy start.”
 Famous, adj. Conspicuously miserable.
 Dictionary, n. A malevolent literary device for cramping the growth of a language and making it hard and inelastic. This dictionary, however, is a most useful work.”
 ― Ambrose Bierce, The Unabridged Devil's Dictionary
-
-And as imagination bodies forth
-The forms of things unknown, the poet's pen
-Turns them to shapes and gives to airy nothing
-A local habitation and a name.”
-― Shakespeare William Shakespeare, A Midsummer Night's Dream

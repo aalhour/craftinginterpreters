@@ -9,6 +9,8 @@ import re
 from subprocess import Popen, PIPE
 import sys
 
+import term
+
 # Runs the tests.
 REPO_DIR = dirname(dirname(realpath(__file__)))
 
@@ -163,6 +165,7 @@ java_interpreter('chap08_statements', {
   'test/operator/equals_class.lox': 'skip',
   'test/operator/equals_method.lox': 'skip',
   'test/operator/not_class.lox': 'skip',
+  'test/regression/394.lox': 'skip',
   'test/super': 'skip',
   'test/this': 'skip',
   'test/return/in_method.lox': 'skip',
@@ -228,6 +231,7 @@ java_interpreter('chap09_control', {
   'test/operator/equals_class.lox': 'skip',
   'test/operator/equals_method.lox': 'skip',
   'test/operator/not_class.lox': 'skip',
+  'test/regression/394.lox': 'skip',
   'test/super': 'skip',
   'test/this': 'skip',
   'test/return/in_method.lox': 'skip',
@@ -277,6 +281,7 @@ java_interpreter('chap10_functions', {
   'test/operator/equals_class.lox': 'skip',
   'test/operator/equals_method.lox': 'skip',
   'test/operator/not_class.lox': 'skip',
+  'test/regression/394.lox': 'skip',
   'test/super': 'skip',
   'test/this': 'skip',
   'test/return/in_method.lox': 'skip',
@@ -314,6 +319,7 @@ java_interpreter('chap11_resolving', {
   'test/operator/equals_class.lox': 'skip',
   'test/operator/equals_method.lox': 'skip',
   'test/operator/not_class.lox': 'skip',
+  'test/regression/394.lox': 'skip',
   'test/super': 'skip',
   'test/this': 'skip',
   'test/return/in_method.lox': 'skip',
@@ -338,10 +344,12 @@ java_interpreter('chap12_classes', {
   'test/limit/stack_overflow.lox': 'skip',
 
   # No inheritance.
+  'test/class/local_inherit_other.lox': 'skip',
   'test/class/local_inherit_self.lox': 'skip',
   'test/class/inherit_self.lox': 'skip',
   'test/class/inherited_method.lox': 'skip',
   'test/inheritance': 'skip',
+  'test/regression/394.lox': 'skip',
   'test/super': 'skip',
 })
 
@@ -956,24 +964,6 @@ class Test:
     self.failures.append(message)
 
 
-def color_text(text, color):
-  """Converts text to a string and wraps it in the ANSI escape sequence for
-  color, if supported."""
-
-  # No ANSI escapes on Windows.
-  if sys.platform == 'win32':
-    return str(text)
-
-  return color + str(text) + '\033[0m'
-
-
-def green(text):  return color_text(text, '\033[32m')
-def pink(text):   return color_text(text, '\033[91m')
-def red(text):    return color_text(text, '\033[31m')
-def yellow(text): return color_text(text, '\033[33m')
-def gray(text):   return color_text(text, '\033[1;30m')
-
-
 def walk(dir, callback):
   """
   Walks [dir], and executes [callback] on each file.
@@ -986,16 +976,6 @@ def walk(dir, callback):
       walk(nfile, callback)
     else:
       callback(nfile)
-
-
-def print_line(line=None):
-  # Erase the line.
-  print('\033[2K', end='')
-  # Move the cursor to the beginning.
-  print('\r', end='')
-  if line:
-    print(line, end='')
-    sys.stdout.flush()
 
 
 def run_script(path):
@@ -1021,10 +1001,11 @@ def run_script(path):
   path = relpath(path).replace("\\", "/")
 
   # Update the status line.
-  print_line('Passed: ' + green(passed) +
-             ' Failed: ' + red(failed) +
-             ' Skipped: ' + yellow(num_skipped) +
-             gray(' (' + path + ')'))
+  term.print_line('Passed: {} Failed: {} Skipped: {} {}'.format(
+      term.green(passed),
+      term.red(failed),
+      term.yellow(num_skipped),
+      term.gray('({})'.format(path))))
 
   # Read the test and parse out the expectations.
   test = Test(path)
@@ -1040,10 +1021,10 @@ def run_script(path):
     passed += 1
   else:
     failed += 1
-    print_line(red('FAIL') + ': ' + path)
+    term.print_line(term.red('FAIL') + ': ' + path)
     print('')
     for failure in test.failures:
-      print('      ' + pink(failure))
+      print('      ' + term.pink(failure))
     print('')
 
 
@@ -1062,13 +1043,14 @@ def run_suite(name):
   expectations = 0
 
   walk(join(REPO_DIR, 'test'), run_script)
-  print_line()
+  term.print_line()
 
   if failed == 0:
-    print('All ' + green(passed) + ' tests passed (' + str(expectations) +
-          ' expectations).')
+    print('All {} tests passed ({} expectations).'.format(
+        term.green(passed), str(expectations)))
   else:
-    print(green(passed) + ' tests passed. ' + red(failed) + ' tests failed.')
+    print('{} tests passed. {} tests failed.'.format(
+        term.green(passed), term.red(failed)))
 
   return failed == 0
 

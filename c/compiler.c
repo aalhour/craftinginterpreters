@@ -9,9 +9,9 @@
 
 #include "common.h"
 #include "compiler.h"
-//> Garbage Collection not-yet
+//> Garbage Collection compiler-include-memory
 #include "memory.h"
-//< Garbage Collection not-yet
+//< Garbage Collection compiler-include-memory
 #include "scanner.h"
 //> Compiling Expressions include-debug
 
@@ -43,11 +43,13 @@ typedef enum {
   PREC_TERM,        // + -
   PREC_FACTOR,      // * /
   PREC_UNARY,       // ! -
-  PREC_CALL,        // . () []
+  PREC_CALL,        // . ()
   PREC_PRIMARY
 } Precedence;
 //< precedence
+//> parse-fn-type
 
+//< parse-fn-type
 /* Compiling Expressions parse-fn-type < Global Variables parse-fn-type
 typedef void (*ParseFn)();
 */
@@ -67,54 +69,43 @@ typedef struct {
 typedef struct {
   Token name;
   int depth;
-//> Closures not-yet
-
-  // True if this local variable is captured as an upvalue by a
-  // function.
-  bool isUpvalue;
-//< Closures not-yet
+//> Closures is-captured-field
+  bool isCaptured;
+//< Closures is-captured-field
 } Local;
 //< Local Variables local-struct
-//> Closures not-yet
-
+//> Closures upvalue-struct
 typedef struct {
-  // The index of the local variable or upvalue being captured from the
-  // enclosing function.
   uint8_t index;
-
-  // Whether the captured variable is a local or upvalue in the
-  // enclosing function.
   bool isLocal;
 } Upvalue;
-//< Closures not-yet
-//> Calls and Functions not-yet
-
+//< Closures upvalue-struct
+//> Calls and Functions function-type-enum
 typedef enum {
   TYPE_FUNCTION,
 //> Methods and Initializers not-yet
   TYPE_INITIALIZER,
   TYPE_METHOD,
 //< Methods and Initializers not-yet
-  TYPE_TOP_LEVEL
+  TYPE_SCRIPT
 } FunctionType;
-//< Calls and Functions not-yet
+//< Calls and Functions function-type-enum
 //> Local Variables compiler-struct
 
 typedef struct Compiler {
-//> Calls and Functions not-yet
-  // The compiler for the enclosing function, if any.
+//> Calls and Functions enclosing-field
   struct Compiler* enclosing;
-
-  // The function being compiled.
+//< Calls and Functions enclosing-field
+//> Calls and Functions function-fields
   ObjFunction* function;
   FunctionType type;
 
-//< Calls and Functions not-yet
+//< Calls and Functions function-fields
   Local locals[UINT8_COUNT];
   int localCount;
-//> Closures not-yet
+//> Closures upvalues-array
   Upvalue upvalues[UINT8_COUNT];
-//< Closures not-yet
+//< Closures upvalues-array
   int scopeDepth;
 } Compiler;
 //< Local Variables compiler-struct
@@ -140,21 +131,22 @@ Compiler* current = NULL;
 
 ClassCompiler* currentClass = NULL;
 //< Methods and Initializers not-yet
-/* Compiling Expressions compiling-chunk < Calls and Functions not-yet
+//> Compiling Expressions compiling-chunk
 
+/* Compiling Expressions compiling-chunk < Calls and Functions current-chunk
 Chunk* compilingChunk;
 
 static Chunk* currentChunk() {
   return compilingChunk;
 }
-
 */
-//> Calls and Functions not-yet
-
+//> Calls and Functions current-chunk
 static Chunk* currentChunk() {
   return &current->function->chunk;
 }
-//< Calls and Functions not-yet
+//< Calls and Functions current-chunk
+
+//< Compiling Expressions compiling-chunk
 //> Compiling Expressions error-at
 static void errorAt(Token* token, const char* message) {
 //> check-panic-mode
@@ -255,7 +247,7 @@ static int emitJump(uint8_t instruction) {
 //< Jumping Back and Forth emit-jump
 //> Compiling Expressions emit-return
 static void emitReturn() {
-/* Calls and Functions not-yet < Methods and Initializers not-yet
+/* Calls and Functions return-nil < Methods and Initializers not-yet
   emitByte(OP_NIL);
 */
 //> Methods and Initializers not-yet
@@ -300,48 +292,38 @@ static void patchJump(int offset) {
 }
 //< Jumping Back and Forth patch-jump
 //> Local Variables init-compiler
-/* Local Variables init-compiler < Calls and Functions not-yet
+/* Local Variables init-compiler < Calls and Functions init-compiler
 static void initCompiler(Compiler* compiler) {
 */
-//> Calls and Functions not-yet
-static void initCompiler(Compiler* compiler, int scopeDepth,
-                         FunctionType type) {
+//> Calls and Functions init-compiler
+static void initCompiler(Compiler* compiler, FunctionType type) {
+//> store-enclosing
   compiler->enclosing = current;
+//< store-enclosing
   compiler->function = NULL;
   compiler->type = type;
-//< Calls and Functions not-yet
+//< Calls and Functions init-compiler
   compiler->localCount = 0;
-/* Local Variables init-compiler < Calls and Functions not-yet
   compiler->scopeDepth = 0;
-*/
-//> Calls and Functions not-yet
-  compiler->scopeDepth = scopeDepth;
+//> Calls and Functions init-function
   compiler->function = newFunction();
-//< Calls and Functions not-yet
+//< Calls and Functions init-function
   current = compiler;
-//> Calls and Functions not-yet
+//> Calls and Functions init-function-name
 
-  switch (type) {
-//> Methods and Initializers not-yet
-    case TYPE_INITIALIZER:
-    case TYPE_METHOD:
-//< Methods and Initializers not-yet
-    case TYPE_FUNCTION:
-      current->function->name = copyString(parser.previous.start,
-                                           parser.previous.length);
-      break;
-    case TYPE_TOP_LEVEL:
-      current->function->name = NULL;
-      break;
+  if (type != TYPE_SCRIPT) {
+    current->function->name = copyString(parser.previous.start,
+                                         parser.previous.length);
   }
+//< Calls and Functions init-function-name
+//> Calls and Functions init-function-slot
 
-  // The first slot is always implicitly declared.
   Local* local = &current->locals[current->localCount++];
-  local->depth = current->scopeDepth;
-//> Closures not-yet
-  local->isUpvalue = false;
-//< Closures not-yet
-/* Calls and Functions not-yet < Methods and Initializers not-yet
+  local->depth = 0;
+//> Closures init-zero-local-is-captured
+  local->isCaptured = false;
+//< Closures init-zero-local-is-captured
+/* Calls and Functions init-function-slot < Methods and Initializers not-yet
   local->name.start = "";
   local->name.length = 0;
 */
@@ -357,39 +339,41 @@ static void initCompiler(Compiler* compiler, int scopeDepth,
     local->name.length = 0;
   }
 //< Methods and Initializers not-yet
-//< Calls and Functions not-yet
+//< Calls and Functions init-function-slot
 }
 //< Local Variables init-compiler
 //> Compiling Expressions end-compiler
-/* Compiling Expressions end-compiler < Calls and Functions not-yet
+/* Compiling Expressions end-compiler < Calls and Functions end-compiler
 static void endCompiler() {
 */
-//> Calls and Functions not-yet
+//> Calls and Functions end-compiler
 static ObjFunction* endCompiler() {
-//< Calls and Functions not-yet
+//< Calls and Functions end-compiler
   emitReturn();
-//> Calls and Functions not-yet
-
+//> Calls and Functions end-function
   ObjFunction* function = current->function;
-//< Calls and Functions not-yet
+
+//< Calls and Functions end-function
 //> dump-chunk
 #ifdef DEBUG_PRINT_CODE
   if (!parser.hadError) {
-/* Compiling Expressions dump-chunk < Calls and Functions not-yet
+/* Compiling Expressions dump-chunk < Calls and Functions disassemble-end
     disassembleChunk(currentChunk(), "code");
 */
-//> Calls and Functions not-yet
+//> Calls and Functions disassemble-end
     disassembleChunk(currentChunk(),
-        function->name != NULL ? function->name->chars : "<top>");
-//< Calls and Functions not-yet
+        function->name != NULL ? function->name->chars : "<script>");
+//< Calls and Functions disassemble-end
   }
 #endif
 //< dump-chunk
-//> Calls and Functions not-yet
-  current = current->enclosing;
+//> Calls and Functions return-function
 
+//> restore-enclosing
+  current = current->enclosing;
+//< restore-enclosing
   return function;
-//< Calls and Functions not-yet
+//< Calls and Functions return-function
 }
 //< Compiling Expressions end-compiler
 //> Local Variables begin-scope
@@ -401,20 +385,20 @@ static void beginScope() {
 static void endScope() {
   current->scopeDepth--;
 //> pop-locals
-  
+
   while (current->localCount > 0 &&
          current->locals[current->localCount - 1].depth >
             current->scopeDepth) {
-/* Local Variables pop-locals < Closures not-yet
+/* Local Variables pop-locals < Closures end-scope
     emitByte(OP_POP);
 */
-//> Closures not-yet
-    if (current->locals[current->localCount - 1].isUpvalue) {
+//> Closures end-scope
+    if (current->locals[current->localCount - 1].isCaptured) {
       emitByte(OP_CLOSE_UPVALUE);
     } else {
       emitByte(OP_POP);
     }
-//< Closures not-yet
+//< Closures end-scope
     current->localCount--;
   }
 //< pop-locals
@@ -459,14 +443,11 @@ static int resolveLocal(Compiler* compiler, Token* name) {
   return -1;
 }
 //< Local Variables resolve-local
-//> Closures not-yet
-
-// Adds an upvalue to [compiler]'s function with the given properties.
-// Does not add one if an upvalue for that variable is already in the
-// list. Returns the index of the upvalue.
+//> Closures add-upvalue
 static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal) {
-  // Look for an existing one.
   int upvalueCount = compiler->function->upvalueCount;
+//> existing-upvalue
+
   for (int i = 0; i < upvalueCount; i++) {
     Upvalue* upvalue = &compiler->upvalues[i];
     if (upvalue->index == index && upvalue->isLocal == isLocal) {
@@ -474,54 +455,41 @@ static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal) {
     }
   }
 
-  // If we got here, it's a new upvalue.
+//< existing-upvalue
+//> too-many-upvalues
   if (upvalueCount == UINT8_COUNT) {
     error("Too many closure variables in function.");
     return 0;
   }
 
+//< too-many-upvalues
   compiler->upvalues[upvalueCount].isLocal = isLocal;
   compiler->upvalues[upvalueCount].index = index;
   return compiler->function->upvalueCount++;
 }
-
-// Attempts to look up [name] in the functions enclosing the one being
-// compiled by [compiler]. If found, it adds an upvalue for it to this
-// compiler's list of upvalues (unless it's already in there) and
-// returns its index. If not found, returns -1.
-//
-// If the name is found outside of the immediately enclosing function,
-// this will flatten the closure and add upvalues to all of the
-// intermediate functions so that it gets walked down to this one.
+//< Closures add-upvalue
+//> Closures resolve-upvalue
 static int resolveUpvalue(Compiler* compiler, Token* name) {
-  // If we are at the top level, we didn't find it.
   if (compiler->enclosing == NULL) return -1;
 
-  // See if it's a local variable in the immediately enclosing function.
   int local = resolveLocal(compiler->enclosing, name);
   if (local != -1) {
-    // Mark the local as an upvalue so we know to close it when it goes
-    // out of scope.
-    compiler->enclosing->locals[local].isUpvalue = true;
+//> mark-local-captured
+    compiler->enclosing->locals[local].isCaptured = true;
+//< mark-local-captured
     return addUpvalue(compiler, (uint8_t)local, true);
   }
+//> resolve-upvalue-recurse
 
-  // See if it's an upvalue in the immediately enclosing function. In
-  // other words, if it's a local variable in a non-immediately
-  // enclosing function. This "flattens" closures automatically: it
-  // adds upvalues to all of the intermediate functions to get from the
-  // function where a local is declared all the way into the possibly
-  // deeply nested function that is closing over it.
   int upvalue = resolveUpvalue(compiler->enclosing, name);
   if (upvalue != -1) {
     return addUpvalue(compiler, (uint8_t)upvalue, false);
   }
+//< resolve-upvalue-recurse
 
-  // If we got here, we walked all the way up the parent chain and
-  // couldn't find it.
   return -1;
 }
-//< Closures not-yet
+//< Closures resolve-upvalue
 //> Local Variables add-local
 static void addLocal(Token name) {
 //> too-many-locals
@@ -539,9 +507,9 @@ static void addLocal(Token name) {
 //> declare-undefined
   local->depth = -1;
 //< declare-undefined
-//> Closures not-yet
-  local->isUpvalue = false;
-//< Closures not-yet
+//> Closures init-is-captured
+  local->isCaptured = false;
+//< Closures init-is-captured
 }
 //< Local Variables add-local
 //> Local Variables declare-variable
@@ -553,7 +521,10 @@ static void declareVariable() {
 //> existing-in-scope
   for (int i = current->localCount - 1; i >= 0; i--) {
     Local* local = &current->locals[i];
-    if (local->depth != -1 && local->depth < current->scopeDepth) break;
+    if (local->depth != -1 && local->depth < current->scopeDepth) {
+      break; // [negative]
+    }
+    
     if (identifiersEqual(name, &local->name)) {
       error("Variable with this name already declared in this scope.");
     }
@@ -567,17 +538,19 @@ static void declareVariable() {
 static uint8_t parseVariable(const char* errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 //> Local Variables parse-local
-  
+
   declareVariable();
   if (current->scopeDepth > 0) return 0;
-  
+
 //< Local Variables parse-local
   return identifierConstant(&parser.previous);
 }
 //< Global Variables parse-variable
 //> Local Variables mark-initialized
 static void markInitialized() {
+//> Calls and Functions check-depth
   if (current->scopeDepth == 0) return;
+//< Calls and Functions check-depth
   current->locals[current->localCount - 1].depth =
       current->scopeDepth;
 }
@@ -591,29 +564,31 @@ static void defineVariable(uint8_t global) {
 //< define-local
     return;
   }
-  
+
 //< Local Variables define-variable
   emitBytes(OP_DEFINE_GLOBAL, global);
 }
 //< Global Variables define-variable
-//> Calls and Functions not-yet
+//> Calls and Functions argument-list
 static uint8_t argumentList() {
   uint8_t argCount = 0;
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
       expression();
-      argCount++;
+//> arg-limit
 
-      if (argCount > 8) {
-        error("Cannot have more than 8 arguments.");
+      if (argCount == 255) {
+        error("Cannot have more than 255 arguments.");
       }
+//< arg-limit
+      argCount++;
     } while (match(TOKEN_COMMA));
   }
 
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after arguments.");
   return argCount;
 }
-//< Calls and Functions not-yet
+//< Calls and Functions argument-list
 //> Jumping Back and Forth and
 static void and_(bool canAssign) {
   int endJump = emitJump(OP_JUMP_IF_FALSE);
@@ -657,12 +632,12 @@ static void binary(bool canAssign) {
   }
 }
 //< Compiling Expressions binary
-//> Calls and Functions not-yet
+//> Calls and Functions compile-call
 static void call(bool canAssign) {
   uint8_t argCount = argumentList();
-  emitByte(OP_CALL_0 + argCount);
+  emitBytes(OP_CALL, argCount);
 }
-//< Calls and Functions not-yet
+//< Calls and Functions compile-call
 //> Classes and Instances not-yet
 static void dot(bool canAssign) {
   consume(TOKEN_IDENTIFIER, "Expect property name after '.'.");
@@ -674,7 +649,8 @@ static void dot(bool canAssign) {
 //> Methods and Initializers not-yet
   } else if (match(TOKEN_LEFT_PAREN)) {
     uint8_t argCount = argumentList();
-    emitBytes(OP_INVOKE_0 + argCount, name);
+    emitBytes(OP_INVOKE, argCount);
+    emitByte(name);
 //< Methods and Initializers not-yet
   } else {
     emitBytes(OP_GET_PROPERTY, name);
@@ -763,11 +739,11 @@ static void namedVariable(Token name, bool canAssign) {
   if (arg != -1) {
     getOp = OP_GET_LOCAL;
     setOp = OP_SET_LOCAL;
-//> Closures not-yet
+//> Closures named-variable-upvalue
   } else if ((arg = resolveUpvalue(current, &name)) != -1) {
     getOp = OP_GET_UPVALUE;
     setOp = OP_SET_UPVALUE;
-//< Closures not-yet
+//< Closures named-variable-upvalue
   } else {
     arg = identifierConstant(&name);
     getOp = OP_GET_GLOBAL;
@@ -775,7 +751,6 @@ static void namedVariable(Token name, bool canAssign) {
   }
 //< Local Variables named-local
 /* Global Variables read-named-variable < Global Variables named-variable
-
   emitBytes(OP_GET_GLOBAL, arg);
 */
 //> named-variable
@@ -788,14 +763,14 @@ static void namedVariable(Token name, bool canAssign) {
 //< named-variable-can-assign
     expression();
 /* Global Variables named-variable < Local Variables emit-set
-    emitBytes(OP_SET_GLOBAL, (uint8_t)arg);
+    emitBytes(OP_SET_GLOBAL, arg);
 */
 //> Local Variables emit-set
     emitBytes(setOp, (uint8_t)arg);
 //< Local Variables emit-set
   } else {
 /* Global Variables named-variable < Local Variables emit-get
-    emitBytes(OP_GET_GLOBAL, (uint8_t)arg);
+    emitBytes(OP_GET_GLOBAL, arg);
 */
 //> Local Variables emit-get
     emitBytes(getOp, (uint8_t)arg);
@@ -845,7 +820,8 @@ static void super_(bool canAssign) {
     uint8_t argCount = argumentList();
 
     pushSuperclass();
-    emitBytes(OP_SUPER_0 + argCount, name);
+    emitBytes(OP_SUPER, argCount);
+    emitByte(name);
   } else {
     pushSuperclass();
     emitBytes(OP_GET_SUPER, name);
@@ -891,18 +867,18 @@ static void unary(bool canAssign) {
 //< Compiling Expressions unary
 //> Compiling Expressions rules
 ParseRule rules[] = {
-/* Compiling Expressions rules < Calls and Functions not-yet
-  { grouping, NULL,    PREC_CALL },       // TOKEN_LEFT_PAREN
+/* Compiling Expressions rules < Calls and Functions infix-left-paren
+  { grouping, NULL,    PREC_NONE },       // TOKEN_LEFT_PAREN
 */
-//> Calls and Functions not-yet
+//> Calls and Functions infix-left-paren
   { grouping, call,    PREC_CALL },       // TOKEN_LEFT_PAREN
-//< Calls and Functions not-yet
+//< Calls and Functions infix-left-paren
   { NULL,     NULL,    PREC_NONE },       // TOKEN_RIGHT_PAREN
   { NULL,     NULL,    PREC_NONE },       // TOKEN_LEFT_BRACE [big]
   { NULL,     NULL,    PREC_NONE },       // TOKEN_RIGHT_BRACE
   { NULL,     NULL,    PREC_NONE },       // TOKEN_COMMA
 /* Compiling Expressions rules < Classes and Instances not-yet
-  { NULL,     NULL,    PREC_CALL },       // TOKEN_DOT
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_DOT
 */
 //> Classes and Instances not-yet
   { NULL,     dot,     PREC_CALL },       // TOKEN_DOT
@@ -919,18 +895,18 @@ ParseRule rules[] = {
   { unary,    NULL,    PREC_NONE },       // TOKEN_BANG
 //< Types of Values table-not
 /* Compiling Expressions rules < Types of Values table-equal
-  { NULL,     NULL,    PREC_EQUALITY },   // TOKEN_BANG_EQUAL
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_BANG_EQUAL
 */
 //> Types of Values table-equal
   { NULL,     binary,  PREC_EQUALITY },   // TOKEN_BANG_EQUAL
 //< Types of Values table-equal
   { NULL,     NULL,    PREC_NONE },       // TOKEN_EQUAL
 /* Compiling Expressions rules < Types of Values table-comparisons
-  { NULL,     NULL,    PREC_EQUALITY },   // TOKEN_EQUAL_EQUAL
-  { NULL,     NULL,    PREC_COMPARISON }, // TOKEN_GREATER
-  { NULL,     NULL,    PREC_COMPARISON }, // TOKEN_GREATER_EQUAL
-  { NULL,     NULL,    PREC_COMPARISON }, // TOKEN_LESS
-  { NULL,     NULL,    PREC_COMPARISON }, // TOKEN_LESS_EQUAL
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_EQUAL_EQUAL
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_GREATER
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_GREATER_EQUAL
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_LESS
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_LESS_EQUAL
 */
 //> Types of Values table-comparisons
   { NULL,     binary,  PREC_EQUALITY },   // TOKEN_EQUAL_EQUAL
@@ -953,7 +929,7 @@ ParseRule rules[] = {
 //< Strings table-string
   { number,   NULL,    PREC_NONE },       // TOKEN_NUMBER
 /* Compiling Expressions rules < Jumping Back and Forth table-and
-  { NULL,     NULL,    PREC_AND },        // TOKEN_AND
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_AND
 */
 //> Jumping Back and Forth table-and
   { NULL,     and_,    PREC_AND },        // TOKEN_AND
@@ -976,7 +952,7 @@ ParseRule rules[] = {
   { literal,  NULL,    PREC_NONE },       // TOKEN_NIL
 //< Types of Values table-nil
 /* Compiling Expressions rules < Jumping Back and Forth table-or
-  { NULL,     NULL,    PREC_OR },         // TOKEN_OR
+  { NULL,     NULL,    PREC_NONE },       // TOKEN_OR
 */
 //> Jumping Back and Forth table-or
   { NULL,     or_,     PREC_OR },         // TOKEN_OR
@@ -1043,7 +1019,6 @@ static void parsePrecedence(Precedence precedence) {
 
   if (canAssign && match(TOKEN_EQUAL)) {
     error("Invalid assignment target.");
-    expression();
   }
 //< Global Variables invalid-assign
 //< infix
@@ -1056,7 +1031,7 @@ static ParseRule* getRule(TokenType type) {
 }
 //< Compiling Expressions get-rule
 //> Compiling Expressions expression
-void expression() {
+static void expression() {
 /* Compiling Expressions expression < Compiling Expressions expression-body
   // What goes here?
 */
@@ -1074,26 +1049,27 @@ static void block() {
   consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
 }
 //< Local Variables block
-//> Calls and Functions not-yet
+//> Calls and Functions compile-function
 static void function(FunctionType type) {
   Compiler compiler;
-  initCompiler(&compiler, 1, type);
+  initCompiler(&compiler, type);
+  beginScope(); // [no-end-scope]
 
   // Compile the parameter list.
   consume(TOKEN_LEFT_PAREN, "Expect '(' after function name.");
-
+//> parameters
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
+      current->function->arity++;
+      if (current->function->arity > 255) {
+        errorAtCurrent("Cannot have more than 255 parameters.");
+      }
+      
       uint8_t paramConstant = parseVariable("Expect parameter name.");
       defineVariable(paramConstant);
-
-      current->function->arity++;
-      if (current->function->arity > 8) {
-        error("Cannot have more than 8 parameters.");
-      }
     } while (match(TOKEN_COMMA));
   }
-
+//< parameters
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
 
   // The body.
@@ -1101,25 +1077,22 @@ static void function(FunctionType type) {
   block();
 
   // Create the function object.
-  endScope();
   ObjFunction* function = endCompiler();
-/* Calls and Functions not-yet < Closures not-yet
+/* Calls and Functions compile-function < Closures emit-closure
   emitBytes(OP_CONSTANT, makeConstant(OBJ_VAL(function)));
 */
-//> Closures not-yet
-
-  // Capture the upvalues in the new closure object.
+//> Closures emit-closure
   emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(function)));
+//< Closures emit-closure
+//> Closures capture-upvalues
 
-  // Emit arguments for each upvalue to know whether to capture a local
-  // or an upvalue.
   for (int i = 0; i < function->upvalueCount; i++) {
     emitByte(compiler.upvalues[i].isLocal ? 1 : 0);
     emitByte(compiler.upvalues[i].index);
   }
-//< Closures not-yet
+//< Closures capture-upvalues
 }
-//< Calls and Functions not-yet
+//< Calls and Functions compile-function
 //> Methods and Initializers not-yet
 static void method() {
   consume(TOKEN_IDENTIFIER, "Expect method name.");
@@ -1161,17 +1134,14 @@ static void classDeclaration() {
   currentClass = &classCompiler;
 
 //< Methods and Initializers not-yet
-/* Classes and Instances not-yet < Superclasses not-yet
-  emitBytes(OP_CLASS, nameConstant);
-*/
 //> Superclasses not-yet
   if (match(TOKEN_LESS)) {
     consume(TOKEN_IDENTIFIER, "Expect superclass name.");
-    
+
     if (identifiersEqual(&className, &parser.previous)) {
       error("A class cannot inherit from itself.");
     }
-    
+
     classCompiler.hasSuperclass = true;
 
     beginScope();
@@ -1206,14 +1176,14 @@ static void classDeclaration() {
 //< Methods and Initializers not-yet
 }
 //< Classes and Instances not-yet
-//> Calls and Functions not-yet
+//> Calls and Functions fun-declaration
 static void funDeclaration() {
   uint8_t global = parseVariable("Expect function name.");
   markInitialized();
   function(TYPE_FUNCTION);
   defineVariable(global);
 }
-//< Calls and Functions not-yet
+//< Calls and Functions fun-declaration
 //> Global Variables var-declaration
 static void varDeclaration() {
   uint8_t global = parseVariable("Expect variable name.");
@@ -1246,10 +1216,10 @@ static void forStatement() {
   consume(TOKEN_SEMICOLON, "Expect ';'.");
 */
 //> for-initializer
-  if (match(TOKEN_VAR)) {
-    varDeclaration();
-  } else if (match(TOKEN_SEMICOLON)) {
+  if (match(TOKEN_SEMICOLON)) {
     // No initializer.
+  } else if (match(TOKEN_VAR)) {
+    varDeclaration();
   } else {
     expressionStatement();
   }
@@ -1270,16 +1240,16 @@ static void forStatement() {
     exitJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP); // Condition.
   }
-  
+
 //< for-exit
 /* Jumping Back and Forth for-statement < Jumping Back and Forth for-increment
-  consume(TOKEN_SEMICOLON, "Expect ')' after for clauses.");
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses.");
 */
 //> for-increment
   if (!match(TOKEN_RIGHT_PAREN)) {
     int bodyJump = emitJump(OP_JUMP);
 
-    int incrementStart = currentChunk()->count;    
+    int incrementStart = currentChunk()->count;
     expression();
     emitByte(OP_POP);
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses.");
@@ -1294,7 +1264,7 @@ static void forStatement() {
 
   emitLoop(loopStart);
 //> exit-jump
-  
+
   if (exitJump != -1) {
     patchJump(exitJump);
     emitByte(OP_POP); // Condition.
@@ -1327,7 +1297,7 @@ static void ifStatement() {
   emitByte(OP_POP);
 //< pop-end
 //> compile-else
-  
+
   if (match(TOKEN_ELSE)) statement();
 //< compile-else
 //> patch-else
@@ -1342,12 +1312,14 @@ static void printStatement() {
   emitByte(OP_PRINT);
 }
 //< Global Variables print-statement
-//> Calls and Functions not-yet
+//> Calls and Functions return-statement
 static void returnStatement() {
-  if (current->type == TYPE_TOP_LEVEL) {
+//> return-from-script
+  if (current->type == TYPE_SCRIPT) {
     error("Cannot return from top-level code.");
   }
 
+//< return-from-script
   if (match(TOKEN_SEMICOLON)) {
     emitReturn();
   } else {
@@ -1362,7 +1334,7 @@ static void returnStatement() {
     emitByte(OP_RETURN);
   }
 }
-//< Calls and Functions not-yet
+//< Calls and Functions return-statement
 //> Jumping Back and Forth while-statement
 static void whileStatement() {
 //> loop-start
@@ -1378,10 +1350,10 @@ static void whileStatement() {
   emitByte(OP_POP);
   statement();
 //> loop
-  
+
   emitLoop(loopStart);
 //< loop
-  
+
   patchJump(exitJump);
   emitByte(OP_POP);
 }
@@ -1418,18 +1390,18 @@ static void declaration() {
 //> Classes and Instances not-yet
   if (match(TOKEN_CLASS)) {
     classDeclaration();
-/* Calls and Functions not-yet < Classes and Instances not-yet
+/* Calls and Functions match-fun < Classes and Instances not-yet
   if (match(TOKEN_FUN)) {
 */
   } else if (match(TOKEN_FUN)) {
 //< Classes and Instances not-yet
-//> Calls and Functions not-yet
+//> Calls and Functions match-fun
     funDeclaration();
-/* Global Variables match-var < Calls and Functions not-yet
+/* Global Variables match-var < Calls and Functions match-fun
   if (match(TOKEN_VAR)) {
 */
   } else if (match(TOKEN_VAR)) {
-//< Calls and Functions not-yet
+//< Calls and Functions match-fun
 //> match-var
     varDeclaration();
   } else {
@@ -1457,10 +1429,10 @@ static void statement() {
   } else if (match(TOKEN_IF)) {
     ifStatement();
 //< Jumping Back and Forth parse-if
-//> Calls and Functions not-yet
+//> Calls and Functions match-return
   } else if (match(TOKEN_RETURN)) {
     returnStatement();
-//< Calls and Functions not-yet
+//< Calls and Functions match-return
 //> Jumping Back and Forth parse-while
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
@@ -1471,23 +1443,23 @@ static void statement() {
     block();
     endScope();
 //< Local Variables parse-block
+//> parse-expressions-statement
   } else {
     expressionStatement();
+//< parse-expressions-statement
   }
 }
 //< Global Variables statement
-/* Scanning on Demand compiler-c < Compiling Expressions compile-signature
 
+/* Scanning on Demand compiler-c < Compiling Expressions compile-signature
 void compile(const char* source) {
 */
-/* Compiling Expressions compile-signature < Calls and Functions not-yet
-
+/* Compiling Expressions compile-signature < Calls and Functions compile-signature
 bool compile(const char* source, Chunk* chunk) {
 */
-//> Calls and Functions not-yet
-
+//> Calls and Functions compile-signature
 ObjFunction* compile(const char* source) {
-//< Calls and Functions not-yet
+//< Calls and Functions compile-signature
   initScanner(source);
 /* Scanning on Demand dump-tokens < Compiling Expressions compile-chunk
   int line = -1;
@@ -1507,18 +1479,18 @@ ObjFunction* compile(const char* source) {
 //> Local Variables compiler
   Compiler compiler;
 //< Local Variables compiler
-/* Local Variables compiler < Calls and Functions not-yet
+/* Local Variables compiler < Calls and Functions call-init-compiler
   initCompiler(&compiler);
 */
-//> Calls and Functions not-yet
-  initCompiler(&compiler, 0, TYPE_TOP_LEVEL);
-//< Calls and Functions not-yet
+//> Calls and Functions call-init-compiler
+  initCompiler(&compiler, TYPE_SCRIPT);
+//< Calls and Functions call-init-compiler
+/* Compiling Expressions init-compile-chunk < Calls and Functions call-init-compiler
+  compilingChunk = chunk;
+*/
 //> Compiling Expressions compile-chunk
 //> init-parser-error
 
-/* Compiling Expressions init-compile-chunk < Calls and Functions not-yet
-  compilingChunk = chunk;
-*/
   parser.hadError = false;
   parser.panicMode = false;
 
@@ -1536,27 +1508,23 @@ ObjFunction* compile(const char* source) {
   }
 
 //< Global Variables compile
-/* Compiling Expressions finish-compile < Calls and Functions not-yet
+/* Compiling Expressions finish-compile < Calls and Functions call-end-compiler
   endCompiler();
 */
-/* Compiling Expressions return-had-error < Calls and Functions not-yet
+/* Compiling Expressions return-had-error < Calls and Functions call-end-compiler
   return !parser.hadError;
 */
-//> Calls and Functions not-yet
+//> Calls and Functions call-end-compiler
   ObjFunction* function = endCompiler();
-
-  // If there was a compile error, the code is not valid, so don't
-  // create a function.
   return parser.hadError ? NULL : function;
-//< Calls and Functions not-yet
+//< Calls and Functions call-end-compiler
 }
-//> Garbage Collection not-yet
-
-void grayCompilerRoots() {
+//> Garbage Collection mark-compiler-roots
+void markCompilerRoots() {
   Compiler* compiler = current;
   while (compiler != NULL) {
-    grayObject((Obj*)compiler->function);
+    markObject((Obj*)compiler->function);
     compiler = compiler->enclosing;
   }
 }
-//< Garbage Collection not-yet
+//< Garbage Collection mark-compiler-roots

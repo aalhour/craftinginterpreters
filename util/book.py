@@ -206,7 +206,6 @@ TOC = [
           'Jump instructions', 'Conditional jumps', 'Control flow statements',
           'Short-circuiting', 'Backpatching'
         ],
-        'done': True,
         'design_note': 'Considering Goto Harmful'
       },
       {
@@ -217,7 +216,6 @@ TOC = [
           'Return statements', 'Function objects', 'Call frames',
           'Stack overflow'
         ],
-        'done': False,
       },
       {
         'name': 'Closures',
@@ -225,7 +223,7 @@ TOC = [
           'Upvalues', 'Resolving enclosing locals', 'Closure flattening',
           'Capturing variables', 'Closing upvalues'
         ],
-        'done': False,
+        'design_note': 'Closing Over the Loop Variable'
       },
       {
         'name': 'Garbage Collection',
@@ -233,7 +231,7 @@ TOC = [
           'Roots', 'Stress testing', 'Mark-sweep collection', 'Tracing',
           'Tri-color marking', 'Weak references', 'Heap growth'
         ],
-        'done': False,
+        'design_note': 'Generational Collectors'
       },
       {
         'name': 'Classes and Instances',

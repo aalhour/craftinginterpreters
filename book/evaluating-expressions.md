@@ -127,7 +127,7 @@ Next, we need blobs of code to implement the evaluation logic for each kind of
 expression we can parse. We could stuff those into the syntax tree classes
 directly in something like an `interpret()` method. In effect, we could tell
 each syntax tree node, "Interpret thyself." This is the Gang of Four's
-[Interpreter design pattern][]". It's a neat pattern, but like I mentioned
+[Interpreter design pattern][]. It's a neat pattern, but like I mentioned
 earlier, it gets messy if we jam all sorts of logic into the tree classes.
 
 [interpreter design pattern]: https://en.wikipedia.org/wiki/Interpreter_pattern
@@ -596,7 +596,7 @@ put this method there too:
 
 It uses the token associated with the RuntimeError to tell the user what line of
 code was executing when the error occurred. It would be even better to give the
-user an entire callstack to show how they *got* to be executing that code. But
+user an entire call stack to show how they *got* to be executing that code. But
 we don't have function calls yet, so I guess we don't have to worry about it.
 
 After showing the error, it sets this field:
@@ -656,7 +656,7 @@ interpreter doesn't do very much, but it's alive!
     is shorter than named function calls and might have a reasonable
     interpretation for some types like strings. Even comparisons among mixed
     types, like `3 < "pancake"` could be handy to enable things like
-    heterogenous ordered collections. Or it could lead to bugs and confused
+    heterogeneous ordered collections. Or it could lead to bugs and confused
     users.
 
     Would you extend Lox to support comparing other types? If so, which pairs of

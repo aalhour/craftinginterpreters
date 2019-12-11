@@ -36,9 +36,13 @@ you manually evaluate an arithmetic expression like this:
 1 + 2 * 3 - 4
 ```
 
-Because you understand the rules of precedence -- the old "Please Excuse My Dear
-Aunt Sally" stuff -- you know that the `*` is evaluated before the `+` or `-`.
-One way to visualize that precedence is using a tree. Leaf nodes are numbers, and interior nodes are operators with branches for each of their operands.
+Because you understand the order or operations -- the old "[Please Excuse My
+Dear Aunt Sally][sally]" stuff -- you know that the `*` is evaluated before the
+`+` or `-`. One way to visualize that precedence is using a tree. Leaf nodes are
+numbers, and interior nodes are operators with branches for each of their
+operands.
+
+[sally]: https://en.wikipedia.org/wiki/Order_of_operations#Mnemonics
 
 In order to evaluate an arithmetic node, you need to know the numeric values of
 its subtrees, so you have to evaluate those first. That means working your way
@@ -233,7 +237,7 @@ protein    → "sausage" ;
 protein    → cooked "eggs" ;
 
 crispiness → "really" ;
-crispiness → really "really" ;
+crispiness → "really" crispiness ;
 
 cooked     → "scrambled" ;
 cooked     → "poached" ;
@@ -287,7 +291,7 @@ simple regular grammar. A regular grammar can *repeat*, but it can't *count*.
 We could keep picking the first production for `breakfast` over and over again
 yielding all manner of breakfasts like "bacon with sausage with scrambled eggs
 with bacon ...". We won't though. This time we'll pick `bread`. There are three
-rules for that, each of which contains only a nonterminal. We'll pick "English
+rules for that, each of which contains only a terminal. We'll pick "English
 muffin".
 
 With that, every nonterminal in the string has been expanded until it finally
@@ -306,7 +310,7 @@ pack an infinite number of strings into a finite grammar.
 ### Enhancing our notation
 
 Stuffing an infinite set of strings in a handful of rules is pretty fantastic,
-but let's take it farther. Our notation works, but it's a little tedious. So,
+but let's take it further. Our notation works, but it's a little tedious. So,
 like any good language designer, we'll sprinkle some syntactic sugar on top. In
 addition to terminals and nonterminals, we'll allow a few other kinds of
 expressions in the body of a rule:
@@ -355,7 +359,7 @@ recursion.
 With all of that sugar, our breakfast grammar condenses down to:
 
 ```lox
-breakfast → protein ( "with" breakfast "on the side" )? ;
+breakfast → protein ( "with" breakfast "on the side" )?
           | bread ;
 
 protein   → "really"+ "crispy" "bacon"

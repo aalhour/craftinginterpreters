@@ -5,12 +5,9 @@
 //> chunk-c-include-memory
 #include "memory.h"
 //< chunk-c-include-memory
-//> chunk-c-include-value
-#include "value.h"
-//< chunk-c-include-value
-//> Garbage Collection not-yet
+//> Garbage Collection chunk-include-vm
 #include "vm.h"
-//< Garbage Collection not-yet
+//< Garbage Collection chunk-include-vm
 
 void initChunk(Chunk* chunk) {
   chunk->count = 0;
@@ -62,15 +59,13 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
 //< write-chunk
 //> add-constant
 int addConstant(Chunk* chunk, Value value) {
-//> Garbage Collection not-yet
-  // Make sure the value doesn't get collected when resizing the array.
+//> Garbage Collection add-constant-push
   push(value);
-
-//< Garbage Collection not-yet
+//< Garbage Collection add-constant-push
   writeValueArray(&chunk->constants, value);
-//> Garbage Collection not-yet
+//> Garbage Collection add-constant-pop
   pop();
-//< Garbage Collection not-yet
+//< Garbage Collection add-constant-pop
   return chunk->constants.count - 1;
 }
 //< add-constant

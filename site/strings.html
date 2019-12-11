@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -174,7 +175,7 @@ so we add another case to the union for that:</p>
 </pre><div class="source-file"><em>value.h</em><br>
 in struct <em>Value</em></div>
 <pre class="insert"><span></span>    <span class="n">Obj</span><span class="o">*</span> <span class="n">obj</span><span class="p">;</span>     
-</pre><pre class="insert-after"><span></span>  <span class="p">}</span> <span class="n">as</span><span class="p">;</span> <span name="as"></span>
+</pre><pre class="insert-after"><span></span>  <span class="p">}</span> <span class="n">as</span><span class="p">;</span> <span name="as">&#8203;</span>
 </pre></div>
 
 <div class="source-file-narrow"><em>value.h</em>, in struct <em>Value</em></div>
@@ -199,7 +200,7 @@ add after struct <em>Value</em></div>
 
 <div class="source-file-narrow"><em>value.h</em></div>
 
-<p>It extracts the Obj pointer from the value. We can also go the other direction:</p>
+<p>It extracts the Obj pointer from the value. We can also go the other way:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#define NUMBER_VAL(value) ((Value){ VAL_NUMBER, { .number = value } }) </span>
 </pre><div class="source-file"><em>value.h</em></div>
 <pre class="insert"><span></span><span class="cp">#define OBJ_VAL(object)   ((Value){ VAL_OBJ, { .obj = (Obj*)object } })</span>
@@ -621,8 +622,7 @@ should evaluate to <code>true</code>. That requires a little special support:</p
 <div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">case</span> <span class="nl">VAL_NUMBER</span><span class="p">:</span> <span class="k">return</span> <span class="n">AS_NUMBER</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">AS_NUMBER</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>              
 </pre><div class="source-file"><em>value.c</em><br>
 in <em>valuesEqual</em>()</div>
-<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">VAL_OBJ</span><span class="p">:</span>                                                      
-    <span class="p">{</span>                                                                  
+<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">VAL_OBJ</span><span class="p">:</span> <span class="p">{</span>                                                    
       <span class="n">ObjString</span><span class="o">*</span> <span class="n">aString</span> <span class="o">=</span> <span class="n">AS_STRING</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>                               
       <span class="n">ObjString</span><span class="o">*</span> <span class="n">bString</span> <span class="o">=</span> <span class="n">AS_STRING</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>                               
       <span class="k">return</span> <span class="n">aString</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">==</span> <span class="n">bString</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">&amp;&amp;</span>                     
@@ -739,9 +739,8 @@ new function, <code>takeString()</code>:</p>
 add after struct <em>sObjString</em></div>
 <pre class="insert"><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">takeString</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">);</span>      
 </pre><pre class="insert-after"><span></span><span class="n">ObjString</span><span class="o">*</span> <span class="nf">copyString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">chars</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">);</span>
-
 <span class="kt">void</span> <span class="nf">printObject</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">);</span>                       
-</pre></div>
+<br></pre></div>
 
 <div class="source-file-narrow"><em>object.h</em>, add after struct <em>sObjString</em></div>
 
@@ -764,6 +763,17 @@ string.</p>
 the heap. Making another copy of that would be redundant (and would mean
 <code>concatenate()</code> has to remember to free its copy). Instead, this function claims
 ownership of the string you give it.</p>
+<p>As usual, stitching this function functionality together requires a couple of
+includes:</p>
+<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;debug.h&quot; </span><span class="cp"></span>
+</pre><div class="source-file"><em>vm.c</em></div>
+<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;object.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;memory.h&quot;</span><span class="cp"></span>
+</pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;vm.h&quot;    </span><span class="cp"></span>
+</pre></div>
+
+<div class="source-file-narrow"><em>vm.c</em></div>
+
 <h2><a href="#freeing-objects" name="freeing-objects"><small>19&#8202;.&#8202;5</small> Freeing Objects</a></h2>
 <p>Behold this innocuous-seeming expression:</p>
 <div class="codehilite"><pre><span></span><span class="s">&quot;st&quot;</span> <span class="o">+</span> <span class="s">&quot;ri&quot;</span> <span class="o">+</span> <span class="s">&quot;ng&quot;</span>
@@ -910,17 +920,6 @@ add after <em>reallocate</em>()</div>
 
 <div class="source-file-narrow"><em>memory.h</em>, add after <em>reallocate</em>()</div>
 
-<p>Before we get to the definition of that, there are a couple of includes we need
-in the &ldquo;vm&rdquo; module:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;debug.h&quot; </span><span class="cp"></span>
-</pre><div class="source-file"><em>vm.c</em></div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;object.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;memory.h&quot;</span><span class="cp"></span>
-</pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;vm.h&quot;    </span><span class="cp"></span>
-</pre></div>
-
-<div class="source-file-narrow"><em>vm.c</em></div>
-
 <p>Here&rsquo;s how we free the objects:</p>
 <div class="codehilite"><div class="source-file"><em>memory.c</em><br>
 add after <em>reallocate</em>()</div>
@@ -975,7 +974,7 @@ and then free the ObjString. Those both use one last memory management macro:</p
 used. If all allocation and freeing goes through <code>reallocate()</code>, it&rsquo;s easy to
 keep a running count of the number of bytes of allocated memory.</p>
 </aside>
-<p>As usual, we need a couple of includes to wire everything together:</p>
+<p>As usual, we need an include to wire everything together:</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#define clox_memory_h                                 </span>
 <br></pre><div class="source-file"><em>memory.h</em></div>
 <pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;object.h&quot;                                   </span><span class="cp"></span>
@@ -1048,13 +1047,13 @@ nasty conundrum: deciding how to represent strings.</p>
 <ol>
 <li>
 <p><strong>What is a single &ldquo;character&rdquo; in a string?</strong> How many different values are
-    there and what do they represent? The first big standard answer for this was
-    <a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>. It gave you 127 different character values and specified what
-    they were. It was great&hellip; if you only ever cared about English. While it
-    has weird, mostly-forgotten characters like &ldquo;record separator&rdquo; and
-    &ldquo;synchronous idle&rdquo;, it doesn&rsquo;t have a single umlaut, acute, or grave. It
-    can&rsquo;t represent &ldquo;jalapeño&rdquo;, &ldquo;na&iuml;ve&rdquo;, <span name="gruyere">&ldquo;Gruyère&rdquo;</span>,
-    or &ldquo;Mötley Crüe&rdquo;.</p>
+    there and what do they represent? The first widely-adopted standard answer
+    to this was <a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>. It gave you 127 different character values and
+    specified what they were. It was great&hellip; if you only ever cared about
+    English. While it has weird, mostly-forgotten characters like &ldquo;record
+    separator&rdquo; and &ldquo;synchronous idle&rdquo;, it doesn&rsquo;t have a single umlaut, acute,
+    or grave. It can&rsquo;t represent &ldquo;jalapeño&rdquo;, &ldquo;na&iuml;ve&rdquo;, <span
+    name="gruyere">&ldquo;Gruyère&rdquo;</span>, or &ldquo;Mötley Crüe&rdquo;.</p>
 <aside markdown="1" name="gruyere">
 
 <p>It goes without saying that a language that does not let one discuss Gruyère

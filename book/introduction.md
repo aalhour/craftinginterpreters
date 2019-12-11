@@ -41,7 +41,7 @@ running. This is not to say theory isn't important. Being able to reason
 precisely and <span name="formal">formally</span> about syntax and semantics is
 a vital skill when working on a language. But, personally, I learn best by
 doing. It's hard for me to wade through paragraphs full of abstract concepts and
-really absorb them. But if I've coded something, ran it, and debugged it, then I
+really absorb them. But if I've coded something, run it, and debugged it, then I
 *get* it.
 
 <aside name="formal">
@@ -372,7 +372,7 @@ pulling yourself up by your own bootstraps.
 And, finally, Java is hugely popular. That means there's a good chance you
 already know it, so there's less for you to learn to get going in the book. If
 you aren't that familiar with Java, don't freak out. I try to stick to a fairly
-minimal subset of it. I use the diamond operator from Java 7 to makes things a
+minimal subset of it. I use the diamond operator from Java 7 to make things a
 little more terse, but that's about it as far as "advanced" features go. If you
 know another object-oriented language like C# or C++, you can probably muddle
 through fine.

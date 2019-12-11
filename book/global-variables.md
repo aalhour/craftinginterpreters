@@ -261,7 +261,12 @@ Exciting!
 
 ### Expression statements
 
-Wait until you see the next statement:
+Wait until you see the next statement. If we *don't* see a `print` keyword, then
+we must be looking at an expression statement:
+
+^code parse-expressions-statement (1 before, 1 after)
+
+It's parsed like so:
 
 ^code expression-statement
 
@@ -281,7 +286,8 @@ expression, and then an `OP_POP` instruction:
 
 ^code pop-op (1 before, 1 after)
 
-As the name implies, this pops the top value off the stack and forgets it:
+As the name implies, that instruction pops the top value off the stack and
+forgets it:
 
 ^code interpret-pop (1 before, 2 after)
 
@@ -359,7 +365,7 @@ The keyword is followed by the variable name. That's compiled by
 `parseVariable()`, which we'll get to in a second. Then we look for an `=`
 followed by an initializer expression. If the user doesn't initialize the
 variable, the compiler implicitly initializes it to <span
-name="nil">`nil`</span> by emiting an `OP_NIL` instruction. Either way, we
+name="nil">`nil`</span> by emitting an `OP_NIL` instruction. Either way, we
 expect the statement to be terminated with a semicolon.
 
 <aside name="nil" class="bottom">
@@ -384,12 +390,12 @@ latter.
 There are two new functions here for working with variables and identifiers. The
 first one is:
 
-^code parse-variable
+^code parse-variable (2 before)
 
 It requires the next token to be an identifier token, which it consumes and
 sends to:
 
-^code identifier-constant
+^code identifier-constant (2 before)
 
 This function takes the given token and adds its lexeme to the chunk's constant
 table as a string. It then returns the index of that constant in the constant
@@ -431,8 +437,8 @@ Thanks to our handy-dandy hash table, the implementation isn't too hard:
 ^code interpret-define-global (1 before, 2 after)
 
 We get the name of the variable from the constant table. Then we <span
-name="pop">take</span> the value from top of the stack and store it in a hash
-table with that name as the key.
+name="pop">take</span> the value from the top of the stack and store it in a
+hash table with that name as the key.
 
 <aside name="pop">
 
@@ -570,7 +576,7 @@ bytecode for the whole thing.
 
 The problem is not as dire as it might seem, though. Look at how the parser sees that example:
 
-<img src="image/global-variables/setter.png" alt="The 'menu.brunch(sunday).beverage = "mimosa"' statement, showing that 'menu.brunch(sunday)' is an expression." />
+<img src="image/global-variables/setter.png" alt="The 'menu.brunch(sunday).beverage = &quot;mimosa&quot;' statement, showing that 'menu.brunch(sunday)' is an expression." />
 
 Even though the `.beverage` part must be compiled as a setter, everything to the
 left of it is an expression, with the normal expression semantics. The
@@ -645,7 +651,7 @@ this should be a syntax error. But here's what our parser does:
 
 <aside name="do">
 
-Wouldn't it be wild if `a * b` *was* as valid assignment target, though? You
+Wouldn't it be wild if `a * b` *was* a valid assignment target, though? You
 could imagine some algebra-like language that tried to divide the assigned value
 up in some reasonable way and distribute it to `a` and `b`. ...That's probably
 a terrible idea.

@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -199,7 +200,7 @@ add after <em>repl</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">runFile</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">)</span> <span class="p">{</span>           
   <span class="kt">char</span><span class="o">*</span> <span class="n">source</span> <span class="o">=</span> <span class="n">readFile</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>                  
   <span class="n">InterpretResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">interpret</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>     
-  <span class="n">free</span><span class="p">(</span><span class="n">source</span><span class="p">);</span> <span name="owner"></span>
+  <span class="n">free</span><span class="p">(</span><span class="n">source</span><span class="p">);</span> <span name="owner">&#8203;</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">INTERPRET_COMPILE_ERROR</span><span class="p">)</span> <span class="n">exit</span><span class="p">(</span><span class="mi">65</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">INTERPRET_RUNTIME_ERROR</span><span class="p">)</span> <span class="n">exit</span><span class="p">(</span><span class="mi">70</span><span class="p">);</span>
@@ -262,7 +263,7 @@ handle them. In C, if we don&rsquo;t check for them, they silently get ignored.<
 <p>This isn&rsquo;t really a book on good C programming practice, but I hate to encourage
 bad style, so let&rsquo;s go ahead and handle the errors. It&rsquo;s good for us, like
 eating our vegetables or flossing.</p>
-<p>Fortunately, we don&rsquo;t need to do anything particulary clever if a failure
+<p>Fortunately, we don&rsquo;t need to do anything particularly clever if a failure
 occurs. If we can&rsquo;t correctly read the user&rsquo;s script, all we can really do is
 tell the user and exit the interpreter gracefully. First up, we might fail to
 open the file:</p>
@@ -438,17 +439,16 @@ reporting. That&rsquo;s it! We don&rsquo;t even keep a pointer to the beginning 
 source code string. The scanner works its way through the code once and is done
 after that.</p>
 <p>Since we have some state, we should initialize it:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="n">Scanner</span> <span class="n">scanner</span><span class="p">;</span>                      
-</pre><div class="source-file"><em>scanner.c</em><br>
-add after struct <em>Scanner</em></div>
-<pre class="insert"><br><span></span><span class="kt">void</span> <span class="nf">initScanner</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">source</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><div class="source-file"><em>scanner.c</em><br>
+add after variable <em>Scanner</em></div>
+<pre><span></span><span class="kt">void</span> <span class="nf">initScanner</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">source</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">scanner</span><span class="p">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">source</span><span class="p">;</span>             
   <span class="n">scanner</span><span class="p">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">source</span><span class="p">;</span>           
   <span class="n">scanner</span><span class="p">.</span><span class="n">line</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>                   
 <span class="p">}</span>                                     
 </pre></div>
 
-<div class="source-file-narrow"><em>scanner.c</em>, add after struct <em>Scanner</em></div>
+<div class="source-file-narrow"><em>scanner.c</em>, add after variable <em>Scanner</em></div>
 
 <p>We start at the very first character on the very first line, like a runner
 crouched and ready to run.</p>
@@ -478,7 +478,7 @@ in <em>compile</em>()</div>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                                                                  
       <span class="n">printf</span><span class="p">(</span><span class="s">&quot;   | &quot;</span><span class="p">);</span>                                                        
     <span class="p">}</span>                                                                         
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%2d &#39;%.*s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">type</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">length</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">start</span><span class="p">);</span> <span name="format"></span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%2d &#39;%.*s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">type</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">length</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">start</span><span class="p">);</span> <span name="format">&#8203;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">TOKEN_EOF</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>                                       
   <span class="p">}</span>                                                                           
@@ -910,7 +910,7 @@ add after <em>skipWhitespace</em>()</div>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">isAtEnd</span><span class="p">())</span> <span class="k">return</span> <span class="n">errorToken</span><span class="p">(</span><span class="s">&quot;Unterminated string.&quot;</span><span class="p">);</span>
 
-  <span class="c1">// The closing &quot;.                                        </span>
+  <span class="c1">// The closing quote.                                    </span>
   <span class="n">advance</span><span class="p">();</span>                                               
   <span class="k">return</span> <span class="n">makeToken</span><span class="p">(</span><span class="n">TOKEN_STRING</span><span class="p">);</span>                          
 <span class="p">}</span>                                                          
@@ -970,7 +970,7 @@ add after <em>skipWhitespace</em>()</div>
 
   <span class="c1">// Look for a fractional part.             </span>
   <span class="k">if</span> <span class="p">(</span><span class="n">peek</span><span class="p">()</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">isDigit</span><span class="p">(</span><span class="n">peekNext</span><span class="p">()))</span> <span class="p">{</span>
-    <span class="c1">// Consume the &quot;.&quot;                       </span>
+    <span class="c1">// Consume the &quot;.&quot;.                      </span>
     <span class="n">advance</span><span class="p">();</span>                               
 
     <span class="k">while</span> <span class="p">(</span><span class="n">isDigit</span><span class="p">(</span><span class="n">peek</span><span class="p">()))</span> <span class="n">advance</span><span class="p">();</span>       

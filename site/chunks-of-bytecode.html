@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -143,7 +144,7 @@ languages. But for a general-purpose, imperative language<span class="em">&mdash
 language like Lox, it won&rsquo;t fly. Take this little script:</p>
 <div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span> <span name="fib"></span>
+  <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span> <span name="fib">&#8203;</span>
 <span class="p">}</span>
 
 <span class="k">var</span> <span class="n">before</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
@@ -414,12 +415,12 @@ arrays provide:</p>
 <li>Constant-time indexed element lookup.</li>
 <li>Constant-time appending to the end of the array.</li>
 </ul>
-<p>Those features are exactly why we used it all the time in jlox under the guise
-of Java&rsquo;s ArrayList class. Now that we&rsquo;re in C, we get to roll our own. If
-you&rsquo;re rusty on dynamic arrays, the idea is pretty simple. In addition to the
-array itself, we keep two numbers<span class="em">&mdash;</span>the number of elements in the array we have
-allocated (&ldquo;capacity&rdquo;) and how many of those allocated entries are actually in
-use (&ldquo;count&rdquo;).</p>
+<p>Those features are exactly why we used dynamic arrays all the time in jlox under
+the guise of Java&rsquo;s ArrayList class. Now that we&rsquo;re in C, we get to roll our
+own. If you&rsquo;re rusty on dynamic arrays, the idea is pretty simple. In addition
+to the array itself, we keep two numbers: the number of elements in the array we
+have allocated (&ldquo;capacity&rdquo;) and how many of those allocated entries are actually
+in use (&ldquo;count&rdquo;).</p>
 <div class="codehilite"><pre class="insert-before"><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </pre><div class="source-file"><em>chunk.h</em><br>
 in struct <em>Chunk</em></div>
@@ -832,7 +833,7 @@ in the chunk this instruction is. This will be a helpful signpost when we start
 doing control flow and jumping around in the bytecode.</p>
 <p>Next, it reads a single byte from the bytecode at the given offset. That&rsquo;s our
 opcode. We <span name="switch">switch</span> on that. For each kind of
-instruction, we dispatch to a little utlity function for displaying it. On the
+instruction, we dispatch to a little utility function for displaying it. On the
 off chance that the given byte doesn&rsquo;t look like an instruction at all<span class="em">&mdash;</span>a bug
 in our compiler<span class="em">&mdash;</span>we print that too. For the one instruction we do have,
 <code>OP_RETURN</code>, the display function is:</p>
@@ -1032,15 +1033,6 @@ in struct <em>Chunk</em></div>
 </pre></div>
 
 <div class="source-file-narrow"><em>chunk.h</em></div>
-
-<p>And another include over in the &ldquo;chunk.c&rdquo; implementation file:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;memory.h&quot;           </span><span class="cp"></span>
-</pre><div class="source-file"><em>chunk.c</em></div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;value.h&quot;            </span><span class="cp"></span>
-</pre><pre class="insert-after"><br><span></span><span class="kt">void</span> <span class="nf">initChunk</span><span class="p">(</span><span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">)</span> <span class="p">{</span>
-</pre></div>
-
-<div class="source-file-narrow"><em>chunk.c</em></div>
 
 <p>Ah, C, and its Stone Age modularity story. Where were we? Right. When we
 initialize a new chunk, we initialize its constant list too:</p>

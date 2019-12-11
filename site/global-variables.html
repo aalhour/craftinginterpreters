@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -248,8 +249,6 @@ add after <em>declaration</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">statement</span><span class="p">()</span> <span class="p">{</span>  
   <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_PRINT</span><span class="p">))</span> <span class="p">{</span>
     <span class="n">printStatement</span><span class="p">();</span>      
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                 
-    <span class="n">expressionStatement</span><span class="p">();</span> 
   <span class="p">}</span>                        
 <span class="p">}</span>                          
 </pre></div>
@@ -408,7 +407,19 @@ in <em>disassembleInstruction</em>()</div>
 
 <p>Exciting!</p>
 <h3><a href="#expression-statements" name="expression-statements"><small>21&#8202;.&#8202;1&#8202;.&#8202;2</small> Expression statements</a></h3>
-<p>Wait until you see the next statement:</p>
+<p>Wait until you see the next statement. If we <em>don&rsquo;t</em> see a <code>print</code> keyword, then
+we must be looking at an expression statement:</p>
+<div class="codehilite"><pre class="insert-before"><span></span>    <span class="n">printStatement</span><span class="p">();</span>     
+</pre><div class="source-file"><em>compiler.c</em><br>
+in <em>statement</em>()</div>
+<pre class="insert"><span></span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                
+    <span class="n">expressionStatement</span><span class="p">();</span>
+</pre><pre class="insert-after"><span></span>  <span class="p">}</span>                       
+</pre></div>
+
+<div class="source-file-narrow"><em>compiler.c</em>, in <em>statement</em>()</div>
+
+<p>It&rsquo;s parsed like so:</p>
 <div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
 add after <em>expression</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">expressionStatement</span><span class="p">()</span> <span class="p">{</span>                        
@@ -441,7 +452,8 @@ in enum <em>OpCode</em></div>
 
 <div class="source-file-narrow"><em>chunk.h</em>, in enum <em>OpCode</em></div>
 
-<p>As the name implies, this pops the top value off the stack and forgets it:</p>
+<p>As the name implies, that instruction pops the top value off the stack and
+forgets it:</p>
 <div class="codehilite"><pre class="insert-before"><span></span>      <span class="k">case</span> <span class="nl">OP_FALSE</span><span class="p">:</span> <span class="n">push</span><span class="p">(</span><span class="n">BOOL_VAL</span><span class="p">(</span><span class="nb">false</span><span class="p">));</span> <span class="k">break</span><span class="p">;</span>
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
@@ -578,7 +590,7 @@ add after <em>expression</em>()</div>
 <code>parseVariable()</code>, which we&rsquo;ll get to in a second. Then we look for an <code>=</code>
 followed by an initializer expression. If the user doesn&rsquo;t initialize the
 variable, the compiler implicitly initializes it to <span
-name="nil"><code>nil</code></span> by emiting an <code>OP_NIL</code> instruction. Either way, we
+name="nil"><code>nil</code></span> by emitting an <code>OP_NIL</code> instruction. Either way, we
 expect the statement to be terminated with a semicolon.</p>
 <aside class="bottom" name="nil">
 <p>Essentially, the compiler desugars a variable declaration like:</p>
@@ -596,9 +608,10 @@ latter.</p>
 </aside>
 <p>There are two new functions here for working with variables and identifiers. The
 first one is:</p>
-<div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
+<div class="codehilite"><pre class="insert-before"><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">parsePrecedence</span><span class="p">(</span><span class="n">Precedence</span> <span class="n">precedence</span><span class="p">);</span>     
+<br></pre><div class="source-file"><em>compiler.c</em><br>
 add after <em>parsePrecedence</em>()</div>
-<pre><span></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">parseVariable</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">errorMessage</span><span class="p">)</span> <span class="p">{</span>
+<pre class="insert"><span></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">parseVariable</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">errorMessage</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">consume</span><span class="p">(</span><span class="n">TOKEN_IDENTIFIER</span><span class="p">,</span> <span class="n">errorMessage</span><span class="p">);</span>              
   <span class="k">return</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">parser</span><span class="p">.</span><span class="n">previous</span><span class="p">);</span>          
 <span class="p">}</span>                                                       
@@ -608,9 +621,10 @@ add after <em>parsePrecedence</em>()</div>
 
 <p>It requires the next token to be an identifier token, which it consumes and
 sends to:</p>
-<div class="codehilite"><div class="source-file"><em>compiler.c</em><br>
+<div class="codehilite"><pre class="insert-before"><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">parsePrecedence</span><span class="p">(</span><span class="n">Precedence</span> <span class="n">precedence</span><span class="p">);</span>                   
+<br></pre><div class="source-file"><em>compiler.c</em><br>
 add after <em>parsePrecedence</em>()</div>
-<pre><span></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">identifierConstant</span><span class="p">(</span><span class="n">Token</span><span class="o">*</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>                      
+<pre class="insert"><span></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">identifierConstant</span><span class="p">(</span><span class="n">Token</span><span class="o">*</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>                      
   <span class="k">return</span> <span class="n">makeConstant</span><span class="p">(</span><span class="n">OBJ_VAL</span><span class="p">(</span><span class="n">copyString</span><span class="p">(</span><span class="n">name</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">,</span> <span class="n">name</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">)));</span>
 <span class="p">}</span>                                                                     
 </pre></div>
@@ -674,8 +688,8 @@ in <em>run</em>()</div>
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>We get the name of the variable from the constant table. Then we <span
-name="pop">take</span> the value from top of the stack and store it in a hash
-table with that name as the key.</p>
+name="pop">take</span> the value from the top of the stack and store it in a
+hash table with that name as the key.</p>
 <aside name="pop">
 <p>Note that we don&rsquo;t <em>pop</em> the value until <em>after</em> we add it to the hash table.
 That ensures the VM can still find the value if a garbage collection is
@@ -790,7 +804,6 @@ pointless now but will become more useful in later chapters. I promise.</p>
 add after <em>string</em>()</div>
 <pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">namedVariable</span><span class="p">(</span><span class="n">Token</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>   
   <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
-
   <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_GET_GLOBAL</span><span class="p">,</span> <span class="n">arg</span><span class="p">);</span>          
 <span class="p">}</span>                                         
 </pre></div>
@@ -876,7 +889,7 @@ target of an assignment and not a normal expression until it reaches <code>=</co
 tokens after the first <code>menu</code>. By then, the compiler has already emitted
 bytecode for the whole thing.</p>
 <p>The problem is not as dire as it might seem, though. Look at how the parser sees that example:</p>
-<p><img src="image/global-variables/setter.png" alt="The 'menu.brunch(sunday).beverage = "mimosa"' statement, showing that 'menu.brunch(sunday)' is an expression." /></p>
+<p><img src="image/global-variables/setter.png" alt="The 'menu.brunch(sunday).beverage = &quot;mimosa&quot;' statement, showing that 'menu.brunch(sunday)' is an expression." /></p>
 <p>Even though the <code>.beverage</code> part must be compiled as a setter, everything to the
 left of it is an expression, with the normal expression semantics. The
 <code>menu.brunch(sunday)</code> part can be compiled and executed as usual.</p>
@@ -892,20 +905,20 @@ be used as an assignment target, we look for a subsequent <code>=</code> token. 
 one, we compile it as an assignment or setter instead of a variable access or
 getter.</p>
 <p>We don&rsquo;t have setters to worry about yet, so all we need to handle is variables:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span> 
+<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">uint8_t</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">identifierConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
 </pre><div class="source-file"><em>compiler.c</em><br>
 in <em>namedVariable</em>()<br>
-replace 2 lines</div>
-<pre class="insert"><br><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_EQUAL</span><span class="p">))</span> <span class="p">{</span>                
-    <span class="n">expression</span><span class="p">();</span>                          
-    <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_SET_GLOBAL</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">arg</span><span class="p">);</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                                 
-    <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_GET_GLOBAL</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">arg</span><span class="p">);</span>
-  <span class="p">}</span>                                        
-</pre><pre class="insert-after"><span></span><span class="p">}</span>                                          
+replace 1 line</div>
+<pre class="insert"><br><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">(</span><span class="n">TOKEN_EQUAL</span><span class="p">))</span> <span class="p">{</span>               
+    <span class="n">expression</span><span class="p">();</span>                         
+    <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_SET_GLOBAL</span><span class="p">,</span> <span class="n">arg</span><span class="p">);</span>        
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                                
+    <span class="n">emitBytes</span><span class="p">(</span><span class="n">OP_GET_GLOBAL</span><span class="p">,</span> <span class="n">arg</span><span class="p">);</span>        
+  <span class="p">}</span>                                       
+</pre><pre class="insert-after"><span></span><span class="p">}</span>                                         
 </pre></div>
 
-<div class="source-file-narrow"><em>compiler.c</em>, in <em>namedVariable</em>(), replace 2 lines</div>
+<div class="source-file-narrow"><em>compiler.c</em>, in <em>namedVariable</em>(), replace 1 line</div>
 
 <p>In the parse function for identifier expressions, we look for a following
 equals sign. If we find one, instead of emitting code for a variable access,
@@ -927,7 +940,7 @@ in <em>run</em>()</div>
 <pre class="insert"><br><span></span>      <span class="k">case</span> <span class="nl">OP_SET_GLOBAL</span><span class="p">:</span> <span class="p">{</span>                                     
         <span class="n">ObjString</span><span class="o">*</span> <span class="n">name</span> <span class="o">=</span> <span class="n">READ_STRING</span><span class="p">();</span>                        
         <span class="k">if</span> <span class="p">(</span><span class="n">tableSet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">globals</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">peek</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span> <span class="p">{</span>             
-          <span class="n">tableDelete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">globals</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span> <span name="delete"></span>
+          <span class="n">tableDelete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vm</span><span class="p">.</span><span class="n">globals</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span> <span name="delete">&#8203;</span>
           <span class="n">runtimeError</span><span class="p">(</span><span class="s">&quot;Undefined variable &#39;%s&#39;.&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">-&gt;</span><span class="n">chars</span><span class="p">);</span>
           <span class="k">return</span> <span class="n">INTERPRET_RUNTIME_ERROR</span><span class="p">;</span>                       
         <span class="p">}</span>                                                       
@@ -973,7 +986,7 @@ parsed roughly like:</p>
 <p>Obviously, <code>a * b</code> isn&rsquo;t a <span name="do">valid</span> assignment target, so
 this should be a syntax error. But here&rsquo;s what our parser does:</p>
 <aside name="do">
-<p>Wouldn&rsquo;t it be wild if <code>a * b</code> <em>was</em> as valid assignment target, though? You
+<p>Wouldn&rsquo;t it be wild if <code>a * b</code> <em>was</em> a valid assignment target, though? You
 could imagine some algebra-like language that tried to divide the assigned value
 up in some reasonable way and distribute it to <code>a</code> and <code>b</code>. &hellip;That&rsquo;s probably
 a terrible idea.</p>
@@ -1068,7 +1081,6 @@ is going to consume it. It&rsquo;s an error and we should report it:</p>
 in <em>parsePrecedence</em>()</div>
 <pre class="insert"><br><span></span>  <span class="k">if</span> <span class="p">(</span><span class="n">canAssign</span> <span class="o">&amp;&amp;</span> <span class="n">match</span><span class="p">(</span><span class="n">TOKEN_EQUAL</span><span class="p">))</span> <span class="p">{</span>                          
     <span class="n">error</span><span class="p">(</span><span class="s">&quot;Invalid assignment target.&quot;</span><span class="p">);</span>                          
-    <span class="n">expression</span><span class="p">();</span>                                                 
   <span class="p">}</span>                                                               
 </pre><pre class="insert-after"><span></span><span class="p">}</span>                                                                 
 </pre></div>

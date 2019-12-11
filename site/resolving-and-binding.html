@@ -10,9 +10,10 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 
 <!-- Oh, God, Source Code Pro is so beautiful it makes me want to cry. -->
-<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400|Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+
 <link rel="icon" type="image/png" href="image/favicon.png" />
-<script src="jquery-1.10.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
 <script src="script.js"></script>
 
 <!-- Google analytics -->
@@ -587,13 +588,13 @@ add after <em>visitBlockStmt</em>()</div>
 <p>Before we get to the interesting code, we need another overload of <code>resolve()</code>
 to resolve an expression instead of a statement:</p>
 <div class="codehilite"><div class="source-file"><em>lox/Resolver.java</em><br>
-in <em>resolve</em>()</div>
+add after <em>resolve</em>(Stmt stmt)</div>
 <pre><span></span>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">Expr</span> <span class="n">expr</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">expr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>             
   <span class="o">}</span>                                
 </pre></div>
 
-<div class="source-file-narrow"><em>lox/Resolver.java</em>, in <em>resolve</em>()</div>
+<div class="source-file-narrow"><em>lox/Resolver.java</em>, add after <em>resolve</em>(Stmt stmt)</div>
 
 <p>Now to the semantics. We split binding into two separate steps<span class="em">&mdash;</span>declaring and
 defining<span class="em">&mdash;</span>in order to handle this funny edge case:</p>
@@ -985,10 +986,10 @@ add after <em>execute</em>()</div>
 variable or assignment expression is later executed, but where? One obvious
 place is right in the syntax tree node itself. That&rsquo;s a fine approach, and
 that&rsquo;s where many compilers store the results of analyses like this.</p>
-<p>We could do that, but it would require mucking around with our syntax tree
-generator. Instead, we&rsquo;ll take <span name="side">another</span> common approach
-and store it off to the side in a map that associates each syntax tree node with
-its resolved data:</p>
+<p>We could do that, but it would require <span name="side">mucking</span> around
+with our syntax tree generator. Instead, we&rsquo;ll take another common approach and
+store it off to the side in a map that associates each syntax tree node with its
+resolved data:</p>
 <aside name="side">
 <p>I <em>think</em> I&rsquo;ve heard this map called a &ldquo;side table&rdquo; since it&rsquo;s a tabular data
 structure that stores data separately from the objects it relates to. But
@@ -1090,7 +1091,7 @@ add after <em>define</em>()</div>
 <pre><span></span>  <span class="n">Environment</span> <span class="nf">ancestor</span><span class="o">(</span><span class="kt">int</span> <span class="n">distance</span><span class="o">)</span> <span class="o">{</span>                 
     <span class="n">Environment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>                    
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">distance</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>               
-      <span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">enclosing</span><span class="o">;</span> <span name="coupled"></span>
+      <span class="n">environment</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">enclosing</span><span class="o">;</span> <span name="coupled">&#8203;</span>
     <span class="o">}</span>
 
     <span class="k">return</span> <span class="n">environment</span><span class="o">;</span>                                

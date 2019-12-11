@@ -1,6 +1,213 @@
+2019/11/30 - 2 prs
+2019/11/29 - fix field name in illustrations
+2019/11/28 - work on https://github.com/munificent/craftinginterpreters/pull/552
+2019/11/27 - 3 issues
+2019/11/26 - 5 issues
+2019/11/25 - prs and issues, work on 531
+2019/11/24 - 6 issues
+2019/11/23 - 5 prs
+2019/11/22 - 2495 words, finish third draft "garbage collection"
+2019/11/21 - work on third draft "garbage collection"
+2019/11/20 - 2161 words, third draft "garbage collection"
+2019/11/19 - 2294 words, third draft "garbage collection"
+2019/11/18 - 2108 words, third draft "garbage collection"
+2019/11/17 - reorganize subheaders
+2019/11/16 - baguette illustration
+2019/11/15 - redo lines in latency illustration
+2019/11/14 - one illustration
+2019/11/13 - photoshop illustration, make bullet images
+2019/11/12 - pencil and ink one illustration
+2019/11/11 - use bank 19
+2019/11/10 - use bank 18
+2019/11/09 - one illustration
+2019/11/08 - fix previous and pencil one large illustration
+             (bank 20) ink and photoshop illustration
+2019/11/07 - one illustration
+             (bank 19) another illustration
+2019/11/06 - one illustration
+2019/11/02 - fix crash bug and other issues
+2019/11/01 - look into crash bug
+2019/10/31 - write first answer for "garbage collection"
+2019/10/30 - code for first answer for "garbage collection"
+2019/10/29 - 2166 words, finish second draft "garbage collection"
+2019/10/28 - 767 words, second draft "garbage collection"
+2019/10/27 - 2205 words, second draft "garbage collection"
+2019/10/26 - 1049 words, second draft "garbage collection"
+2019/10/25 - 1621 words, second draft "garbage collection"
+2019/10/24 - 1142 words, second draft "garbage collection"
+2019/10/23 - 587 words, finish first draft "garbage collection"
+2019/10/22 - 2047 words, first draft "garbage collection"
+2019/10/21 - 531 words, first draft "garbage collection"
+2019/10/20 - 884 words, first draft "garbage collection"
+2019/10/19 - 624 words, first draft "garbage collection"
+2019/10/18 - 1502 words, first draft "garbage collection"
+2019/10/17 - 779 words, first draft "garbage collection"
+2019/10/16 - 1405 words, first draft "garbage collection"
+2019/10/15 - 656 words, first draft "garbage collection"
+2019/10/14 - 673 words, first draft "garbage collection"
+2019/10/13 - 7 bug fixes, publish site
+2019/10/12 - 8 bug fixes
+2019/10/11 - 4 bug fixes
+2019/10/10 - 6 prs, fix location for overloads
+2019/10/09 - 1615 words, finish outline "garbage collection"
+2019/10/08 - outline "garbage collection"
+2019/10/07 - 675 words, outline "garbage collection"
+2019/10/06 - 844 words, outline "garbage collection"
+2019/10/05 - 800 words, outline "garbage collection"
+2019/10/04 - 101 words, outline "garbage collection"
+2019/10/03 - 223 words, outline "garbage collection"
+2019/10/02 - finish organizing snippets
+2019/10/01 - more splitting and organizing snippets
+2019/09/30 - more splitting and organizing snippets
+2019/09/29 - split up and order snippets
+2019/09/28 - issues and pull requests
+2019/09/27 - publish "closures"
+2019/09/26 - split out snippets for "garbage collection"
+2019/09/25 - 2142 words, finish third draft "closures"
+2019/09/24 - 1173 words, third draft "closures"
+2019/09/23 - 2484 words, third draft "closures"
+2019/09/22 - 2633 words, third draft "closures"
+2019/09/21 - 2084 words, third draft "closures"
+2019/09/20 - tease apart and commit changes
+2019/09/19 - 1 illustration
+2019/09/18 - 1 illustration, fix positions of asides in chrome
+2019/09/17 - 1 illustration
+2019/09/16 - 1 illustration
+2019/09/15 - 1 illustration
+2019/09/14 - 1 illustration
+2019/09/13 - 1 illustration
+2019/09/12 - 1 illustration
+2019/09/11 - 2176 words, second draft "closures"
+2019/09/10 - 759 words, second draft "closures"
+2019/09/09 - 1788 words, second draft "closures"
+2019/09/08 - 1210 words, second draft "closures"
+2019/09/07 - 2603 words, second draft "closures"
+2019/09/06 - 1395 words, second draft "closures"
+2019/09/05 - 699 words, second draft "closures"
+2019/09/04 - fix an issue and publish site
+2019/09/03 - email and bug fixes
+2019/09/02 - six issues
+2019/09/01 - three issues
+2019/08/31 - use bank 17
+2019/08/30 - answer 3
+2019/08/29 - finish answer 2
+2019/08/28 - work on answer 2
+2019/08/27 - work on answer 2
+2019/08/26 - write up text for answer 1
+             (bank 18) work on answer 2
+2019/08/25 - code for answer 1
+2019/08/24 - 17 emails
+             (bank 17) 950 words, finish first draft "closures"
+2019/08/23 - first draft "closures"
+2019/08/22 - 749 words, first draft "closures"
+2019/08/21 - 1017 words, first draft "closures"
+2019/08/20 - 1327 words, first draft "closures"
+2019/08/19 - 1207 words, first draft "closures"
+2019/08/18 - 1016 words, first draft "closures"
+2019/08/17 - 1401 words, first draft "closures"
+2019/08/16 - 419 words, first draft "closures"
+2019/08/15 - email
+2019/08/14 - 401 words, first draft "closures"
+2019/08/13 - 1271 words, first draft "closures"
+2019/08/12 - outline design note for "closures"
+2019/08/11 - code samples for "closures" design note
+2019/08/10 - more outline "closures"
+2019/08/09 - more outline "closures"
+2019/08/08 - more outline "closures"
+2019/08/07 - 408 words outline "closures"
+2019/08/06 - 447 words outline "closures"
+2019/08/05 - 515 words outline "closures"
+2019/08/04 - more outline "closures"
+2019/08/03 - research, 283 words outline "closures"
+2019/08/02 - 4 prs and issues
+2019/08/01 - survey about (void), 6 prs and issues
+2019/07/31 - 7 prs and issues
+2019/07/30 - get "calls and functions" compiling partway through
+2019/07/29 - finish snippet test script
+2019/07/28 - set up test snippets for more chapters
+2019/07/27 - set up test snippets for more chapters
+2019/07/26 - set up test snippets for more chapters
+2019/07/25 - start building system to test snippets in middle of chapters
+2019/07/24 - close 2 prs and 6 issues
+2019/07/23 - answers for "calls and functions"
+2019/07/22 - 1812 words, finish third draft "calls and functions"
+2019/07/21 - 2145 words, third draft "calls and functions"
+2019/07/20 - 1658 words, third draft "calls and functions"
+2019/07/19 - 3530 words, third draft "calls and functions"
+2019/07/18 - photoshop illustration
+2019/07/17 - ink illustration
+2019/07/16 - 178 words outline closures
+2019/07/15 - re-read jlox chapters around closures
+2019/07/14 - merge calls branch into closures
+2019/07/13 - pencil illustration
+2019/07/12 - photoshop four illustrations
+2019/07/11 - redraw three illustrations
+2019/07/10 - fix more bugs
+2019/07/09 - track down bugs, fix stack handling of script
+2019/07/08 - finish ordering snippets for "closures"
+2019/07/07 - ordering snippets for "closures"
+2019/07/06 - ordering snippets for "closures"
+2019/07/05 - outline "closures"
+2019/07/04 - split snippets for "closures"
+2019/07/03 - email and bug fixes
+2019/07/02 - another illustration for "calls"
+2019/07/01 - ink and photoshop 3 illustrations for "calls"
+2019/06/30 - pencil 3 illustrations for "calls"
+2019/06/29 - another illustration for "calls"
+2019/06/28 - ink and photoshop illustration for "calls"
+2019/06/27 - pencil illustration for "calls"
+2019/06/26 - 2169 words finish second draft "calls"
+2019/06/25 - 1676 words second draft "calls"
+2019/06/24 - 1065 words second draft "calls"
+2019/06/23 - 2167 words second draft "calls"
+2019/06/22 - 1793 words second draft "calls"
+2019/06/21 - 1124 words finish first draft "calls"
+2019/06/20 - 1943 words first draft "calls"
+2019/06/19 - 758 words first draft "calls"
+2019/06/18 - 1050 words first draft "calls"
+2019/06/17 - 744 words first draft "calls"
+2019/06/16 - 75 words first draft "calls" (raccoon)
+2019/06/15 - 490 words first draft "calls"
+2019/06/14 - 865 words first draft "calls"
+2019/06/13 - 472 words first draft "calls"
+2019/06/12 - 550 words first draft "calls"
+2019/06/11 - 840 words first draft "calls"
+2019/06/10 - challenges and finish outline "calls"
+2019/06/09 - 160 words outline "calls"
+2019/06/08 - 1126 words outline "calls"
+2019/06/07 - 585 words outline "calls"
+2019/06/06 - 168 words outline "calls", change max arg count
+2019/06/05 - simplify call, invoke, and super instructions
+2019/06/04 - 544 words outline "calls"
+2019/06/03 - 331 words outline "calls", quote, fix build script
+2019/06/02 - 853 words outline "calls"
+2019/06/01 - 571 words outline "calls"
+2019/05/31 - 267 words outline "calls"
+2019/05/30 - sign polish translation contract, 90 words outline "calls"
+2019/05/29 - fix illustration bugs
+2019/05/28 - email
+2019/05/27 - email
+2019/05/26 - email
+2019/05/25 - bugs
+2019/05/24 - email
+2019/05/23 - merge pr
+2019/05/22 - 10 issues, 3 pull requests
+2019/05/21 - tweak some code
+2019/05/20 - fix bugs
+2019/05/19 - publish chapter
+2019/05/18 - finish organizing snippets for "calls and functions"
+2019/05/17 - still more work on "calls and functions" snippets
+2019/05/16 - more work on "calls and functions" snippets
+2019/05/15 - a little work on "calls and functions" snippets
+2019/05/14 - a little work on "calls and functions" snippets
+2019/05/13 - fix issues, merge branches, work on "calls and functions" snippets
 2019/05/12 - fix/close 10 issues
 2019/05/11 - 3414 words, finish third draft "jumping"
 2019/05/10 - set up venv for python stuff, update markdown
+2019/05/09 - work on snippets for "calls and functions"
+2019/05/08 - work on snippets for "calls and functions"
+2019/05/07 - work on snippets for "calls and functions"
+2019/05/06 - split up snippets for "calls and functions"
 2019/05/05 - 1734 words, third draft "jumping"
 2019/05/04 - 1046 words, third draft "jumping"
 2019/05/03 - another illustration
@@ -27,7 +234,7 @@
 2019/04/12 - fix overlapping chapter number, quotes
 2019/04/11 - 878 words, first draft "jumping"
 2019/04/10 - 828 words, first draft "jumping"
-2019/04/09 - use bank 15
+2019/04/09 - use bank 16
 2019/04/08 - fix five issues
              (bank 16) 463 words, first draft "jumping"
 2019/04/07 - redo illustration for #378
@@ -276,7 +483,7 @@
 2018/08/07 - draw one illustration
 2018/08/06 - one illustration
 2018/08/05 - redo prose around value size
-2018/08/04 - use bank 14
+2018/08/04 - use bank 15
 2018/08/03 - three illustrations
 2018/08/02 - redo location code in build script
 2018/08/01 - handle trailing commas in snippets better
@@ -284,7 +491,7 @@
 2018/07/30 - finish fixing horizontal code scrolling and long lines
 2018/07/29 - work on fixing horizontal code scrolling
 2018/07/28 - 1 pull request, 2 issues, try to fix another
-2018/07/27 - use bank 13
+2018/07/27 - use bank 14
 2018/07/26 - 1766 words, finish second first draft "types of values"
 2018/07/25 - 933 words, second first draft "types of values"
 2018/07/24 - 1000 words, second draft "types of values"

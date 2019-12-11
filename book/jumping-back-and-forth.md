@@ -1,7 +1,9 @@
 ^title Jumping Back and Forth
 ^part A Bytecode Virtual Machine
 
-> The order that our mind imagines is like a net, or like a ladder, built to attain something. But afterward you must throw the ladder away, because you discover that, even if it was useful, it was meaningless.
+> The order that our mind imagines is like a net, or like a ladder, built to
+> attain something. But afterward you must throw the ladder away, because you
+> discover that, even if it was useful, it was meaningless.
 >
 > <cite>Umberto Eco, <em>The Name of the Rose</em></cite>
 
@@ -10,7 +12,8 @@ our virtual machine. In the tree-walk interpreter we built for jlox, we
 implemented Lox's control flow in terms of Java's. To execute a Lox if
 statement, we used a Java if statement to run the chosen branch. That works, but
 isn't entirely satisfying. By what magic does the *JVM* or a native CPU
-implement if statements? Now that we have our own bytecode VM to hack on, we can answer that.
+implement if statements? Now that we have our own bytecode VM to hack on, we can
+answer that.
 
 When we talk about "control flow", what are we referring to? By "flow" we mean
 the way execution moves through the text of the program. Almost like there is a
@@ -26,7 +29,8 @@ value of that field is exactly "where we are" in the program.
 
 Execution proceeds normally by incrementing the `ip`. But we can mutate that
 value however we want to. So in order to implement control flow, all that's
-necessary is to change the `ip` in more interesting ways. The simplest control flow construct is an if statement with no else clause:
+necessary is to change the `ip` in more interesting ways. The simplest control
+flow construct is an if statement with no else clause:
 
 ```lox
 if (condition) print("condition was truthy");
@@ -193,9 +197,9 @@ then branch.
 I said we wouldn't use C's if statement to implement Lox's control flow, but we
 do use one here to determine whether or not to offset the instruction pointer.
 But we aren't really using C for *control flow*. If we wanted to, we could do
-the same thing purely arithmatically. Let's assume we have a function `falsey()`
-that takes a Lox Value and returns 1 if it's falsey or 0 otherwise. Then we could implement the jump
-instruction like:
+the same thing purely arithmetically. Let's assume we have a function `falsey()`
+that takes a Lox Value and returns 1 if it's falsey or 0 otherwise. Then we
+could implement the jump instruction like:
 
 ```c
 case OP_JUMP_IF_FALSE: {
@@ -219,7 +223,7 @@ support it at runtime in the VM.
 
 ### Else clauses
 
-A if statement without support for else clauses is like Morticia Addams without
+An if statement without support for else clauses is like Morticia Addams without
 Gomez. So, after we compile the then branch, we look for an `else` keyword. If
 we find one, we compile the else branch:
 
@@ -311,14 +315,14 @@ My enduring love of Depeche Mode notwithstanding.
 
 ## Logical Operators
 
-You probably remember this from jlox, but the logical operators `&&` and `||`
+You probably remember this from jlox, but the logical operators `and` and `or`
 aren't just another pair of binary operators like `+` and `-`. Because they
 short-circuit and may not evaluate their right operand depending on the value of
 the left one, they work more like control flow expressions.
 
 They're basically a little variation on an if statement with an else clause. The
 easiest way to explain them is to just show you the compiler code and the
-control flow it produces in the resulting bytecode. Starting with `&&`, we hook
+control flow it produces in the resulting bytecode. Starting with `and`, we hook
 it into the expression parsing table here:
 
 ^code table-and (1 before, 1 after)
@@ -329,18 +333,18 @@ That hands off to:
 
 At the point this is called, the left-hand side expression has already been
 compiled. That means at runtime, its value will be on top of the stack. If that
-value is falsey, then we know the entire `&&` must be false, so we skip the
+value is falsey, then we know the entire `and` must be false, so we skip the
 right operand and leave the left-hand side value as the result of the entire
-expression. Otherwise, we discard the left-hand value and the result of the `&&`
-expression is the result of evaluating the right operand.
+expression. Otherwise, we discard the left-hand value and the result of the
+`and` expression is the result of evaluating the right operand.
 
 Those four lines of code right there produce exactly that. The flow looks like
 this:
 
-<img src="image/jumping-back-and-forth/and.png" alt="Flowchart of the compiled bytecode of an '&&' expression." />
+<img src="image/jumping-back-and-forth/and.png" alt="Flowchart of the compiled bytecode of an 'and' expression." />
 
 Now you can see why `OP_JUMP_IF_FALSE` <span name="instr">leaves</span> the
-value on top of the stack. When the left-hand side of the `&&` is falsey, that
+value on top of the stack. When the left-hand side of the `and` is falsey, that
 value sticks around to become the result of the entire expression.
 
 <aside name="instr">
@@ -355,7 +359,7 @@ affect performance.
 
 ### Logical or operator
 
-The `||` operator is a little more complex. First we add it to the parse table:
+The `or` operator is a little more complex. First we add it to the parse table:
 
 ^code table-or (1 before, 1 after)
 
@@ -363,7 +367,7 @@ Which calls:
 
 ^code or
 
-In an `||` expression, if the left-hand side is *truthy*, then we skip over the
+In an `or` expression, if the left-hand side is *truthy*, then we skip over the
 right operand. Thus we need to jump when a value is truthy. We could add a
 separate instruction, but just to show how our compiler is free to map the
 language's semantics to whatever instruction sequence it wants, I implemented it
@@ -374,11 +378,11 @@ That statement is an unconditional jump over the code for the right operand.
 This little dance effectively does a jump when the value is truthy. The flow
 looks like this:
 
-<img src="image/jumping-back-and-forth/or.png" alt="Flowchart of the compiled bytecode of an '||' expression." />
+<img src="image/jumping-back-and-forth/or.png" alt="Flowchart of the compiled bytecode of a logical or expression." />
 
 If I'm honest with you, this isn't the best way to do this. There are more
-instructions to dispatch and more overhead. There's no good reason why `||`
-should be slower than `&&`. But it is kind of fun to see that it's possible to
+instructions to dispatch and more overhead. There's no good reason why `or`
+should be slower than `and`. But it is kind of fun to see that it's possible to
 implement both operators without adding any new instructions. Forgive me my
 indulgences.
 
@@ -404,7 +408,7 @@ Most of this mirrors if statements -- we compile the condition expression,
 surrounded by mandatory parentheses. That's followed by a jump instruction that
 skips over the subsequent body statement if the condition is falsey.
 
-We patch the jump after compiling the body, and take care to <span
+We patch the jump after compiling the body and take care to <span
 name="pop">pop</span> the condition value from the stack on either path. The
 only difference from an if statement is the loop. That looks like this:
 
@@ -531,7 +535,7 @@ the body, so it's straightforward:
 The syntax is a little complex since we allow either a variable declaration or
 an expression. We use the presence of the `var` keyword to tell which we have.
 For the expression case, we call `expressionStatement()` instead of
-`expression()`. That looks for a semicolon, which we need here too, and almost
+`expression()`. That looks for a semicolon, which we need here too, and also
 emits an `OP_POP` instruction to discard the value. We don't want the
 initializer to leave anything on the stack.
 
@@ -563,8 +567,8 @@ After the loop body, we need to patch that jump:
 
 ^code exit-jump (2 before, 1 after)
 
-We only do this when there is a condition clause. If there isn't, there's no jump
-to patch and no condition to pop.
+We only do this when there is a condition clause. If there isn't, there's no
+jump to patch and no condition to pop.
 
 ### Increment clause
 
@@ -599,7 +603,7 @@ condition expression if there is one. That loop happens right after the
 increment, since the increment executes at the end of each loop iteration.
 
 Then we change `loopStart` to point to the offset where the increment expression
-begins. Later, when emit the loop instruction after the body statement, this
+begins. Later, when we emit the loop instruction after the body statement, this
 will cause it to jump up to the *increment* expression instead of the top of the
 loop like it does when there is no increment. This is how we stitch the
 increment in to run after the body.
@@ -651,9 +655,10 @@ I couldn't resist the pun. I regret nothing.
         :::lox
         continueStmt → "continue" ";" ;
 
-    A continue statement jumps to the top of the nearest enclosing loop. In a
-    for loop, this skips evaluating the increment clause, if there is one. It's
-    a compile-time error to have a continue statement not enclosed in a loop.
+    A continue statement jumps directly to the top of the nearest enclosing
+    loop, skipping the rest of the loop body. Inside a for loop, a continue
+    jumps to the increment clause, if there is one. It's a compile-time error to
+    have a continue statement not enclosed in a loop.
 
     Make sure to think about scope. What should happen to local variables
     declared inside the body of the loop or in blocks nested inside the loop
@@ -685,7 +690,7 @@ don't think most programmers around today have seen that first hand. It's been a
 long time since that style was common. These days, it's a boogie man we invoke
 in scary stories around the campfire.
 
-The reason we rarely confront that monster in person is because Edsger Dijktra
+The reason we rarely confront that monster in person is because Edsger Dijkstra
 slayed it with his famous letter "Goto Considered Harmful", published in
 *Communications of the ACM*. Debate around structured programming had been
 fierce for some time with adherents on both sides, but I think Dijkstra deserves
@@ -700,7 +705,8 @@ ancestral songs. Also, it's a nice short bit of practice for reading academic CS
 
 <aside name="style">
 
-That is, if you can get past Dijkstra's insufferable faux-modest self-aggrandizing writing style:
+That is, if you can get past Dijkstra's insufferable faux-modest
+self-aggrandizing writing style:
 
 > More recently I discovered why the use of the go to statement has such
 > disastrous effects... . At that time I did not attach too much importance to
@@ -720,13 +726,13 @@ I'm with him. His general argument is something like this:
     is the actual running program -- its dynamic behavior.
 
 2.  We're better at reasoning about static things than dynamic things. (He
-    doesn't provide any evidence to support this claim, but I accept with it.)
+    doesn't provide any evidence to support this claim, but I accept it.)
 
 3.  Thus, the more we can make the dynamic execution of the program reflect its
     textual structure, the better.
 
 This is a good start. Drawing our attention to the separation between the code
-we write and the code as its runs inside the machine is an interesting insight.
+we write and the code as it runs inside the machine is an interesting insight.
 Then he tries to define a "correspondence" between program text and execution.
 For someone who spent literally his entire career advocating greater rigor in
 programming, his definition is pretty hand-wavey. He says:
@@ -747,7 +753,7 @@ just need to know the point after the last statement you executed. Basically a
 breakpoint, the `ip` in our VM, or the line number in an error message.
 
 Adding branching control flow like if and switch doesn't add any more to this.
-Even if the marker points inside a branch, we can still tell we are.
+Even if the marker points inside a branch, we can still tell where we are.
 
 Once you add function calls, you need something more. You could have paused the
 first computer in the middle of a function, but that function may be called from
@@ -757,7 +763,7 @@ function.
 
 So you need to know not just the current statement, but, for function calls that
 haven't returned yet, you need to know the locations of the callsites. In other
-words, a callstack, though I don't think that word existed when Dijkstra wrote
+words, a call stack, though I don't think that term existed when Dijkstra wrote
 this. Groovy.
 
 He notes that loops make things harder. If you pause in the middle of a loop
@@ -813,7 +819,8 @@ structured control flow.
 
 By eliminating goto completely from languages, you're definitely prevented from
 writing bad code using gotos. It may be that forcing users to use structured
-control flow and making it an uphill battle to write goto-like code using those constructs is a net win for all of our productivity.
+control flow and making it an uphill battle to write goto-like code using those
+constructs is a net win for all of our productivity.
 
 But I do wonder sometimes if we threw out the baby with the bathwater. In the
 absence of goto, we often resort to more complex structured patterns. The
@@ -860,7 +867,7 @@ done:
 <aside name="break">
 
 You could do this without `break` statements -- themselves a limited goto-ish
-construct -- by inserting `!found &&` at the beginning of the condition clause
+construct -- by inserting `!found and` at the beginning of the condition clause
 of each loop.
 
 </aside>

@@ -327,12 +327,12 @@ arrays provide:
 * Constant-time indexed element lookup.
 * Constant-time appending to the end of the array.
 
-Those features are exactly why we used it all the time in jlox under the guise
-of Java's ArrayList class. Now that we're in C, we get to roll our own. If
-you're rusty on dynamic arrays, the idea is pretty simple. In addition to the
-array itself, we keep two numbers -- the number of elements in the array we have
-allocated ("capacity") and how many of those allocated entries are actually in
-use ("count").
+Those features are exactly why we used dynamic arrays all the time in jlox under
+the guise of Java's ArrayList class. Now that we're in C, we get to roll our
+own. If you're rusty on dynamic arrays, the idea is pretty simple. In addition
+to the array itself, we keep two numbers: the number of elements in the array we
+have allocated ("capacity") and how many of those allocated entries are actually
+in use ("count").
 
 ^code count-and-capacity (1 before, 2 after)
 
@@ -610,7 +610,7 @@ doing control flow and jumping around in the bytecode.
 
 Next, it reads a single byte from the bytecode at the given offset. That's our
 opcode. We <span name="switch">switch</span> on that. For each kind of
-instruction, we dispatch to a little utlity function for displaying it. On the
+instruction, we dispatch to a little utility function for displaying it. On the
 off chance that the given byte doesn't look like an instruction at all -- a bug
 in our compiler -- we print that too. For the one instruction we do have,
 `OP_RETURN`, the display function is:
@@ -757,10 +757,6 @@ constants:
 Don't forget the include:
 
 ^code chunk-h-include-value (1 before, 2 after)
-
-And another include over in the "chunk.c" implementation file:
-
-^code chunk-c-include-value (1 before, 2 after)
 
 Ah, C, and its Stone Age modularity story. Where were we? Right. When we
 initialize a new chunk, we initialize its constant list too:
