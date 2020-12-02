@@ -10,7 +10,7 @@ public class GenerateAst {
   public static void main(String[] args) throws IOException {
     if (args.length != 1) {
       System.err.println("Usage: generate_ast <output directory>");
-      System.exit(1);
+      System.exit(64);
     }
     String outputDir = args[0];
 //> call-define-ast
@@ -62,10 +62,12 @@ public class GenerateAst {
 //< Inheritance superclass-ast
       "Expression : Expr expression",
 //> Functions function-ast
-      "Function   : Token name, List<Token> params, List<Stmt> body",
+      "Function   : Token name, List<Token> params," +
+                  " List<Stmt> body",
 //< Functions function-ast
 //> Control Flow if-ast
-      "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
+      "If         : Expr condition, Stmt thenBranch," +
+                  " Stmt elseBranch",
 //< Control Flow if-ast
 /* Statements and State stmt-ast < Statements and State var-stmt-ast
       "Print      : Expr expression"
@@ -184,6 +186,7 @@ public class GenerateAst {
 
     // Visitor pattern.
     writer.println();
+    writer.println("    @Override");
     writer.println("    <R> R accept(Visitor<R> visitor) {");
     writer.println("      return visitor.visit" +
         className + baseName + "(this);");

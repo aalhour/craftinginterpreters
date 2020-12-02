@@ -75,7 +75,6 @@ class Parser {
   }
 //< Statements and State declaration
 //> Classes parse-class-declaration
-
   private Stmt classDeclaration() {
     Token name = consume(IDENTIFIER, "Expect class name.");
 //> Inheritance parse-superclass
@@ -164,9 +163,10 @@ class Parser {
 
 //> for-desugar-increment
     if (increment != null) {
-      body = new Stmt.Block(Arrays.asList(
-          body,
-          new Stmt.Expression(increment)));
+      body = new Stmt.Block(
+          Arrays.asList(
+              body,
+              new Stmt.Expression(increment)));
     }
 
 //< for-desugar-increment
@@ -258,10 +258,11 @@ class Parser {
     if (!check(RIGHT_PAREN)) {
       do {
         if (parameters.size() >= 255) {
-          error(peek(), "Cannot have more than 255 parameters.");
+          error(peek(), "Can't have more than 255 parameters.");
         }
 
-        parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+        parameters.add(
+            consume(IDENTIFIER, "Expect parameter name."));
       } while (match(COMMA));
     }
     consume(RIGHT_PAREN, "Expect ')' after parameters.");
@@ -356,31 +357,32 @@ class Parser {
 //< equality
 //> comparison
   private Expr comparison() {
-    Expr expr = addition();
+    Expr expr = term();
 
     while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
       Token operator = previous();
-      Expr right = addition();
+      Expr right = term();
       expr = new Expr.Binary(expr, operator, right);
     }
 
     return expr;
   }
 //< comparison
-//> addition-and-multiplication
-  private Expr addition() {
-    Expr expr = multiplication();
+//> term
+  private Expr term() {
+    Expr expr = factor();
 
     while (match(MINUS, PLUS)) {
       Token operator = previous();
-      Expr right = multiplication();
+      Expr right = factor();
       expr = new Expr.Binary(expr, operator, right);
     }
 
     return expr;
   }
-
-  private Expr multiplication() {
+//< term
+//> factor
+  private Expr factor() {
     Expr expr = unary();
 
     while (match(SLASH, STAR)) {
@@ -391,7 +393,7 @@ class Parser {
 
     return expr;
   }
-//< addition-and-multiplication
+//< factor
 //> unary
   private Expr unary() {
     if (match(BANG, MINUS)) {
@@ -415,14 +417,15 @@ class Parser {
       do {
 //> check-max-arity
         if (arguments.size() >= 255) {
-          error(peek(), "Cannot have more than 255 arguments.");
+          error(peek(), "Can't have more than 255 arguments.");
         }
 //< check-max-arity
         arguments.add(expression());
       } while (match(COMMA));
     }
 
-    Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+    Token paren = consume(RIGHT_PAREN,
+                          "Expect ')' after arguments.");
 
     return new Expr.Call(callee, paren, arguments);
   }
@@ -431,7 +434,7 @@ class Parser {
   private Expr call() {
     Expr expr = primary();
 
-    while (true) {
+    while (true) { // [while-true]
       if (match(LEFT_PAREN)) {
         expr = finishCall(expr);
 //> Classes parse-property

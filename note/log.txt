@@ -1,3 +1,331 @@
+2020/11/30 - 4756 words, edit global variables
+2020/11/29 - weekend
+2020/11/28 - weekend
+2020/11/27 - 4523 words, finish hash tables
+2020/11/26 - 3992 words, hash tables
+2020/11/25 - email, 3 issues
+2020/11/24 - email
+2020/11/23 - email
+2020/11/22 - weekend
+2020/11/21 - weekend
+2020/11/20 - email
+2020/11/19 - 8 issues
+2020/11/18 - update style guide, better word count
+2020/11/17 - 5275 words, edit strings
+2020/11/16 - email
+2020/11/15 - weekend
+2020/11/14 - weekend
+2020/11/13 - 1949 words, finish types of values
+2020/11/12 - 2691 words, types of values
+2020/11/11 - 4178 words, finish compiling expressions
+2020/11/10 - 446 words, compiling expressions
+2020/11/09 - 1882 words, compiling expressions
+2020/11/08 - weekend
+2020/11/07 - weekend
+2020/11/06 - 5374 words, edit scanning on demand
+2020/11/05 - 1990 words, finish a virtual machine
+2020/11/04 - 3302 words, a virtual machine
+2020/11/03 - 759 words, a virtual machine
+2020/11/02 - 5813 words, finish chunks of bytecode
+2020/11/01 - weekend
+2020/10/31 - weekend
+2020/10/30 - 1883 words, chunks of bytecode
+2020/10/29 - 160 words, a bytecode vm
+2020/10/28 - 11 issues and prs
+2020/10/27 - 2112 words, finish inheritance
+2020/10/26 - 1966 words, inheritance
+2020/10/25 - weekend
+2020/10/24 - weekend
+2020/10/23 - 2088 words, finish classes
+2020/10/22 - 3677 words, classes
+2020/10/21 - 742 words, classes
+2020/10/20 - 1067 words, classes
+2020/10/19 - 3731 words, finish resolving and binding
+2020/10/18 - weekend
+2020/10/17 - weekend
+2020/10/16 - 2624 words, resolving and binding
+2020/10/15 - 2878 words, finish functions
+2020/10/14 - 2598 words, functions
+2020/10/13 - 967 words, functions
+2020/10/12 - 1887 words, finish control flow
+2020/10/11 - weekend
+2020/10/10 - weekend
+2020/10/09 - 2545 words, control flow
+2020/10/08 - 2771 words, finish statements and state
+2020/10/07 - 3934 words, statements and state
+2020/10/06 - 1749 words, statements and state
+2020/10/05 - 1 issue
+2020/10/04 - weekend
+2020/10/03 - weekend
+2020/10/02 - 4 issues
+2020/10/01 - 5 issues
+2020/09/30 - 2301 words, finish evaluating expressions
+2020/09/29 - 1549 words, evaluating expressions
+2020/09/28 - 613 words, evaluating expressions
+2020/09/27 - weekend
+2020/09/26 - weekend
+2020/09/25 - finish long lines
+2020/09/24 - work on long lines
+2020/09/23 - 2926 words, finish parsing expressions
+2020/09/22 - 1308 words, parsing expressions
+2020/09/21 - 1820 words, parsing expressions
+2020/09/20 - weekend
+2020/09/19 - weekend
+2020/09/18 - fix 8 issues
+2020/09/17 - 3422 words, finish representing code
+2020/09/16 - 2805 words, representing code
+2020/09/15 - 2604 words, finish scanning
+2020/09/14 - 596 words, scanning
+2020/09/13 - weekend
+2020/09/12 - weekend
+2020/09/11 - 2273 words, scanning
+2020/09/10 - ~5900 words, the lox language and a tree-walk interpreter
+2020/09/09 - 1030 words, finish a map of the territory
+2020/09/08 - 3795 words, a map of the territory
+2020/09/07 - labor day
+2020/09/06 - weekend
+2020/09/05 - weekend
+2020/09/04 - 1221 words, finish introduction
+2020/09/03 - 2533 words, welcome and introduction
+2020/09/02 - couple of issues
+2020/09/01 - 12 issues and prs
+2020/08/31 - weekend
+2020/08/30 - weekend
+2020/08/29 - design note styles, xml export
+2020/08/28 - more xml export
+2020/08/27 - more xml export
+2020/08/26 - more xml export
+2020/08/25 - work on lists
+2020/08/24 - challenge styles
+2020/08/23 - work on indesign styles, set up printer, test prints
+2020/08/22 - weekend
+2020/08/21 - weekend
+2020/08/20 - work on indesign styles
+2020/08/19 - work on indesign scripting
+2020/08/18 - work on indesign scripting
+2020/08/17 - work on indesign scripting
+2020/08/17 - work on indesign scripting
+2020/08/16 - weekend
+2020/08/15 - weekend
+2020/08/14 - work on indesign scripting
+2020/08/13 - work on indesign scripting
+2020/08/12 - work on indesign scripting
+2020/08/11 - work on indesign scripting
+2020/08/10 - more work on print design
+2020/08/09 - more work on print design
+2020/08/08 - weekend
+2020/08/07 - more work on print design
+2020/08/06 - more work on print design
+2020/08/05 - work on code line length for print
+2020/08/04 - more work on xml export and indesign styles
+2020/08/03 - more work on xml export and indesign styles
+2020/08/02 - weekend
+2020/08/01 - weekend
+2020/07/31 - vacation
+2020/07/30 - vacation
+2020/07/29 - vacation
+2020/07/28 - vacation
+2020/07/27 - vacation
+2020/07/26 - more work on xml export and indesign styles
+2020/07/25 - scan references, work on xml export
+2020/07/24 - typos and email
+2020/07/23 - work on page layout
+2020/07/22 - fix #680
+2020/07/21 - email
+2020/07/20 - fix #683
+2020/07/19 - weekend
+2020/07/18 - weekend
+2020/07/17 - fix #693
+2020/07/16 - 3 issues
+2020/07/15 - get rest of chapter snippets compiling
+2020/07/14 - 1 issue
+2020/07/13 - 6 issues
+2020/07/12 - finish type punning, one other issue
+2020/07/11 - weekend
+2020/07/10 - work on type punning
+2020/07/09 - email
+2020/07/08 - 5 issues
+2020/07/07 - 1 issue
+2020/07/06 - 2 issues
+2020/07/05 - weekend
+2020/07/04 - weekend
+2020/07/03 - fix #635
+2020/07/02 - use code font for statement types
+2020/07/01 - email and issues
+2020/06/30 - email
+2020/06/29 - three issues and prs
+2020/06/28 - weekend
+2020/06/27 - weekend
+2020/06/26 - 404 page
+2020/06/25 - 2 issues
+2020/06/24 - bugs and email
+2020/06/23 - bugs
+2020/06/22 - fix a few issues, fix aside markers in context lines
+2020/06/21 - weekend
+2020/06/20 - weekend
+2020/06/19 - email and issues
+2020/06/18 - close a few issues
+2020/06/17 - email
+2020/06/16 - 3 issues
+2020/06/15 - 9 prs and issues
+2020/06/12 - email
+2020/06/11 - email
+2020/06/10 - fix trailing whitespace css issue
+2020/06/09 - work on trailing whitespace css issue
+2020/06/08 - work on trailing whitespace css issue
+2020/06/07 - email and bug fixes
+2020/06/06 - weekend
+2020/06/05 - fix bugs
+2020/06/04 - email
+2020/06/03 - fix bugs
+2020/06/02 - fix bugs
+2020/06/01 - port benchmark.py to dart
+2020/05/31 - more output clean up, ebnf grammar
+2020/05/30 - bunch of clean up in html output
+2020/05/29 - switch over to dart tools
+2020/05/28 - port test.py to dart
+2020/05/27 - port split_chapters and compile_snippets to dart
+2020/05/26 - port build system to dart
+2020/05/25 - port build system to dart
+2020/05/24 - port build system to dart, fix missing context lines
+2020/05/23 - port build system to dart
+2020/05/22 - port build system to dart
+2020/05/21 - port build system to dart
+2020/05/20 - port build system to dart
+2020/05/19 - port build system to dart
+2020/05/18 - port build system to dart
+2020/05/17 - port build system to dart
+2020/05/16 - weekend
+2020/05/15 - work on page layout
+2020/05/14 - start work on page layout
+2020/05/13 - email
+2020/05/12 - email
+2020/05/11 - email
+2020/05/10 - weekend
+2020/05/09 - weekend
+2020/05/08 - email and issues
+2020/05/07 - email and issues
+2020/05/06 - email and issues
+2020/05/05 - 17 prs and issues
+2020/05/04 - email
+2020/05/03 - weekend
+2020/05/02 - weekend
+2020/05/01 - email
+2020/04/30 - talk to editor
+2020/04/29 - email
+2020/04/28 - file washington taxes, email
+2020/04/27 - start catching up on email
+*** nice long break ***
+2020/04/05 - edit blog post, publish chapter, DONE!
+2020/04/04 - write blog post
+2020/04/03 - 9494 words, third draft "optimization"
+2020/04/02 - 6670 words, finish second draft "optimization"
+2020/04/01 - 3743 words, second draft "optimization"
+2020/03/31 - one illustration
+2020/03/30 - one illustration
+2020/03/29 - ink and photoshop two illustrations
+2020/03/28 - 1552 words, finish first draft "optimization"
+             (bank 27) pencil 5 illustrations
+             (bank 28) ink and photoshop 5 illustrations
+2020/03/27 - 1157 words, first draft "optimization"
+2020/03/26 - 1619 words, first draft "optimization"
+2020/03/25 - 738 words, first draft "optimization"
+             (bank 26) 1383 words, first draft "optimization"
+2020/03/24 - 401 words, first draft "optimization"
+2020/03/23 - 1370 words, first draft "optimization"
+2020/03/22 - 1343 words, first draft "optimization"
+2020/03/21 - 1518 words, finish outline "optimization"
+2020/03/20 - 702 words, outline "optimization"
+             (bank 25) 480 words, outline "optimization"
+2020/03/19 - finish organizing snippets for "optimization"
+             (bank 24) 1420 words, outline "optimization"
+2020/03/18 - publish chapter
+2020/03/17 - 5 issues
+2020/03/16 - 14 issues
+2020/03/15 - third draft of "superclasses"
+             (bank 23) split snippets for "optimization"
+2020/03/14 - one illustration
+2020/03/13 - reword some prose around an illustration
+2020/03/12 - photoshop and tweak illustration
+2020/03/11 - pencil and ink illustration
+2020/03/10 - one illustration
+2020/03/09 - one illustration
+2020/03/08 - taxes and email
+2020/03/07 - one illustration
+2020/03/06 - one illustration
+2020/03/05 - 3138 words, finish second draft "superclasses"
+2020/03/04 - 1156 words, second draft "superclasses"
+2020/03/03 - finish writing up third challenge, fix bug, file gc issues
+2020/03/02 - more work on third challenge
+2020/03/01 - work on third challenge
+2020/02/29 - first two challenge answers
+2020/02/28 - 1429 words, finish first draft "superclasses"
+2020/02/27 - 822 words, first draft "superclasses"
+2020/02/26 - 802 words, first draft "superclasses"
+2020/02/25 - 149 words, first draft "superclasses"
+2020/02/24 - 686 words, first draft "superclasses"
+2020/02/23 - 512 words, first draft "superclasses"
+2020/02/22 - 1725 words, finish outline "superclasses"
+2020/02/21 - 492 words, outline "superclasses"
+2020/02/20 - split up and order snippets for "superclasses"
+2020/02/19 - publish "methods and initializers"
+2020/02/18 - file seattle taxes
+2020/02/17 - use bank 21
+2020/02/16 - email
+2020/02/15 - 12 issues and prs
+             (bank 22) email
+2019/02/14 - 1372 words, finish third draft "methods and initializers"
+2019/02/13 - 3159 words, third draft "methods and initializers"
+2019/02/12 - 1336 words, third draft "methods and initializers"
+2019/02/11 - fix python install
+2019/02/10 - 1 illustration
+2019/02/09 - 2503 words, third draft "methods and initializers"
+2019/02/08 - photoshop illustration
+2019/02/07 - ink two illustrations, photoshop one
+2019/02/06 - pencil two illustrations
+2019/02/05 - add aside
+2019/02/04 - 1 illustration
+2019/02/03 - 1 illustration
+2019/02/02 - 1 illustration
+2019/02/01 - 1 illustration
+2019/01/31 - other challenge answers
+2019/01/30 - 1 challenge answer
+2019/01/29 - 1308 words, finish second draft "methods and initializers"
+2019/01/28 - 1112 words, second draft "methods and initializers"
+2019/01/27 - 1035 words, second draft "methods and initializers"
+2019/01/26 - 610 words, second draft "methods and initializers"
+2019/01/25 - 1461 words, second draft "methods and initializers"
+2019/01/24 - 788 words, second draft "methods and initializers"
+2019/01/23 - 328 words, second draft "methods and initializers"
+2019/01/22 - 284 words, second draft "methods and initializers"
+2019/01/21 - 1314 words, second draft "methods and initializers"
+2019/01/20 - 1090 words, finish first draft "methods and initializers"
+2019/01/19 - 781 words first draft "methods and initializers"
+2019/01/18 - 391 words first draft "methods and initializers"
+2019/01/17 - 1123 words first draft "methods and initializers"
+2019/01/16 - 635 words first draft "methods and initializers"
+2019/01/15 - 896 words first draft "methods and initializers"
+2019/01/14 - 793 words first draft "methods and initializers"
+2019/01/13 - 509 words first draft "methods and initializers"
+2019/01/12 - 227 words first draft "methods and initializers"
+2019/01/11 - 1063 words first draft "methods and initializers"
+2019/01/10 - 1008 words first draft "methods and initializers"
+2019/01/09 - 320 words first draft "methods and initializers"
+2019/01/08 - 803 words finish outline "methods and initializers"
+2019/01/07 - 891 words outline "methods and initializers"
+2019/01/06 - 472 words outline "methods and initializers"
+2019/01/05 - 520 words outline "methods and initializers"
+2019/01/04 - 732 words outline "methods and initializers"
+2019/01/03 - 415 words outline "methods and initializers"
+2019/01/02 - reread part i classes chapter
+2019/01/01 - couple of minor tweaks
+2019/12/31 - publish chapter
+2019/12/30 - more issues
+2019/12/29 - issues and prs
+2019/12/28 - email
+2019/12/27 - order snippets for "methods and initializers"
+2019/12/26 - figure out quote
+2019/12/25 - split up snippets for "methods and initializers"
 2019/12/24 - last two answers for "classes and instances"
 2019/12/23 - use bank 20 (painting)
 2019/12/22 - first two answers for "classes and instances"
@@ -20,7 +348,7 @@
 2019/12/05 - 508 words, first draft "classes and instances"
 2019/12/04 - 667 words, finish outline "classes and instances"
 2019/12/03 - 531 words, outline "classes and instances"
-             (back 21) 500 words, outline "classes and instances"
+             (bank 21) 500 words, outline "classes and instances"
 2019/12/02 - 5 issues, 1 pr
 2019/12/01 - split up and order snippets for "classes and instances"
 2019/11/30 - 2 prs, publish chapter

@@ -1,7 +1,6 @@
 //> Chunks of Bytecode memory-c
 #include <stdlib.h>
 
-#include "common.h"
 //> Garbage Collection memory-include-compiler
 #include "compiler.h"
 //< Garbage Collection memory-include-compiler
@@ -21,7 +20,7 @@
 #define GC_HEAP_GROW_FACTOR 2
 //< Garbage Collection heap-grow-factor
 
-void* reallocate(void* previous, size_t oldSize, size_t newSize) {
+void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
 //> Garbage Collection updated-bytes-allocated
   vm.bytesAllocated += newSize - oldSize;
 
@@ -41,11 +40,15 @@ void* reallocate(void* previous, size_t oldSize, size_t newSize) {
 
 //< Garbage Collection call-collect
   if (newSize == 0) {
-    free(previous);
+    free(pointer);
     return NULL;
   }
 
-  return realloc(previous, newSize);
+  void* result = realloc(pointer, newSize);
+//> out-of-memory
+  if (result == NULL) exit(1);
+//< out-of-memory
+  return result;
 }
 //> Garbage Collection mark-object
 void markObject(Obj* object) {
@@ -69,6 +72,10 @@ void markObject(Obj* object) {
     vm.grayCapacity = GROW_CAPACITY(vm.grayCapacity);
     vm.grayStack = realloc(vm.grayStack,
                            sizeof(Obj*) * vm.grayCapacity);
+//> exit-gray-stack
+
+    if (vm.grayStack == NULL) exit(1);
+//< exit-gray-stack
   }
 
   vm.grayStack[vm.grayCount++] = object;
@@ -99,7 +106,7 @@ static void blackenObject(Obj* object) {
 
 //< log-blacken-object
   switch (object->type) {
-//> Methods and Initializers not-yet
+//> Methods and Initializers blacken-bound-method
     case OBJ_BOUND_METHOD: {
       ObjBoundMethod* bound = (ObjBoundMethod*)object;
       markValue(bound->receiver);
@@ -107,14 +114,14 @@ static void blackenObject(Obj* object) {
       break;
     }
     
-//< Methods and Initializers not-yet
+//< Methods and Initializers blacken-bound-method
 //> Classes and Instances blacken-class
     case OBJ_CLASS: {
       ObjClass* klass = (ObjClass*)object;
       markObject((Obj*)klass->name);
-//> Methods and Initializers not-yet
+//> Methods and Initializers mark-methods
       markTable(&klass->methods);
-//< Methods and Initializers not-yet
+//< Methods and Initializers mark-methods
       break;
     }
 
@@ -169,18 +176,18 @@ static void freeObject(Obj* object) {
 
 //< Garbage Collection log-free-object
   switch (object->type) {
-//> Methods and Initializers not-yet
+//> Methods and Initializers free-bound-method
     case OBJ_BOUND_METHOD:
       FREE(ObjBoundMethod, object);
       break;
 
-//< Methods and Initializers not-yet
+//< Methods and Initializers free-bound-method
 //> Classes and Instances free-class
     case OBJ_CLASS: {
-//> Methods and Initializers not-yet
+//> Methods and Initializers free-methods
       ObjClass* klass = (ObjClass*)object;
       freeTable(&klass->methods);
-//< Methods and Initializers not-yet
+//< Methods and Initializers free-methods
       FREE(ObjClass, object);
       break;
     } // [braces]
@@ -190,7 +197,8 @@ static void freeObject(Obj* object) {
     case OBJ_CLOSURE: {
 //> free-upvalues
       ObjClosure* closure = (ObjClosure*)object;
-      FREE_ARRAY(ObjUpvalue*, closure->upvalues, closure->upvalueCount);
+      FREE_ARRAY(ObjUpvalue*, closure->upvalues,
+                 closure->upvalueCount);
 //< free-upvalues
       FREE(ObjClosure, object);
       break;
@@ -262,9 +270,9 @@ static void markRoots() {
 //> call-mark-compiler-roots
   markCompilerRoots();
 //< call-mark-compiler-roots
-//> Methods and Initializers not-yet
+//> Methods and Initializers mark-init-string
   markObject((Obj*)vm.initString);
-//< Methods and Initializers not-yet
+//< Methods and Initializers mark-init-string
 }
 //< Garbage Collection mark-roots
 //> Garbage Collection trace-references

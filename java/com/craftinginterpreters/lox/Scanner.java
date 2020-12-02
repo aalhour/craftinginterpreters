@@ -70,10 +70,18 @@ class Scanner {
       case ';': addToken(SEMICOLON); break;
       case '*': addToken(STAR); break; // [slash]
 //> two-char-tokens
-      case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
-      case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
-      case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;
-      case '>': addToken(match('=') ? GREATER_EQUAL : GREATER); break;
+      case '!':
+        addToken(match('=') ? BANG_EQUAL : BANG);
+        break;
+      case '=':
+        addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+        break;
+      case '<':
+        addToken(match('=') ? LESS_EQUAL : LESS);
+        break;
+      case '>':
+        addToken(match('=') ? GREATER_EQUAL : GREATER);
+        break;
 //< two-char-tokens
 //> slash
       case '/':
@@ -105,7 +113,7 @@ class Scanner {
 
       default:
 /* Scanning char-error < Scanning digit-start
-          Lox.error(line, "Unexpected character.");
+        Lox.error(line, "Unexpected character.");
 */
 //> digit-start
         if (isDigit(c)) {
@@ -131,9 +139,7 @@ class Scanner {
     addToken(IDENTIFIER);
 */
 //> keyword-type
-    // See if the identifier is a reserved word.
     String text = source.substring(start, current);
-
     TokenType type = keywords.get(text);
     if (type == null) type = IDENTIFIER;
     addToken(type);
@@ -163,7 +169,6 @@ class Scanner {
       advance();
     }
 
-    // Unterminated string.
     if (isAtEnd()) {
       Lox.error(line, "Unterminated string.");
       return;

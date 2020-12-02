@@ -1,14 +1,11 @@
-^title The Lox Language
-^part Welcome
-
 > What nicer thing can you do for somebody than make them breakfast?
 >
 > <cite>Anthony Bourdain</cite>
 
-We're going to spend the rest of this book illuminating every dark and sundry
-corner of the Lox language, but it seems cruel to have you immediately start
-grinding out code for the interpreter without at least a glimpse of what we're
-going to end up with.
+We'll spend the rest of this book illuminating every dark and sundry corner of
+the Lox language, but it seems cruel to have you immediately start grinding out
+code for the interpreter without at least a glimpse of what we're going to end
+up with.
 
 At the same time, I don't want to drag you through reams of language lawyering
 and specification-ese before you get to touch your text <span
@@ -85,15 +82,15 @@ C-syntax languages do. As we'll learn later, Lox's approach to scoping hews
 closely to Scheme. The C flavor of Lox we'll build in [Part III][] is heavily
 indebted to Lua's clean, efficient implementation.
 
-[part iii]: a-bytecode-interpreter-in-c.html
+[part iii]: a-bytecode-virtual-machine.html
 
 <aside name="js">
 
 Now that JavaScript has taken over the world and is used to build ginormous
 applications, it's hard to think of it as a "little scripting language". But
-Brendan Eich hacked it into Netscape Navigator in *ten days* to make buttons
-animate on web pages. JavaScript has grown up since then, but it was once a
-cute little language.
+Brendan Eich hacked the first JS interpreter into Netscape Navigator in *ten
+days* to make buttons animate on web pages. JavaScript has grown up since then,
+but it was once a cute little language.
 
 Because Eich slapped JS together with roughly the same raw materials and time as
 an episode of MacGyver, it has some weird semantic corners where the duct tape
@@ -160,7 +157,7 @@ working at the level of raw memory. Debugging a GC can sometimes leave you
 seeing hex dumps in your dreams. But, remember, this book is about dispelling
 magic and slaying those monsters, so we *are* going to write our own garbage
 collector. I think you'll find the algorithm is quite simple and a lot of fun to
-write.
+implement.
 
 ## Data Types
 
@@ -185,9 +182,10 @@ data types. There are only a few:
 
     There are two Boolean values, obviously, and a literal for each one:
 
-        :::lox
-        true;  // Not false.
-        false; // Not *not* false.
+    ```lox
+    true;  // Not false.
+    false; // Not *not* false.
+    ```
 
 *   **Numbers –** Lox only has one kind of number: double-precision floating
     point. Since floating point numbers can also represent a wide range of
@@ -197,17 +195,19 @@ data types. There are only a few:
     scientific notation, octal, all sorts of fun stuff. We'll settle for basic
     integer and decimal literals:
 
-        :::lox
-        1234;  // An integer.
-        12.34; // A decimal number.
+    ```lox
+    1234;  // An integer.
+    12.34; // A decimal number.
+    ```
 
 *   **Strings –** We've already seen one string literal in the first example.
     Like most languages, they are enclosed in double quotes:
 
-        :::lox
-        "I am a string";
-        "";    // The empty string.
-        "123"; // This is a string, not a number.
+    ```lox
+    "I am a string";
+    "";    // The empty string.
+    "123"; // This is a string, not a number.
+    ```
 
     As we'll see when we get to implementing them, there is quite a lot of
     complexity hiding in that innocuous sequence of <span
@@ -254,8 +254,8 @@ The subexpressions on either side of the operator are **operands**. Because
 there are *two* of them, these are called **binary** operators. (It has nothing
 to do with the ones-and-zeroes use of "binary".) Because the operator is <span
 name="fixity">fixed</span> *in* the middle of the operands, these are also
-called ***in*fix** operators as opposed to ***pre*fix** operators where the
-operator comes before and ***post*fix** where it follows the operand.
+called **infix** operators as opposed to **prefix** operators where the operator
+comes before and **postfix** where it follows the operand.
 
 <aside name="fixity">
 
@@ -268,7 +268,7 @@ condition ? thenArm : elseArm;
 ```
 
 Some call these **mixfix** operators. A few languages let you define your own
-operator and control how it is positioned -- its "fixity".
+operators and control how they are positioned -- their "fixity".
 
 </aside>
 
@@ -314,7 +314,7 @@ Values of different types are *never* equivalent:
 123 == "123"; // false.
 ```
 
-Like I said, I'm generally against implicit conversions.
+I'm generally against implicit conversions.
 
 ### Logical operators
 
@@ -393,7 +393,7 @@ You've seen a couple of kinds of statements already. The first one was:
 print "Hello, world!";
 ```
 
-A <span name="print">print statement</span> evaluates a single expression
+A <span name="print">`print` statement</span> evaluates a single expression
 and displays the result to the user. You've also seen some statements like:
 
 <aside name="print">
@@ -468,9 +468,9 @@ rules. In most cases, it works like you expect coming from C or Java.
 ## Control Flow
 
 It's hard to write <span name="flow">useful</span> programs if you can't skip
-some code, or execute some more than once. We need some control flow. In
-addition to the logical operators we already covered, Lox lifts three statements
-straight from C.
+some code, or execute some more than once. That means control flow. In addition
+to the logical operators we already covered, Lox lifts three statements straight
+from C.
 
 <aside name="flow">
 
@@ -484,7 +484,7 @@ relies on dynamic dispatch for selectively executing code.
 
 </aside>
 
-An `if ()` statement executes one of two statements based on some condition:
+An `if` statement executes one of two statements based on some condition:
 
 ```lox
 if (condition) {
@@ -494,8 +494,8 @@ if (condition) {
 }
 ```
 
-A `while` <span name="do">loop</span> executes the body repeatedly as long as the condition expression
-evaluates to true:
+A `while` <span name="do">loop</span> executes the body repeatedly as long as
+the condition expression evaluates to true:
 
 ```lox
 var a = 1;
@@ -507,7 +507,7 @@ while (a < 10) {
 
 <aside name="do">
 
-I left `do-while` loops out of Lox because they aren't that common and wouldn't
+I left `do while` loops out of Lox because they aren't that common and wouldn't
 teach you anything that you won't already learn from `while`. Go ahead and add
 it to your implementation if it makes you happy. It's your party.
 
@@ -570,18 +570,31 @@ fun printSum(a, b) {
 }
 ```
 
-Now's a good time to clarify some terminology. Some people throw around
-"parameter" and "argument" like they are interchangeable and, to many, they are.
-We're going to spend a lot of time splitting the finest of downy hairs around
-semantics, so let's sharpen our words. From here on out:
+Now's a good time to clarify some <span name="define">terminology</span>. Some
+people throw around "parameter" and "argument" like they are interchangeable
+and, to many, they are. We're going to spend a lot of time splitting the finest
+of downy hairs around semantics, so let's sharpen our words. From here on out:
 
 *   An **argument** is an actual value you pass to a function when you call it.
-    So a function *call* has an *argument* list. Sometimes you hear **"actual
-    parameter"** used for these.
+    So a function *call* has an *argument* list. Sometimes you hear **actual
+    parameter** used for these.
 
 *   A **parameter** is a variable that holds the value of the argument inside
     the body of the function. Thus, a function *declaration* has a *parameter*
-    list. Others call these **"formal parameters"** or simply **"formals"**.
+    list. Others call these **formal parameters** or simply **formals**.
+
+<aside name="define">
+
+Speaking of terminology, some statically-typed languages like C make a
+distinction between *declaring* a function and *defining* it. The declaration
+binds the function's type to its name so calls can be type-checked but does not
+provide a body. The definition also fills in the body of the function so that it
+can be compiled.
+
+Since Lox is dynamically typed, this distinction isn't meaningful. A function
+declaration fully specifies the function including its body.
+
+</aside>
 
 The body of a function is always a block. Inside it, you can return a value
 using a `return` statement:
@@ -656,9 +669,9 @@ this feature from Lisp, you probably know the answer is yes.
 For that to work, `inner()` has to "hold on" to references to any surrounding
 variables that it uses so that they stay around even after the outer function
 has returned. We call functions that do this <span
-name="closure">**"closures"**</span>. These days, the term is often used for
-*any* first-class function, though it's sort of a misnomer if the function
-doesn't happen to close over any variables.
+name="closure">**closures**</span>. These days, the term is often used for *any*
+first-class function, though it's sort of a misnomer if the function doesn't
+happen to close over any variables.
 
 <aside name="closure">
 
@@ -781,15 +794,15 @@ classes right in.
 
 <aside name="waterbed">
 
-Larry Wall, Perl's inventor/prophet calls this the "[waterbed
-theory][]". Some complexity is essential and cannot be eliminated. If you push
-it down in one place it swells up in another.
+Larry Wall, Perl's inventor/prophet calls this the "[waterbed theory][]". Some
+complexity is essential and cannot be eliminated. If you push it down in one
+place it swells up in another.
+
+[waterbed theory]: http://wiki.c2.com/?WaterbedTheory
 
 Prototypal languages don't so much *eliminate* the complexity of classes as they
 do make the *user* take that complexity by building their own class-like
 metaprogramming libraries.
-
-[waterbed theory]: http://wiki.c2.com/?WaterbedTheory
 
 </aside>
 
@@ -813,8 +826,9 @@ class Breakfast {
 
 The body of a class contains its methods. They look like function declarations
 but without the `fun` <span name="method">keyword</span>. When the class
-declaration is executed, it creates a class object and stores it in a variable
-named after the class. Just like functions, classes are first class in Lox:
+declaration is executed, Lox creates a class object and stores that in a
+variable named after the class. Just like functions, classes are first class in
+Lox:
 
 <aside name="method">
 
@@ -893,13 +907,13 @@ baconAndToast.serve("Dear Reader");
 
 Every object-oriented language lets you not only define methods, but reuse them
 across multiple classes or objects. For that, Lox supports single inheritance.
-When you declare a class, you can specify a class that it inherits from using
-<span name="less">`<`</span>:
+When you declare a class, you can specify a class that it inherits from using a less-than
+<span name="less">(`<`)</span> operator:
 
 ```lox
 class Brunch < Breakfast {
   drink() {
-    print "How about a Blood Mary?";
+    print "How about a Bloody Mary?";
   }
 }
 ```
@@ -913,9 +927,8 @@ that either. Instead, I took a page from Ruby and used `<`.
 If you know any type theory, you'll notice it's not a *totally* arbitrary
 choice. Every instance of a subclass is an instance of its superclass too, but
 there may be instances of the superclass that are not instances of the subclass.
-That means, in the universe of possible objects, the subclass has fewer than the
-superclass. Its set of objects is "smaller", though type nerds usually use `<:`
-for that relation.
+That means, in the universe of objects, the set of subclass objects is smaller
+than the superclass's set, though type nerds usually use `<:` for that relation.
 
 </aside>
 
@@ -928,10 +941,18 @@ var benedict = Brunch("ham", "English muffin");
 benedict.serve("Noble Reader");
 ```
 
-Even the `init()` method gets inherited. In practice, the subclass usually wants
-to define its own `init()` method too. But the original one also needs to be
-called so that the superclass can maintain its state. We need some way to call a
-method on our own *instance* without hitting our own *methods*.
+Even the `init()` method gets <span name="init">inherited</span>. In practice,
+the subclass usually wants to define its own `init()` method too. But the
+original one also needs to be called so that the superclass can maintain its
+state. We need some way to call a method on our own *instance* without hitting
+our own *methods*.
+
+<aside name="init">
+
+Lox is different from C++, Java, and C# which do not inherit constructors, but
+similar to Smalltalk and Ruby which do.
+
+</aside>
 
 As in Java, you use `super` for that:
 
@@ -944,10 +965,10 @@ class Brunch < Breakfast {
 }
 ```
 
-That's about it. I tried to keep it minimal. The structure of the book did force
-one compromise. Lox is not a *pure* object-oriented language. In a true OOP
-language every object is an instance of a class, even primitive ones like
-numbers and Booleans.
+That's about it for object orientation. I tried to keep the feature set minimal.
+The structure of the book did force one compromise. Lox is not a *pure*
+object-oriented language. In a true OOP language every object is an instance of
+a class, even primitive values like numbers and Booleans.
 
 Because we don't implement classes until well after we start working with the
 built-in types, that would have been hard. So values of primitive types aren't
@@ -969,7 +990,7 @@ that, we already have the built-in `print` statement.
 Later, when we start optimizing, we'll write some benchmarks and see how long it
 takes to execute code. That means we need to track time, so we'll define one
 built-in function `clock()` that returns the number of seconds since the
-application started.
+program started.
 
 And... that's it. I know, right? It's embarrassing.
 

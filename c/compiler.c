@@ -83,17 +83,22 @@ typedef struct {
 //> Calls and Functions function-type-enum
 typedef enum {
   TYPE_FUNCTION,
-//> Methods and Initializers not-yet
+//> Methods and Initializers initializer-type-enum
   TYPE_INITIALIZER,
+//< Methods and Initializers initializer-type-enum
+//> Methods and Initializers method-type-enum
   TYPE_METHOD,
-//< Methods and Initializers not-yet
+//< Methods and Initializers method-type-enum
   TYPE_SCRIPT
 } FunctionType;
 //< Calls and Functions function-type-enum
 //> Local Variables compiler-struct
 
-typedef struct Compiler {
+/* Local Variables compiler-struct < Calls and Functions enclosing-field
+typedef struct {
+*/
 //> Calls and Functions enclosing-field
+typedef struct Compiler {
   struct Compiler* enclosing;
 //< Calls and Functions enclosing-field
 //> Calls and Functions function-fields
@@ -109,17 +114,16 @@ typedef struct Compiler {
   int scopeDepth;
 } Compiler;
 //< Local Variables compiler-struct
-//> Methods and Initializers not-yet
+//> Methods and Initializers class-compiler-struct
 
 typedef struct ClassCompiler {
   struct ClassCompiler* enclosing;
-
   Token name;
-//> Superclasses not-yet
+//> Superclasses has-superclass
   bool hasSuperclass;
-//< Superclasses not-yet
+//< Superclasses has-superclass
 } ClassCompiler;
-//< Methods and Initializers not-yet
+//< Methods and Initializers class-compiler-struct
 
 Parser parser;
 
@@ -127,10 +131,10 @@ Parser parser;
 //> Local Variables current-compiler
 Compiler* current = NULL;
 //< Local Variables current-compiler
-//> Methods and Initializers not-yet
+//> Methods and Initializers current-class
 
 ClassCompiler* currentClass = NULL;
-//< Methods and Initializers not-yet
+//< Methods and Initializers current-class
 //> Compiling Expressions compiling-chunk
 
 /* Compiling Expressions compiling-chunk < Calls and Functions current-chunk
@@ -247,18 +251,17 @@ static int emitJump(uint8_t instruction) {
 //< Jumping Back and Forth emit-jump
 //> Compiling Expressions emit-return
 static void emitReturn() {
-/* Calls and Functions return-nil < Methods and Initializers not-yet
+/* Calls and Functions return-nil < Methods and Initializers return-this
   emitByte(OP_NIL);
 */
-//> Methods and Initializers not-yet
-  // An initializer automatically returns "this".
+//> Methods and Initializers return-this
   if (current->type == TYPE_INITIALIZER) {
     emitBytes(OP_GET_LOCAL, 0);
   } else {
     emitByte(OP_NIL);
   }
 
-//< Methods and Initializers not-yet
+//< Methods and Initializers return-this
   emitByte(OP_RETURN);
 }
 //< Compiling Expressions emit-return
@@ -323,22 +326,19 @@ static void initCompiler(Compiler* compiler, FunctionType type) {
 //> Closures init-zero-local-is-captured
   local->isCaptured = false;
 //< Closures init-zero-local-is-captured
-/* Calls and Functions init-function-slot < Methods and Initializers not-yet
+/* Calls and Functions init-function-slot < Methods and Initializers slot-zero
   local->name.start = "";
   local->name.length = 0;
 */
-//> Methods and Initializers not-yet
+//> Methods and Initializers slot-zero
   if (type != TYPE_FUNCTION) {
-    // In a method, it holds the receiver, "this".
     local->name.start = "this";
     local->name.length = 4;
   } else {
-    // In a function, it holds the function, but cannot be referenced,
-    // so has no name.
     local->name.start = "";
     local->name.length = 0;
   }
-//< Methods and Initializers not-yet
+//< Methods and Initializers slot-zero
 //< Calls and Functions init-function-slot
 }
 //< Local Variables init-compiler
@@ -361,8 +361,8 @@ static ObjFunction* endCompiler() {
     disassembleChunk(currentChunk(), "code");
 */
 //> Calls and Functions disassemble-end
-    disassembleChunk(currentChunk(),
-        function->name != NULL ? function->name->chars : "<script>");
+    disassembleChunk(currentChunk(), function->name != NULL
+        ? function->name->chars : "<script>");
 //< Calls and Functions disassemble-end
   }
 #endif
@@ -417,7 +417,8 @@ static void parsePrecedence(Precedence precedence);
 //< Compiling Expressions forward-declarations
 //> Global Variables identifier-constant
 static uint8_t identifierConstant(Token* name) {
-  return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+  return makeConstant(OBJ_VAL(copyString(name->start,
+                                         name->length)));
 }
 //< Global Variables identifier-constant
 //> Local Variables identifiers-equal
@@ -433,7 +434,7 @@ static int resolveLocal(Compiler* compiler, Token* name) {
     if (identifiersEqual(name, &local->name)) {
 //> own-initializer-error
       if (local->depth == -1) {
-        error("Cannot read local variable in its own initializer.");
+        error("Can't read local variable in its own initializer.");
       }
 //< own-initializer-error
       return i;
@@ -444,7 +445,8 @@ static int resolveLocal(Compiler* compiler, Token* name) {
 }
 //< Local Variables resolve-local
 //> Closures add-upvalue
-static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal) {
+static int addUpvalue(Compiler* compiler, uint8_t index,
+                      bool isLocal) {
   int upvalueCount = compiler->function->upvalueCount;
 //> existing-upvalue
 
@@ -526,7 +528,7 @@ static void declareVariable() {
     }
     
     if (identifiersEqual(name, &local->name)) {
-      error("Variable with this name already declared in this scope.");
+      error("Already variable with this name in this scope.");
     }
   }
 
@@ -578,7 +580,7 @@ static uint8_t argumentList() {
 //> arg-limit
 
       if (argCount == 255) {
-        error("Cannot have more than 255 arguments.");
+        error("Can't have more than 255 arguments.");
       }
 //< arg-limit
       argCount++;
@@ -646,12 +648,12 @@ static void dot(bool canAssign) {
   if (canAssign && match(TOKEN_EQUAL)) {
     expression();
     emitBytes(OP_SET_PROPERTY, name);
-//> Methods and Initializers not-yet
+//> Methods and Initializers parse-call
   } else if (match(TOKEN_LEFT_PAREN)) {
     uint8_t argCount = argumentList();
-    emitBytes(OP_INVOKE, argCount);
-    emitByte(name);
-//< Methods and Initializers not-yet
+    emitBytes(OP_INVOKE, name);
+    emitByte(argCount);
+//< Methods and Initializers parse-call
   } else {
     emitBytes(OP_GET_PROPERTY, name);
   }
@@ -789,54 +791,59 @@ static void variable(bool canAssign) {
   namedVariable(parser.previous, canAssign);
 }
 //< Global Variables variable
-//> Superclasses not-yet
+//> Superclasses synthetic-token
 static Token syntheticToken(const char* text) {
   Token token;
   token.start = text;
   token.length = (int)strlen(text);
   return token;
 }
-
-static void pushSuperclass() {
-  if (currentClass == NULL) return;
-  namedVariable(syntheticToken("super"), false);
-}
-
+//< Superclasses synthetic-token
+//> Superclasses super
 static void super_(bool canAssign) {
+//> super-errors
   if (currentClass == NULL) {
-    error("Cannot use 'super' outside of a class.");
+    error("Can't use 'super' outside of a class.");
   } else if (!currentClass->hasSuperclass) {
-    error("Cannot use 'super' in a class with no superclass.");
+    error("Can't use 'super' in a class with no superclass.");
   }
 
+//< super-errors
   consume(TOKEN_DOT, "Expect '.' after 'super'.");
   consume(TOKEN_IDENTIFIER, "Expect superclass method name.");
   uint8_t name = identifierConstant(&parser.previous);
-
-  // Push the receiver.
+//> super-get
+  
   namedVariable(syntheticToken("this"), false);
-
+/* Superclasses super-get < Superclasses super-invoke
+  namedVariable(syntheticToken("super"), false);
+  emitBytes(OP_GET_SUPER, name);
+*/
+//< super-get
+//> super-invoke
   if (match(TOKEN_LEFT_PAREN)) {
     uint8_t argCount = argumentList();
-
-    pushSuperclass();
-    emitBytes(OP_SUPER, argCount);
-    emitByte(name);
+    namedVariable(syntheticToken("super"), false);
+    emitBytes(OP_SUPER_INVOKE, name);
+    emitByte(argCount);
   } else {
-    pushSuperclass();
+    namedVariable(syntheticToken("super"), false);
     emitBytes(OP_GET_SUPER, name);
   }
+//< super-invoke
 }
-//< Superclasses not-yet
-//> Methods and Initializers not-yet
+//< Superclasses super
+//> Methods and Initializers this
 static void this_(bool canAssign) {
+//> this-outside-class
   if (currentClass == NULL) {
-    error("Cannot use 'this' outside of a class.");
-  } else {
-    variable(false);
+    error("Can't use 'this' outside of a class.");
+    return;
   }
-}
-//< Methods and Initializers not-yet
+//< this-outside-class
+  variable(false);
+} // [this]
+//< Methods and Initializers this
 //> Compiling Expressions unary
 /* Compiling Expressions unary < Global Variables unary
 static void unary() {
@@ -868,119 +875,119 @@ static void unary(bool canAssign) {
 //> Compiling Expressions rules
 ParseRule rules[] = {
 /* Compiling Expressions rules < Calls and Functions infix-left-paren
-  { grouping, NULL,    PREC_NONE },       // TOKEN_LEFT_PAREN
+  [TOKEN_LEFT_PAREN]    = {grouping, NULL,   PREC_NONE},
 */
 //> Calls and Functions infix-left-paren
-  { grouping, call,    PREC_CALL },       // TOKEN_LEFT_PAREN
+  [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_CALL},
 //< Calls and Functions infix-left-paren
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_RIGHT_PAREN
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_LEFT_BRACE [big]
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_RIGHT_BRACE
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_COMMA
+  [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   PREC_NONE}, // [big]
+  [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_COMMA]         = {NULL,     NULL,   PREC_NONE},
 /* Compiling Expressions rules < Classes and Instances table-dot
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_DOT
+  [TOKEN_DOT]           = {NULL,     NULL,   PREC_NONE},
 */
 //> Classes and Instances table-dot
-  { NULL,     dot,     PREC_CALL },       // TOKEN_DOT
+  [TOKEN_DOT]           = {NULL,     dot,    PREC_CALL},
 //< Classes and Instances table-dot
-  { unary,    binary,  PREC_TERM },       // TOKEN_MINUS
-  { NULL,     binary,  PREC_TERM },       // TOKEN_PLUS
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_SEMICOLON
-  { NULL,     binary,  PREC_FACTOR },     // TOKEN_SLASH
-  { NULL,     binary,  PREC_FACTOR },     // TOKEN_STAR
+  [TOKEN_MINUS]         = {unary,    binary, PREC_TERM},
+  [TOKEN_PLUS]          = {NULL,     binary, PREC_TERM},
+  [TOKEN_SEMICOLON]     = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_SLASH]         = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_STAR]          = {NULL,     binary, PREC_FACTOR},
 /* Compiling Expressions rules < Types of Values table-not
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_BANG
+  [TOKEN_BANG]          = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-not
-  { unary,    NULL,    PREC_NONE },       // TOKEN_BANG
+  [TOKEN_BANG]          = {unary,    NULL,   PREC_NONE},
 //< Types of Values table-not
 /* Compiling Expressions rules < Types of Values table-equal
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_BANG_EQUAL
+  [TOKEN_BANG_EQUAL]    = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-equal
-  { NULL,     binary,  PREC_EQUALITY },   // TOKEN_BANG_EQUAL
+  [TOKEN_BANG_EQUAL]    = {NULL,     binary, PREC_EQUALITY},
 //< Types of Values table-equal
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_EQUAL
+  [TOKEN_EQUAL]         = {NULL,     NULL,   PREC_NONE},
 /* Compiling Expressions rules < Types of Values table-comparisons
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_EQUAL_EQUAL
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_GREATER
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_GREATER_EQUAL
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_LESS
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_LESS_EQUAL
+  [TOKEN_EQUAL_EQUAL]   = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_GREATER]       = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_GREATER_EQUAL] = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_LESS]          = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_LESS_EQUAL]    = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-comparisons
-  { NULL,     binary,  PREC_EQUALITY },   // TOKEN_EQUAL_EQUAL
-  { NULL,     binary,  PREC_COMPARISON }, // TOKEN_GREATER
-  { NULL,     binary,  PREC_COMPARISON }, // TOKEN_GREATER_EQUAL
-  { NULL,     binary,  PREC_COMPARISON }, // TOKEN_LESS
-  { NULL,     binary,  PREC_COMPARISON }, // TOKEN_LESS_EQUAL
+  [TOKEN_EQUAL_EQUAL]   = {NULL,     binary, PREC_EQUALITY},
+  [TOKEN_GREATER]       = {NULL,     binary, PREC_COMPARISON},
+  [TOKEN_GREATER_EQUAL] = {NULL,     binary, PREC_COMPARISON},
+  [TOKEN_LESS]          = {NULL,     binary, PREC_COMPARISON},
+  [TOKEN_LESS_EQUAL]    = {NULL,     binary, PREC_COMPARISON},
 //< Types of Values table-comparisons
 /* Compiling Expressions rules < Global Variables table-identifier
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_IDENTIFIER
+  [TOKEN_IDENTIFIER]    = {NULL,     NULL,   PREC_NONE},
 */
 //> Global Variables table-identifier
-  { variable, NULL,    PREC_NONE },       // TOKEN_IDENTIFIER
+  [TOKEN_IDENTIFIER]    = {variable, NULL,   PREC_NONE},
 //< Global Variables table-identifier
 /* Compiling Expressions rules < Strings table-string
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_STRING
+  [TOKEN_STRING]        = {NULL,     NULL,   PREC_NONE},
 */
 //> Strings table-string
-  { string,   NULL,    PREC_NONE },       // TOKEN_STRING
+  [TOKEN_STRING]        = {string,   NULL,   PREC_NONE},
 //< Strings table-string
-  { number,   NULL,    PREC_NONE },       // TOKEN_NUMBER
+  [TOKEN_NUMBER]        = {number,   NULL,   PREC_NONE},
 /* Compiling Expressions rules < Jumping Back and Forth table-and
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_AND
+  [TOKEN_AND]           = {NULL,     NULL,   PREC_NONE},
 */
 //> Jumping Back and Forth table-and
-  { NULL,     and_,    PREC_AND },        // TOKEN_AND
+  [TOKEN_AND]           = {NULL,     and_,   PREC_AND},
 //< Jumping Back and Forth table-and
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_CLASS
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_ELSE
+  [TOKEN_CLASS]         = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_ELSE]          = {NULL,     NULL,   PREC_NONE},
 /* Compiling Expressions rules < Types of Values table-false
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_FALSE
+  [TOKEN_FALSE]         = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-false
-  { literal,  NULL,    PREC_NONE },       // TOKEN_FALSE
+  [TOKEN_FALSE]         = {literal,  NULL,   PREC_NONE},
 //< Types of Values table-false
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_FOR
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_FUN
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_IF
+  [TOKEN_FOR]           = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_FUN]           = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_IF]            = {NULL,     NULL,   PREC_NONE},
 /* Compiling Expressions rules < Types of Values table-nil
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_NIL
+  [TOKEN_NIL]           = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-nil
-  { literal,  NULL,    PREC_NONE },       // TOKEN_NIL
+  [TOKEN_NIL]           = {literal,  NULL,   PREC_NONE},
 //< Types of Values table-nil
 /* Compiling Expressions rules < Jumping Back and Forth table-or
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_OR
+  [TOKEN_OR]            = {NULL,     NULL,   PREC_NONE},
 */
 //> Jumping Back and Forth table-or
-  { NULL,     or_,     PREC_OR },         // TOKEN_OR
+  [TOKEN_OR]            = {NULL,     or_,    PREC_OR},
 //< Jumping Back and Forth table-or
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_PRINT
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_RETURN
-/* Compiling Expressions rules < Superclasses not-yet
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_SUPER
+  [TOKEN_PRINT]         = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_RETURN]        = {NULL,     NULL,   PREC_NONE},
+/* Compiling Expressions rules < Superclasses table-super
+  [TOKEN_SUPER]         = {NULL,     NULL,   PREC_NONE},
 */
-//> Superclasses not-yet
-  { super_,   NULL,    PREC_NONE },       // TOKEN_SUPER
-//< Superclasses not-yet
-/* Compiling Expressions rules < Methods and Initializers not-yet
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_THIS
+//> Superclasses table-super
+  [TOKEN_SUPER]         = {super_,   NULL,   PREC_NONE},
+//< Superclasses table-super
+/* Compiling Expressions rules < Methods and Initializers table-this
+  [TOKEN_THIS]          = {NULL,     NULL,   PREC_NONE},
 */
-//> Methods and Initializers not-yet
-  { this_,    NULL,    PREC_NONE },       // TOKEN_THIS
-//< Methods and Initializers not-yet
+//> Methods and Initializers table-this
+  [TOKEN_THIS]          = {this_,    NULL,   PREC_NONE},
+//< Methods and Initializers table-this
 /* Compiling Expressions rules < Types of Values table-true
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_TRUE
+  [TOKEN_TRUE]          = {NULL,     NULL,   PREC_NONE},
 */
 //> Types of Values table-true
-  { literal,  NULL,    PREC_NONE },       // TOKEN_TRUE
+  [TOKEN_TRUE]          = {literal,  NULL,   PREC_NONE},
 //< Types of Values table-true
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_VAR
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_WHILE
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_ERROR
-  { NULL,     NULL,    PREC_NONE },       // TOKEN_EOF
+  [TOKEN_VAR]           = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_WHILE]         = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_ERROR]         = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_EOF]           = {NULL,     NULL,   PREC_NONE},
 };
 //< Compiling Expressions rules
 //> Compiling Expressions parse-precedence
@@ -1062,10 +1069,11 @@ static void function(FunctionType type) {
     do {
       current->function->arity++;
       if (current->function->arity > 255) {
-        errorAtCurrent("Cannot have more than 255 parameters.");
+        errorAtCurrent("Can't have more than 255 parameters.");
       }
       
-      uint8_t paramConstant = parseVariable("Expect parameter name.");
+      uint8_t paramConstant = parseVariable(
+          "Expect parameter name.");
       defineVariable(paramConstant);
     } while (match(TOKEN_COMMA));
   }
@@ -1093,87 +1101,102 @@ static void function(FunctionType type) {
 //< Closures capture-upvalues
 }
 //< Calls and Functions compile-function
-//> Methods and Initializers not-yet
+//> Methods and Initializers method
 static void method() {
   consume(TOKEN_IDENTIFIER, "Expect method name.");
   uint8_t constant = identifierConstant(&parser.previous);
+//> method-body
 
-  // If the method is named "init", it's an initializer.
+//< method-body
+/* Methods and Initializers method-body < Methods and Initializers method-type
+  FunctionType type = TYPE_FUNCTION;
+*/
+//> method-type
   FunctionType type = TYPE_METHOD;
+//< method-type
+//> initializer-name
   if (parser.previous.length == 4 &&
       memcmp(parser.previous.start, "init", 4) == 0) {
     type = TYPE_INITIALIZER;
   }
-
+  
+//< initializer-name
+//> method-body
   function(type);
-
+//< method-body
   emitBytes(OP_METHOD, constant);
 }
-//< Methods and Initializers not-yet
+//< Methods and Initializers method
 //> Classes and Instances class-declaration
 static void classDeclaration() {
   consume(TOKEN_IDENTIFIER, "Expect class name.");
-//> Methods and Initializers not-yet
+//> Methods and Initializers class-name
   Token className = parser.previous;
-//< Methods and Initializers not-yet
+//< Methods and Initializers class-name
   uint8_t nameConstant = identifierConstant(&parser.previous);
   declareVariable();
 
   emitBytes(OP_CLASS, nameConstant);
   defineVariable(nameConstant);
 
-//> Methods and Initializers not-yet
+//> Methods and Initializers create-class-compiler
   ClassCompiler classCompiler;
   classCompiler.name = parser.previous;
-//< Methods and Initializers not-yet
-//> Superclasses not-yet
+//> Superclasses init-has-superclass
   classCompiler.hasSuperclass = false;
-//< Superclasses not-yet
-//> Methods and Initializers not-yet
+//< Superclasses init-has-superclass
   classCompiler.enclosing = currentClass;
   currentClass = &classCompiler;
 
-//< Methods and Initializers not-yet
-//> Superclasses not-yet
+//< Methods and Initializers create-class-compiler
+//> Superclasses compile-superclass
   if (match(TOKEN_LESS)) {
     consume(TOKEN_IDENTIFIER, "Expect superclass name.");
+    variable(false);
+//> inherit-self
 
     if (identifiersEqual(&className, &parser.previous)) {
-      error("A class cannot inherit from itself.");
+      error("A class can't inherit from itself.");
     }
 
-    classCompiler.hasSuperclass = true;
-
+//< inherit-self
+//> superclass-variable
     beginScope();
-
-    // Store the superclass in a local variable named "super".
-    variable(false);
     addLocal(syntheticToken("super"));
     defineVariable(0);
-
+    
+//< superclass-variable
     namedVariable(className, false);
     emitByte(OP_INHERIT);
+//> set-has-superclass
+    classCompiler.hasSuperclass = true;
+//< set-has-superclass
   }
   
-//< Superclasses not-yet
+//< Superclasses compile-superclass
+//> Methods and Initializers load-class
+  namedVariable(className, false);
+//< Methods and Initializers load-class
   consume(TOKEN_LEFT_BRACE, "Expect '{' before class body.");
-//> Methods and Initializers not-yet
+//> Methods and Initializers class-body
   while (!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
-    namedVariable(className, false);
     method();
   }
-//< Methods and Initializers not-yet
+//< Methods and Initializers class-body
   consume(TOKEN_RIGHT_BRACE, "Expect '}' after class body.");
-//> Superclasses not-yet
+//> Methods and Initializers pop-class
+  emitByte(OP_POP);
+//< Methods and Initializers pop-class
+//> Superclasses end-superclass-scope
 
   if (classCompiler.hasSuperclass) {
     endScope();
   }
-//< Superclasses not-yet
-//> Methods and Initializers not-yet
+//< Superclasses end-superclass-scope
+//> Methods and Initializers pop-enclosing
 
   currentClass = currentClass->enclosing;
-//< Methods and Initializers not-yet
+//< Methods and Initializers pop-enclosing
 }
 //< Classes and Instances class-declaration
 //> Calls and Functions fun-declaration
@@ -1193,7 +1216,8 @@ static void varDeclaration() {
   } else {
     emitByte(OP_NIL);
   }
-  consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+  consume(TOKEN_SEMICOLON,
+          "Expect ';' after variable declaration.");
 
   defineVariable(global);
 }
@@ -1316,19 +1340,19 @@ static void printStatement() {
 static void returnStatement() {
 //> return-from-script
   if (current->type == TYPE_SCRIPT) {
-    error("Cannot return from top-level code.");
+    error("Can't return from top-level code.");
   }
 
 //< return-from-script
   if (match(TOKEN_SEMICOLON)) {
     emitReturn();
   } else {
-//> Methods and Initializers not-yet
+//> Methods and Initializers return-from-init
     if (current->type == TYPE_INITIALIZER) {
-      error("Cannot return a value from an initializer.");
+      error("Can't return a value from an initializer.");
     }
 
-//< Methods and Initializers not-yet
+//< Methods and Initializers return-from-init
     expression();
     consume(TOKEN_SEMICOLON, "Expect ';' after return value.");
     emitByte(OP_RETURN);

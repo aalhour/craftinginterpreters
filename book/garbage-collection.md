@@ -1,13 +1,10 @@
-^title Garbage Collection
-^part A Bytecode Virtual Machine
-
 > I wanna, I wanna,<br>
 > I wanna, I wanna,<br>
 > I wanna be trash.<br>
 >
 > <cite>The Whip, <em>Trash</em></cite>
 
-We say Lox is a "high-level" language because it frees programmers worrying
+We say Lox is a "high-level" language because it frees programmers from worrying
 about details irrelevant to the problem they're solving. The user becomes an
 executive giving the machine abstract goals and letting the lowly computer
 figure out how to get there.
@@ -98,9 +95,9 @@ var global = "string";
 ```
 
 Pause the program right after the two strings have been concatenated but before
-the print statement has executed. The VM can reach `"string"` by looking through
-the global variable table and finding the entry for `global`. It can find
-`"another"` by walking the value stack and hitting the slot for the local
+the `print` statement has executed. The VM can reach `"string"` by looking
+through the global variable table and finding the entry for `global`. It can
+find `"another"` by walking the value stack and hitting the slot for the local
 variable `local`. It can even find the concatenated string `"stringanother"`
 since that temporary value is also sitting on the VM's stack at the point when
 we paused our program.
@@ -209,15 +206,16 @@ of CS seem to be timeless.
 
 As the name implies, mark-sweep works in two phases:
 
-*   **Marking.** We start with the roots and traverse or <span
+*   **Marking** &ndash; We start with the roots and traverse or <span
     name="trace">*trace*</span> through all of the objects those roots refer to.
     This is a classic graph traversal of all of the reachable objects. Each time
     we visit an object, we *mark* it in some way. (Implementations differ in how
     they record the mark.)
 
-*   **Sweeping.** Once the mark phase completes, every reachable object in the
-    heap is marked. That means any unmarked object is unreachable and ripe for
-    reclamation. We go through all the unmarked objects and free each one.
+*   **Sweeping** &ndash; Once the mark phase completes, every reachable object
+    in the heap is marked. That means any unmarked object is unreachable and
+    ripe for reclamation. We go through all the unmarked objects and free each
+    one.
 
 It looks something like this:
 
@@ -392,8 +390,8 @@ We implement that in the "table" module:
 
 ^code mark-table
 
-Pretty straightforward. We walk the entry array. For each one, we its value. We
-also mark the key strings for each entry since the GC manages those strings too.
+Pretty straightforward. We walk the entry array. For each one, we mark its value.
+We also mark the key strings for each entry since the GC manages those strings too.
 
 ### Less obvious roots
 
@@ -431,7 +429,7 @@ It's declared here:
 
 Which means the "memory" module needs an include:
 
-^code memory-include-compiler (1 before, 1 after)
+^code memory-include-compiler (2 before, 1 after)
 
 And the definition is over in the "compiler" module:
 
@@ -503,7 +501,7 @@ object is in and what work is left to do.
 
 Advanced garbage collection algorithms often add other colors to the
 abstraction. I've seen multiple shades of gray and even purple in some designs.
-My puce-chartreuse-fuschia-malachite collector paper was, alas, not accepted for
+My puce-chartreuse-fuchsia-malachite collector paper was, alas, not accepted for
 publication.
 
 </aside>
@@ -591,9 +589,27 @@ It starts out empty:
 
 ^code init-gray-stack (1 before, 2 after)
 
-And, because we manage it ourselves, we need to free it when the VM shuts down:
+And we need to free it when the VM shuts down:
 
 ^code free-gray-stack (2 before, 1 after)
+
+<span name="robust">We</span> take full responsibility for this array. That
+includes allocation failure. If we can't create or grow the gray stack, then we
+can't finish the garbage collection. This is bad news for the VM, but
+fortunately rare since the gray stack tends to be pretty small. It would be nice
+to do something more graceful, but to keep the code in this book simple, we just
+abort.
+
+<aside name="robust">
+
+To be more robust, we can allocate a "rainy day fund" block of memory when we
+start the VM. If the gray stack allocation fails, we free the rainy day block
+and try again. That may give us enough wiggle room on the heap to create the
+gray stack, finish the GC, and free up more memory.
+
+</aside>
+
+^code exit-gray-stack (2 before, 1 after)
 
 ### Processing gray objects
 
@@ -601,7 +617,7 @@ OK, now when we're done marking the roots we have both set a bunch of fields
 and filled our work list with objects to chew through. It's time for the next
 phase:
 
-^code call-trace-references (1 before, 1 after)
+^code call-trace-references (1 before, 2 after)
 
 Here's the implementation:
 
@@ -698,14 +714,14 @@ either black or white. The black objects are reachable and we want to hang on to
 them. Anything still white never got touched by the trace and is thus garbage.
 All that's left is to reclaim them:
 
-^code call-sweep (1 before, 1 after)
+^code call-sweep (1 before, 2 after)
 
 All of the logic lives in one function:
 
 ^code sweep
 
 I know that's kind of a lot of code and pointer shenanigans but there isn't much
-to it once you work through it. The outer while loop walks the linked list of
+to it once you work through it. The outer `while` loop walks the linked list of
 every object in the heap, checking their mark bits. If an object is unmarked
 (white), we unlink it from the list and free it using the `freeObject()`
 function we already wrote.
@@ -1062,10 +1078,10 @@ grossest invertebrates out there.
 
 The collector's job is to free dead objects and preserve live ones. Mistakes are
 easy to make in both directions. If the VM fails to free objects that aren't
-needed, it can slowly leak memory over time. If it frees an object that is in
-use, the user's program can access invalid memory. These failures often don't
-immediately cause a crash, which makes it harder for us to trace backwards in
-time to find the bug.
+needed, it slowly leaks memory. If it frees an object that is in use, the user's
+program can access invalid memory. These failures often don't immediately cause
+a crash, which makes it harder for us to trace backwards in time to find the
+bug.
 
 This is made harder by the fact that we don't know when the collector will run.
 Any call that eventually allocates some memory is a place in the VM where a
@@ -1084,9 +1100,9 @@ CallFrame stacks, but the C stack is <span name="c">hidden</span> to it.
 Our GC can't find addresses in the C stack, but many can. Conservative garbage
 collectors look all through memory, including the native stack. The most
 well-known of this variety is the [Boehm–Demers–Weiser garbage
-collector][boehm], usually just called the "Boehm collector". (The best way to
-fame in CS is a last name that's alphabetically early so that it shows up first
-in sorted lists of names.)
+collector][boehm], usually just called the "Boehm collector". (The shortest path
+to fame in CS is a last name that's alphabetically early so that it shows up
+first in sorted lists of names.)
 
 [boehm]: https://en.wikipedia.org/wiki/Boehm_garbage_collector
 
@@ -1124,7 +1140,7 @@ table doesn't have enough capacity and needs to grow, it calls `reallocate()`.
 That in turn triggers a GC, which fails to mark the new constant object and
 thus sweeps it right before we have a chance to add it to the table. Crash.
 
-The fix, as you've seen in other places, is to push it onto the stack
+The fix, as you've seen in other places, is to push the constant onto the stack
 temporarily:
 
 ^code add-constant-push (1 before, 1 after)

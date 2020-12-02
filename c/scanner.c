@@ -131,8 +131,7 @@ static TokenType checkKeyword(int start, int length,
 }
 //< check-keyword
 //> identifier-type
-static TokenType identifierType()
-{
+static TokenType identifierType() {
 //> keywords
   switch (scanner.start[0]) {
     case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
@@ -243,14 +242,17 @@ Token scanToken() {
     case '*': return makeToken(TOKEN_STAR);
 //> two-char
     case '!':
-      return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
+      return makeToken(
+          match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
     case '=':
-      return makeToken(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
+      return makeToken(
+          match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
     case '<':
-      return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
+      return makeToken(
+          match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
     case '>':
-      return makeToken(match('=') ?
-                       TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+      return makeToken(
+          match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
 //< two-char
 //> scan-string
       

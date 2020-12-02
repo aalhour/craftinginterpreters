@@ -1,6 +1,3 @@
-^title Calls and Functions
-^part A Bytecode Virtual Machine
-
 > Any problem in computer science can be solved with another level of
 > indirection. Except for the problem of too many layers of indirection.
 >
@@ -100,7 +97,7 @@ least, we'll be able to once we [implement a garbage collector][gc].
 
 </aside>
 
-Lox let's you print any object, and functions are first-class objects, so we
+Lox lets you print any object, and functions are first-class objects, so we
 need to handle them too:
 
 ^code print-function (1 before, 1 after)
@@ -109,17 +106,7 @@ This calls out to:
 
 ^code print-function-helper
 
-Since we have the function's name, we may as well use it.
-
-While we're here, there's a funny little edge case to handle. The implicit
-function that the compiler creates to contain the top level code for a script
-doesn't have a name. If we try to print it, we'll crash. You might correctly
-note that there's no way for a user to get a reference to that function in the
-first place. But our diagnostic code that prints the entire stack when
-`DEBUG_TRACE_EXECUTION` is defined *will* print it, and we don't want that to
-blow up. So:
-
-^code print-script (1 before, 1 after)
+Since functions know their name, they may as well say it.
 
 Finally, we have a couple of macros for converting values to functions. First,
 make sure your value actually *is* a function:
@@ -269,6 +256,17 @@ debug the compiler. We should fix that now that the generated chunk is wrapped
 in a function:
 
 ^code disassemble-end (2 before, 2 after)
+
+Notice the check in here to see if the function's name is `NULL`? User-defined
+functions have names, but the implicit function we create for the top-level code
+does not, and we need to handle that gracefully even in our own diagnostic code.
+Speaking of which:
+
+^code print-script (1 before, 1 after)
+
+There's no way for a *user* to get a reference to the top-level function and try
+to print it, but our `DEBUG_TRACE_EXECUTION` diagnostic code that prints the
+entire stack can and does.
 
 Bumping up a level to `compile()`, we adjust its signature:
 
@@ -736,7 +734,11 @@ the Value and CallFrame stacks in the VM, we won't use an array. Instead, we use
 a linked list. Each Compiler points back to the Compiler for the function that
 encloses it, all the way back to the root Compiler for the top level code:
 
-^code enclosing-field (1 before, 1 after)
+^code enclosing-field (2 before, 1 after)
+
+Inside the Compiler struct, we can't reference the Compiler *typedef* since that
+declaration hasn't finished yet. Instead, we give a name to the struct itself
+and use that for the field's type. C is weird.
 
 When initializing a new Compiler, we capture the about-to-no-longer-be-current
 one in that pointer:
@@ -940,8 +942,8 @@ call begins here:
 
 <aside name="switch">
 
-Using a switch statement to check a single type is overkill right now, but will
-make more sense later as we add more cases to handle other callable types.
+Using a `switch` statement to check a single type is overkill right now, but
+will make more sense later as we add more cases to handle other callable types.
 
 </aside>
 
@@ -1063,10 +1065,10 @@ It prints out:
 
 ```text
 Expected 0 arguments but got 2.
-[line 10] in c()
-[line 6] in b()
-[line 2] in a()
-[line 13] in script
+[line 4] in c()
+[line 2] in b()
+[line 1] in a()
+[line 7] in script
 ```
 
 That doesn't look too bad, does it?
@@ -1127,7 +1129,7 @@ take parameters! It almost looks like we know what we're doing here.
 ## Return Statements
 
 If you want a function that returns something other than the implicit `nil`, you
-need a return statement:
+need a `return` statement:
 
 ^code match-return (1 before, 1 after)
 
@@ -1143,10 +1145,10 @@ value expression and return it with an `OP_RETURN` instruction.
 
 This is the same `OP_RETURN` instruction we've already implemented -- we don't
 need any new runtime code. This is quite a difference from jlox. There, we had
-to use exceptions to unwind the stack when a return statement was executed. That
-was because you could return from deep inside some nested blocks. Since jlox
-recursively walks the AST, that means there's a bunch of Java method calls we
-need to escape out of.
+to use exceptions to unwind the stack when a `return` statement was executed.
+That was because you could return from deep inside some nested blocks. Since
+jlox recursively walks the AST, that means there's a bunch of Java method calls
+we need to escape out of.
 
 Our bytecode compiler flattens that all out. We do recursive descent during
 parsing, but at runtime, the VM's bytecode dispatch loop is completely flat.
@@ -1154,10 +1156,10 @@ There is no recursion going on at the C level at all. So returning, even from
 within some nested blocks, is as straightforward as returning from the end of
 the function's body.
 
-We're not totally done, though. Return statements give us a new compile error to
-worry about. Returns are useful for returning from functions but the top level
-of a Lox program is imperative code too. You shouldn't be able to <span
-name="worst">return</span> from there:
+We're not totally done, though. The new `return` statement gives us a new
+compile error to worry about. Returns are useful for returning from functions
+but the top level of a Lox program is imperative code too. You shouldn't be able
+to <span name="worst">return</span> from there:
 
 ```lox
 return "What?!";
@@ -1165,14 +1167,14 @@ return "What?!";
 
 <aside name="worst">
 
-Allowing returns at the top level isn't the worst idea in the world. It would
+Allowing `return` at the top level isn't the worst idea in the world. It would
 give you a natural way to terminate a script early. You could maybe even use a
 returned number to indicate the process's exit code.
 
 </aside>
 
-We've specified that it's a compile error to have a return statement outside of
-any function:
+We've specified that it's a compile error to have a `return` statement outside
+of any function:
 
 ^code return-from-script (1 before, 1 after)
 
@@ -1277,7 +1279,7 @@ a helper to define a new native function exposed to Lox programs:
 ^code define-native
 
 It takes a pointer to a C function and the name it will be known as in Lox.
-We wrap the function in an ObjFunction and then store that in a global variable
+We wrap the function in an ObjNative and then store that in a global variable
 with the given name.
 
 You're probably wondering why we push and pop the name and function on the
@@ -1363,16 +1365,21 @@ optimizations we can do in our VM.
     Implement this optimization. Write a couple of benchmarks and see how it
     affects the performance. Do you think the extra code complexity is worth it?
 
-2.  Right now, there's no way for a native function to signal a runtime error.
+2.  Native function calls are fast in part because we don't validate that the
+    call passes as many arguments as the function expects. We really should, or
+    an incorrect call to a native function without enough arguments could cause
+    the function to read uninitialized memory. Add arity checking.
+
+3.  Right now, there's no way for a native function to signal a runtime error.
     In a real implementation, this is something we'd need to support because
     native functions live in the statically-typed world of C but are called
     from dynamically-typed Lox land. If a user, say, tries to pass a string to
     `sin()`, that native function needs to report a runtime error.
 
     Extend the native function system to support that. How does this capability
-    affect performance of native calls?
+    affect the performance of native calls?
 
-3.  Add some more native functions to do things you find useful. Write some
+4.  Add some more native functions to do things you find useful. Write some
     programs using those. What did you add? How do they affect the feel of the
     language and how practical it is?
 

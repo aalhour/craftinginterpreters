@@ -51,7 +51,9 @@ public class Lox {
 
     for (;;) { // [repl]
       System.out.print("> ");
-      run(reader.readLine());
+      String line = reader.readLine();
+      if (line == null) break;
+      run(line);
 //> reset-had-error
       hadError = false;
 //< reset-had-error
@@ -108,7 +110,8 @@ public class Lox {
     report(line, "", message);
   }
 
-  private static void report(int line, String where, String message) {
+  private static void report(int line, String where,
+                             String message) {
     System.err.println(
         "[line " + line + "] Error" + where + ": " + message);
     hadError = true;

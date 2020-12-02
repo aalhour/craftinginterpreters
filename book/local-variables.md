@@ -1,9 +1,6 @@
-^title Local Variables
-^part A Bytecode Virtual Machine
-
-> And as imagination bodies forth<br/>
-> The forms of things unknown, the poet's pen<br/>
-> Turns them to shapes and gives to airy nothing<br/>
+> And as imagination bodies forth<br>
+> The forms of things unknown, the poet's pen<br>
+> Turns them to shapes and gives to airy nothing<br>
 > A local habitation and a name.
 > <cite>William Shakespeare, <em>A Midsummer Night's Dream</em></cite>
 
@@ -202,7 +199,7 @@ are a big chunk of work that we'll tackle in [a later chapter][functions], so
 for now we're only going to do blocks. As usual, we start with the syntax. The
 new grammar we'll introduce is:
 
-```lox
+```ebnf
 statement      → exprStmt
                | printStmt
                | block ;
@@ -677,8 +674,9 @@ the bare bits.
 
 1.  How do other languages handle code like:
 
-        :::lox
-        var a = a;
+    ```lox
+    var a = a;
+    ```
 
     What would you do? Why?
 

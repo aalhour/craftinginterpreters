@@ -1,5 +1,6 @@
 //> Evaluating Expressions interpreter-class
 package com.craftinginterpreters.lox;
+//> Statements and State import-list
 
 //> Functions import-array-list
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 //> Resolving and Binding import-hash-map
 import java.util.HashMap;
 //< Resolving and Binding import-hash-map
-//> Statements and State import-list
 import java.util.List;
 //< Statements and State import-list
 //> Resolving and Binding import-map
@@ -18,11 +18,11 @@ import java.util.Map;
 class Interpreter implements Expr.Visitor<Object> {
 */
 //> Statements and State interpreter
-class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+class Interpreter implements Expr.Visitor<Object>,
+                             Stmt.Visitor<Void> {
 //< Statements and State interpreter
 /* Statements and State environment-field < Functions global-environment
   private Environment environment = new Environment();
-
 */
 //> Functions global-environment
   final Environment globals = new Environment();
@@ -31,8 +31,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 //> Resolving and Binding locals-field
   private final Map<Expr, Integer> locals = new HashMap<>();
 //< Resolving and Binding locals-field
-//> Functions interpreter-constructor
+//> Statements and State environment-field
 
+//< Statements and State environment-field
+//> Functions interpreter-constructor
   Interpreter() {
     globals.define("clock", new LoxCallable() {
       @Override
@@ -48,9 +50,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       public String toString() { return "<native fn>"; }
     });
   }
+  
 //< Functions interpreter-constructor
 /* Evaluating Expressions interpret < Statements and State interpret
-  void interpret(Expr expression) {
+  void interpret(Expr expression) { // [void]
     try {
       Object value = evaluate(expression);
       System.out.println(stringify(value));
@@ -86,7 +89,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 //< Resolving and Binding resolve
 //> Statements and State execute-block
-  void executeBlock(List<Stmt> statements, Environment environment) {
+  void executeBlock(List<Stmt> statements,
+                    Environment environment) {
     Environment previous = this.environment;
     try {
       this.environment = environment;
@@ -168,7 +172,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {
     evaluate(stmt.expression);
-    return null; // [void]
+    return null;
   }
 //< Statements and State visit-expression-stmt
 //> Functions visit-function
@@ -181,7 +185,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     LoxFunction function = new LoxFunction(stmt, environment);
 */
 //> Classes construct-function
-    LoxFunction function = new LoxFunction(stmt, environment, false);
+    LoxFunction function = new LoxFunction(stmt, environment,
+                                           false);
 //< Classes construct-function
     environment.define(stmt.name.lexeme, function);
     return null;
@@ -240,11 +245,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Object visitAssignExpr(Expr.Assign expr) {
     Object value = evaluate(expr.value);
-
 /* Statements and State visit-assign < Resolving and Binding resolved-assign
     environment.assign(expr.name, value);
 */
 //> Resolving and Binding resolved-assign
+
     Integer distance = locals.get(expr);
     if (distance != null) {
       environment.assignAt(distance, expr.name, value);
@@ -303,8 +308,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if (left instanceof String && right instanceof String) {
           return (String)left + (String)right;
         }
-//> string-wrong-type
 
+/* Evaluating Expressions binary-plus < Evaluating Expressions string-wrong-type
+        break;
+*/
+//> string-wrong-type
         throw new RuntimeError(expr.operator,
             "Operands must be two numbers or two strings.");
 //< string-wrong-type
@@ -398,7 +406,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     Object object = evaluate(expr.object);
 
     if (!(object instanceof LoxInstance)) { // [order]
-      throw new RuntimeError(expr.name, "Only instances have fields.");
+      throw new RuntimeError(expr.name,
+                             "Only instances have fields.");
     }
 
     Object value = evaluate(expr.value);
@@ -414,7 +423,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         distance, "super");
 //> super-find-this
 
-    // "this" is always one level nearer than "super"'s environment.
     LoxInstance object = (LoxInstance)environment.getAt(
         distance - 1, "this");
 //< super-find-this
@@ -504,7 +512,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 //< is-truthy
 //> is-equal
   private boolean isEqual(Object a, Object b) {
-    // nil is only equal to nil.
     if (a == null && b == null) return true;
     if (a == null) return false;
 
@@ -515,7 +522,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private String stringify(Object object) {
     if (object == null) return "nil";
 
-    // Hack. Work around Java adding ".0" to integer-valued doubles.
     if (object instanceof Double) {
       String text = object.toString();
       if (text.endsWith(".0")) {

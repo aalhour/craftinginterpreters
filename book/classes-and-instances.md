@@ -1,8 +1,5 @@
-^title Classes and Instances
-^part A Bytecode Virtual Machine
-
 > Caring too much for objects can destroy you. Only -- if you care for a thing
-> enough, it takes on a life of its own, doesn’t it? And isn’t the whole point
+> enough, it takes on a life of its own, doesn't it? And isn’t the whole point
 > of things -- beautiful things -- that they connect you to some larger beauty?
 >
 > <cite>Donna Tartt, <em>The Goldfinch</em></cite>
@@ -234,7 +231,7 @@ users freely add fields to an instance at runtime. This means we need a storage
 mechanism that can grow. We could use a dynamic array, but we also want to look
 up fields by name as quickly as possible. There's a data structure that's just
 perfect for quickly accessing a set of values by name and
--- even more convenient -- we've already implemented it. Each instance stores
+-- even more conveniently -- we've already implemented it. Each instance stores
 its fields using a hash table.
 
 <aside name="fields">

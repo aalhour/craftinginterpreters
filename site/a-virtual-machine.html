@@ -43,8 +43,7 @@
     <li><a href="#an-arithmetic-calculator"><small>15.3</small> An Arithmetic Calculator</a></li>
     <li class="divider"></li>
     <li class="end-part"><a href="#challenges">Challenges</a></li>
-    <li class="end-part"><a href="#design-note"><small>note</small>Register-Based Bytecode
-</a></li>
+    <li class="end-part"><a href="#design-note"><small>note</small>Register-Based Bytecode</a></li>
 </ul>
 
 
@@ -75,8 +74,7 @@
     <li><a href="#an-arithmetic-calculator"><small>15.3</small> An Arithmetic Calculator</a></li>
     <li class="divider"></li>
     <li class="end-part"><a href="#challenges">Challenges</a></li>
-    <li class="end-part"><a href="#design-note"><small>note</small>Register-Based Bytecode
-</a></li>
+    <li class="end-part"><a href="#design-note"><small>note</small>Register-Based Bytecode</a></li>
 </ul>
 
 
@@ -95,9 +93,9 @@
   <h1>A Virtual Machine</h1>
 
 <div class="sign-up closable">
-    <h1>This book is a work in progress!</h1>
+  <h1>This book is a work in progress!</h1>
     <span class="dismiss">&times;</span>
-    <p>If you see a mistake, find something unclear, or have a suggestion, please <a href="https://github.com/munificent/craftinginterpreters/issues" target="_blank">let me know</a>. To learn when new chapters are up, join the mailing list:</p>
+    <p>If you see a mistake, find something unclear, or have a suggestion, please <a href="https://github.com/munificent/craftinginterpreters/issues" target="_blank">let me know</a>. To follow its progress, please join the mailing list:</p>
 
   <!-- Begin MailChimp Signup Form -->
   <div id="mc_embed_signup">
@@ -120,37 +118,37 @@ would be embarrassed to admit that that was how it was done.</p>
 <p><cite>Christopher Priest, <em>The Prestige</em></cite></p>
 </blockquote>
 <p>We&rsquo;ve spent a lot of time talking about how to represent a program as a sequence
-of bytecode instructions, but it feels like learning biology using only dead
-stuffed animals. We know what instructions are in theory, but we&rsquo;ve never seen
-them living and breathing, so it&rsquo;s hard to really understand what they <em>do</em>. It
-would be hard to write a compiler that outputs bytecode when we don&rsquo;t have a
-good understanding of how that bytecode behaves.</p>
+of bytecode instructions, but it feels like learning biology using only stuffed
+dead animals. We know what instructions are in theory, but we&rsquo;ve never seen them
+in action, so it&rsquo;s hard to really understand what they <em>do</em>. It would be hard to
+write a compiler that outputs bytecode when we don&rsquo;t have a good understanding
+of how that bytecode behaves.</p>
 <p>So, before we go and build the front end of our new interpreter, we will begin
 with the back end<span class="em">&mdash;</span>the virtual machine that executes instructions. It breathes
 life into the bytecode. Watching the instructions prance around gives us a
 clearer picture of how a compiler might translate the user&rsquo;s source code into a
 series of them.</p>
-<h2><a href="#an-instruction-execution-machine" name="an-instruction-execution-machine"><small>15&#8202;.&#8202;1</small> An Instruction Execution Machine</a></h2>
-<p>The &ldquo;virtual machine&rdquo; is one part of our interpreter&rsquo;s internal architecture.
-You hand it a chunk of code<span class="em">&mdash;</span>literally a Chunk<span class="em">&mdash;</span>and it runs it. The code and
-data structures for the VM reside in a new module:</p>
+<h2><a href="#an-instruction-execution-machine" name="an-instruction-execution-machine"><small>15&#8202;.&#8202;1</small>An Instruction Execution Machine</a></h2>
+<p>The virtual machine is one part of our interpreter&rsquo;s internal architecture. You
+hand it a chunk of code<span class="em">&mdash;</span>literally a Chunk<span class="em">&mdash;</span>and it runs it. The code and
+data structures for the VM reside in a new module.</p>
 <div class="codehilite"><div class="source-file"><em>vm.h</em><br>
 create new file</div>
-<pre><span></span><span class="cp">#ifndef clox_vm_h </span>
-<span class="cp">#define clox_vm_h </span>
+<pre>
+<span class="a">#ifndef clox_vm_h</span>
+<span class="a">#define clox_vm_h</span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;chunk.h&quot;</span><span class="cp"></span>
+<span class="a">#include &quot;chunk.h&quot;</span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>  
-  <span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">;</span>   
-<span class="p">}</span> <span class="n">VM</span><span class="p">;</span>             
+<span class="k">typedef</span> <span class="k">struct</span> {
+  <span class="t">Chunk</span>* <span class="i">chunk</span>;
+} <span class="a">VM</span>;
 
-<span class="kt">void</span> <span class="nf">initVM</span><span class="p">();</span>    
-<span class="kt">void</span> <span class="nf">freeVM</span><span class="p">();</span>    
+<span class="t">void</span> <span class="i">initVM</span>();
+<span class="t">void</span> <span class="i">freeVM</span>();
 
-<span class="cp">#endif            </span>
+<span class="a">#endif</span>
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.h</em>, create new file</div>
 
 <p>As usual, we start simple. The VM will gradually acquire a whole pile of state
@@ -160,18 +158,18 @@ Currently, all we store is the chunk that it executes.</p>
 to create and tear down a VM. Here&rsquo;s the implementation:</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 create new file</div>
-<pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;common.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;vm.h&quot;    </span><span class="cp"></span>
+<pre>
+<span class="a">#include &quot;common.h&quot;</span>
+<span class="a">#include &quot;vm.h&quot;</span>
 
-<span class="n">VM</span> <span class="n">vm</span><span class="p">;</span> <span name="one">&#8203;</span>
+<span class="a">VM</span> <span class="i">vm</span>;<span name="one"> </span>
 
-<span class="kt">void</span> <span class="nf">initVM</span><span class="p">()</span> <span class="p">{</span>    
-<span class="p">}</span>                  
+<span class="t">void</span> <span class="i">initVM</span>() {
+}
 
-<span class="kt">void</span> <span class="nf">freeVM</span><span class="p">()</span> <span class="p">{</span>    
-<span class="p">}</span>                  
+<span class="t">void</span> <span class="i">freeVM</span>() {
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, create new file</div>
 
 <p>OK, calling those functions &ldquo;implementations&rdquo; is a stretch. We don&rsquo;t have any
@@ -195,88 +193,105 @@ global variables</a> is still true when programming in the large. But when
 keeping things small for a book&hellip;</p>
 </aside>
 <p>Before we start pumping fun code into our VM, let&rsquo;s go ahead and wire it up to
-the interpreter&rsquo;s main entrypoint:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+the interpreter&rsquo;s main entrypoint.</p>
+<div class="codehilite"><pre class="insert-before">
+int main(int argc, const char* argv[]) {
 </pre><div class="source-file"><em>main.c</em><br>
 in <em>main</em>()</div>
-<pre class="insert"><span></span>  <span class="n">initVM</span><span class="p">();</span>                             
-<br></pre><pre class="insert-after"><span></span>  <span class="n">Chunk</span> <span class="n">chunk</span><span class="p">;</span>                          
-</pre></div>
+<pre class="insert">
+  <span class="i">initVM</span>();
 
+</pre><pre class="insert-after">
+  Chunk chunk;
+</pre></div>
 <div class="source-file-narrow"><em>main.c</em>, in <em>main</em>()</div>
 
 <p>We spin up the VM when the interpreter first starts. Then when we&rsquo;re about to
-exit, we wind it down:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">disassembleChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="s">&quot;test chunk&quot;</span><span class="p">);</span>
+exit, we wind it down.</p>
+<div class="codehilite"><pre class="insert-before">
+  disassembleChunk(&amp;chunk, &quot;test chunk&quot;);
 </pre><div class="source-file"><em>main.c</em><br>
 in <em>main</em>()</div>
-<pre class="insert"><span></span>  <span class="n">freeVM</span><span class="p">();</span>                              
-</pre><pre class="insert-after"><span></span>  <span class="n">freeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">);</span>                     
+<pre class="insert">
+  <span class="i">freeVM</span>();
+</pre><pre class="insert-after">
+  freeChunk(&amp;chunk);
 </pre></div>
-
 <div class="source-file-narrow"><em>main.c</em>, in <em>main</em>()</div>
 
 <p>One last ceremonial obligation:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;debug.h&quot;                      </span><span class="cp"></span>
+<div class="codehilite"><pre class="insert-before">
+#include &quot;debug.h&quot;
 </pre><div class="source-file"><em>main.c</em></div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;vm.h&quot;                         </span><span class="cp"></span>
-</pre><pre class="insert-after"><br><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
-</pre></div>
+<pre class="insert">
+<span class="a">#include &quot;vm.h&quot;</span>
+</pre><pre class="insert-after">
 
+int main(int argc, const char* argv[]) {
+</pre></div>
 <div class="source-file-narrow"><em>main.c</em></div>
 
 <p>Now when you run clox, it starts up the VM before it creates that hand-authored
 chunk from the <a href="chunks-of-bytecode.html#disassembling-chunks">last chapter</a>. The VM is ready and waiting, so let&rsquo;s teach it
 to do something.</p>
-<h3><a href="#executing-instructions" name="executing-instructions"><small>15&#8202;.&#8202;1&#8202;.&#8202;1</small> Executing instructions</a></h3>
-<p>The VM springs into action when we command it to interpret a chunk of bytecode:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">disassembleChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="s">&quot;test chunk&quot;</span><span class="p">);</span>
+<h3><a href="#executing-instructions" name="executing-instructions"><small>15&#8202;.&#8202;1&#8202;.&#8202;1</small>Executing instructions</a></h3>
+<p>The VM springs into action when we command it to interpret a chunk of bytecode.</p>
+<div class="codehilite"><pre class="insert-before">
+  disassembleChunk(&amp;chunk, &quot;test chunk&quot;);
 </pre><div class="source-file"><em>main.c</em><br>
 in <em>main</em>()</div>
-<pre class="insert"><span></span>  <span class="n">interpret</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">);</span>                     
-</pre><pre class="insert-after"><span></span>  <span class="n">freeVM</span><span class="p">();</span>                              
+<pre class="insert">
+  <span class="i">interpret</span>(&amp;<span class="i">chunk</span>);
+</pre><pre class="insert-after">
+  freeVM();
 </pre></div>
-
 <div class="source-file-narrow"><em>main.c</em>, in <em>main</em>()</div>
 
 <p>This function is the main entrypoint into the VM. It&rsquo;s declared like so:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="kt">void</span> <span class="nf">freeVM</span><span class="p">();</span>                          
+<div class="codehilite"><pre class="insert-before">
+void freeVM();
 </pre><div class="source-file"><em>vm.h</em><br>
 add after <em>freeVM</em>()</div>
-<pre class="insert"><span></span><span class="n">InterpretResult</span> <span class="nf">interpret</span><span class="p">(</span><span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">);</span>
-</pre><pre class="insert-after"><br><span></span><span class="cp">#endif                                  </span>
-</pre></div>
+<pre class="insert">
+<span class="t">InterpretResult</span> <span class="i">interpret</span>(<span class="t">Chunk</span>* <span class="i">chunk</span>);
+</pre><pre class="insert-after">
 
+#endif
+</pre></div>
 <div class="source-file-narrow"><em>vm.h</em>, add after <em>freeVM</em>()</div>
 
 <p>The VM runs the chunk and then responds with a value from this enum:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="p">}</span> <span class="n">VM</span><span class="p">;</span>                     
-<br></pre><div class="source-file"><em>vm.h</em><br>
-add after struct <em>VM</em></div>
-<pre class="insert"><span></span><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>            
-  <span class="n">INTERPRET_OK</span><span class="p">,</span>           
-  <span class="n">INTERPRET_COMPILE_ERROR</span><span class="p">,</span>
-  <span class="n">INTERPRET_RUNTIME_ERROR</span> 
-<span class="p">}</span> <span class="n">InterpretResult</span><span class="p">;</span>        
-<br></pre><pre class="insert-after"><span></span><span class="kt">void</span> <span class="nf">initVM</span><span class="p">();</span>            
-<span class="kt">void</span> <span class="nf">freeVM</span><span class="p">();</span>            
-</pre></div>
+<div class="codehilite"><pre class="insert-before">
+} VM;
 
+</pre><div class="source-file"><em>vm.h</em><br>
+add after struct <em>VM</em></div>
+<pre class="insert">
+<span class="k">typedef</span> <span class="k">enum</span> {
+  <span class="a">INTERPRET_OK</span>,
+  <span class="a">INTERPRET_COMPILE_ERROR</span>,
+  <span class="a">INTERPRET_RUNTIME_ERROR</span>
+} <span class="t">InterpretResult</span>;
+
+</pre><pre class="insert-after">
+void initVM();
+void freeVM();
+</pre></div>
 <div class="source-file-narrow"><em>vm.h</em>, add after struct <em>VM</em></div>
 
 <p>We aren&rsquo;t using the result yet, but when we have a compiler that reports static
 errors and a VM that detects runtime errors, the interpreter will use this to
 know how to set the exit code of the process.</p>
-<p>We&rsquo;re tiptoeing towards some actual implementation:</p>
+<p>We&rsquo;re inching towards some actual implementation.</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add after <em>freeVM</em>()</div>
-<pre><span></span><span class="n">InterpretResult</span> <span class="nf">interpret</span><span class="p">(</span><span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">vm</span><span class="p">.</span><span class="n">chunk</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">;</span>                      
-  <span class="n">vm</span><span class="p">.</span><span class="n">ip</span> <span class="o">=</span> <span class="n">vm</span><span class="p">.</span><span class="n">chunk</span><span class="o">-&gt;</span><span class="n">code</span><span class="p">;</span>                
-  <span class="k">return</span> <span class="n">run</span><span class="p">();</span>                          
-<span class="p">}</span>                                        
+<pre>
+<span class="t">InterpretResult</span> <span class="i">interpret</span>(<span class="t">Chunk</span>* <span class="i">chunk</span>) {
+  <span class="i">vm</span>.<span class="i">chunk</span> = <span class="i">chunk</span>;
+  <span class="i">vm</span>.<span class="i">ip</span> = <span class="i">vm</span>.<span class="i">chunk</span>-&gt;<span class="i">code</span>;
+  <span class="k">return</span> <span class="i">run</span>();
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, add after <em>freeVM</em>()</div>
 
 <p>First, we store the chunk being executed in the VM. Then we call <code>run()</code>, an
@@ -284,21 +299,22 @@ internal helper function that actually runs the bytecode instructions. Between
 those two parts is an intriguing line. What is this <code>ip</code> business?</p>
 <p>As the VM works its way through the bytecode, it keeps track of where it is<span class="em">&mdash;</span>the location of the instruction currently being executed. We don&rsquo;t use a <span
 name="local">local</span> variable inside <code>run()</code> for this because eventually
-other functions will need to access it. Instead, we store it as a field in VM:</p>
+other functions will need to access it. Instead, we store it as a field in VM.</p>
 <aside name="local">
-<p>Actually, if we were trying to squeeze every ounce of speed out of our bytecode
-interpreter, we <em>would</em> store <code>ip</code> in a local variable. It gets modified so
-frequently during execution that we ideally want the C compiler to keep it in a
-register.</p>
+<p>If we were trying to squeeze every ounce of speed out of our bytecode
+interpreter, we would store <code>ip</code> in a local variable. It gets modified so often
+during execution that we want the C compiler to keep it in a register.</p>
 </aside>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-  <span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">;</span> 
+<div class="codehilite"><pre class="insert-before">
+typedef struct {
+  Chunk* chunk;
 </pre><div class="source-file"><em>vm.h</em><br>
 in struct <em>VM</em></div>
-<pre class="insert"><span></span>  <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">ip</span><span class="p">;</span>  
-</pre><pre class="insert-after"><span></span><span class="p">}</span> <span class="n">VM</span><span class="p">;</span>           
+<pre class="insert">
+  <span class="t">uint8_t</span>* <span class="i">ip</span>;
+</pre><pre class="insert-after">
+} VM;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.h</em>, in struct <em>VM</em></div>
 
 <p>Its type is a byte pointer. We use an actual real C pointer right into the
@@ -317,25 +333,25 @@ it &ldquo;PC&rdquo;.</p>
 haven&rsquo;t executed that instruction yet, so <code>ip</code> points to the instruction <em>about
 to be executed</em>. This will be true during the entire time the VM is running: the
 IP always points to the next instruction, not the one currently being handled.</p>
-<p>The real fun happens in <code>run</code>():</p>
+<p>The real fun happens in <code>run</code>().</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add after <em>freeVM</em>()</div>
-<pre><span></span><span class="k">static</span> <span class="n">InterpretResult</span> <span class="nf">run</span><span class="p">()</span> <span class="p">{</span>          
-<span class="cp">#define READ_BYTE() (*vm.ip++)          </span>
+<pre>
+<span class="k">static</span> <span class="t">InterpretResult</span> <span class="i">run</span>() {
+<span class="a">#define READ_BYTE() (*vm.ip++)</span>
 
-  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>                            
-    <span class="kt">uint8_t</span> <span class="n">instruction</span><span class="p">;</span>                
-    <span class="k">switch</span> <span class="p">(</span><span class="n">instruction</span> <span class="o">=</span> <span class="n">READ_BYTE</span><span class="p">())</span> <span class="p">{</span>
-      <span class="k">case</span> <span class="nl">OP_RETURN</span><span class="p">:</span> <span class="p">{</span>                 
-        <span class="k">return</span> <span class="n">INTERPRET_OK</span><span class="p">;</span>            
-      <span class="p">}</span>                                 
-    <span class="p">}</span>                                   
-  <span class="p">}</span>                                     
+  <span class="k">for</span> (;;) {
+    <span class="t">uint8_t</span> <span class="i">instruction</span>;
+    <span class="k">switch</span> (<span class="i">instruction</span> = <span class="a">READ_BYTE</span>()) {
+      <span class="k">case</span> <span class="a">OP_RETURN</span>: {
+        <span class="k">return</span> <span class="a">INTERPRET_OK</span>;
+      }
+    }
+  }
 
-<span class="cp">#undef READ_BYTE                        </span>
-<span class="p">}</span>                                       
+<span class="a">#undef READ_BYTE</span>
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, add after <em>freeVM</em>()</div>
 
 <p>This is the single most <span name="important">important</span> function in all
@@ -346,7 +362,7 @@ VM.</p>
 <p>Or, at least, it <em>will</em> be in a few chapters when it has enough content to be
 useful. Right now, it&rsquo;s not exactly a wonder of software wizardry.</p>
 </aside>
-<p>Despite that dramatic intro, it&rsquo;s conceptually pretty simple. You have an outer
+<p>Despite that dramatic intro, it&rsquo;s conceptually pretty simple. We have an outer
 loop that goes and goes. Each turn through that loop, we read and execute a
 single bytecode instruction.</p>
 <p>To process an instruction, we first figure out what kind of instruction we&rsquo;re
@@ -354,11 +370,11 @@ dealing with. The <code>READ_BYTE</code> macro reads the byte currently pointed 
 and then <span name="next">advances</span> the instruction pointer. The first
 byte of any instruction is the opcode. Given a numeric opcode, we need to get to
 the right C code that implements that instruction&rsquo;s semantics. This process is
-called <strong>&ldquo;decoding&rdquo;</strong> or <strong>&ldquo;dispatching&rdquo;</strong> the instruction.</p>
+called <strong>decoding</strong> or <strong>dispatching</strong> the instruction.</p>
 <aside name="next">
 <p>Note that <code>ip</code> advances as soon as we read the opcode, before we&rsquo;ve actually
 started executing the instruction. So, again, <code>ip</code> points to the <em>next</em>
-instruction to execute.</p>
+byte of code to be used.</p>
 </aside>
 <p>We do that process for every single instruction, every single time one is
 executed, so this is the most performance critical part of the entire virtual
@@ -371,69 +387,79 @@ going all the way back to the early days of computers.</p>
 </aside>
 <p>Alas, the fastest solutions require either non-standard extensions to C, or
 hand-written assembly code. For clox, we&rsquo;ll keep it simple. Just like our
-disassembler, we have a single giant switch statement with a case for each
+disassembler, we have a single giant <code>switch</code> statement with a case for each
 opcode. The body of each case implements that opcode&rsquo;s behavior.</p>
 <p>So far, we only handle a single instruction, <code>OP_RETURN</code>, and the only thing it
 does is exit the loop entirely. Eventually, that instruction will be used to
 return from the current Lox function, but we don&rsquo;t have functions yet, so we&rsquo;ll
 repurpose it temporarily to end the execution.</p>
-<p>Let&rsquo;s go ahead and support our one other instruction:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">switch</span> <span class="p">(</span><span class="n">instruction</span> <span class="o">=</span> <span class="n">READ_BYTE</span><span class="p">())</span> <span class="p">{</span> 
+<p>Let&rsquo;s go ahead and support our one other instruction.</p>
+<div class="codehilite"><pre class="insert-before">
+    switch (instruction = READ_BYTE()) {
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span>      <span class="k">case</span> <span class="nl">OP_CONSTANT</span><span class="p">:</span> <span class="p">{</span>                
-        <span class="n">Value</span> <span class="n">constant</span> <span class="o">=</span> <span class="n">READ_CONSTANT</span><span class="p">();</span>
-        <span class="n">printValue</span><span class="p">(</span><span class="n">constant</span><span class="p">);</span>            
-        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>                    
-        <span class="k">break</span><span class="p">;</span>                           
-      <span class="p">}</span>                                  
-</pre><pre class="insert-after"><span></span>      <span class="k">case</span> <span class="nl">OP_RETURN</span><span class="p">:</span> <span class="p">{</span>                  
+<pre class="insert">
+      <span class="k">case</span> <span class="a">OP_CONSTANT</span>: {
+        <span class="t">Value</span> <span class="i">constant</span> = <span class="a">READ_CONSTANT</span>();
+        <span class="i">printValue</span>(<span class="i">constant</span>);
+        <span class="i">printf</span>(<span class="s">&quot;</span><span class="e">\n</span><span class="s">&quot;</span>);
+        <span class="k">break</span>;
+      }
+</pre><pre class="insert-after">
+      case OP_RETURN: {
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>We don&rsquo;t have enough machinery in place yet to do anything useful with a
 constant. For now, we&rsquo;ll just print it out so we interpreter hackers can see
-what&rsquo;s going on inside our VM. That call to <code>printf()</code> necessitates an include:</p>
+what&rsquo;s going on inside our VM. That call to <code>printf()</code> necessitates an include.</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add to top of file</div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt; </span><span class="cp"></span>
-<br></pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;common.h&quot;</span><span class="cp"></span>
-</pre></div>
+<pre class="insert">
+<span class="a">#include &lt;stdio.h&gt;</span>
 
+</pre><pre class="insert-after">
+#include &quot;common.h&quot;
+</pre></div>
 <div class="source-file-narrow"><em>vm.c</em>, add to top of file</div>
 
-<p>We also have a new macro to define:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#define READ_BYTE() (*vm.ip++)                                   </span>
+<p>We also have a new macro to define.</p>
+<div class="codehilite"><pre class="insert-before">
+#define READ_BYTE() (*vm.ip++)
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span><span class="cp">#define READ_CONSTANT() (vm.chunk-&gt;constants.values[READ_BYTE()])</span>
-</pre><pre class="insert-after"><br><span></span>  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>                                                     
-</pre></div>
+<pre class="insert">
+<span class="a">#define READ_CONSTANT() (vm.chunk-&gt;constants.values[READ_BYTE()])</span>
+</pre><pre class="insert-after">
 
+  for (;;) {
+</pre></div>
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p><code>READ_CONSTANT()</code> reads the next byte from the bytecode, treats the resulting
-number as an index, and looks up the corresponding location in the chunk&rsquo;s
-constant table. In later chapters, we&rsquo;ll add a few more instructions with
-operands that refer to constants, so we&rsquo;re setting up this helper macro now.</p>
+number as an index, and looks up the corresponding Value in the chunk&rsquo;s constant
+table. In later chapters, we&rsquo;ll add a few more instructions with operands that
+refer to constants, so we&rsquo;re setting up this helper macro now.</p>
 <p>Like the previous <code>READ_BYTE</code> macro, <code>READ_CONSTANT</code> is only used inside
 <code>run()</code>. To make that scoping more explicit, the macro definitions themselves
 are confined to that function. We <span name="macro">define</span> them at the
 beginning and<span class="em">&mdash;</span>because we care<span class="em">&mdash;</span>undefine them at the end:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#undef READ_BYTE    </span>
+<div class="codehilite"><pre class="insert-before">
+#undef READ_BYTE
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span><span class="cp">#undef READ_CONSTANT</span>
-</pre><pre class="insert-after"><span></span><span class="p">}</span>                   
+<pre class="insert">
+<span class="a">#undef READ_CONSTANT</span>
+</pre><pre class="insert-after">
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <aside name="macro">
 <p>Undefining these macros explicitly might seem needlessly fastidious, but C tends
 to punish sloppy users, and the C preprocessor doubly so.</p>
 </aside>
+<h3><a href="#execution-tracing" name="execution-tracing"><small>15&#8202;.&#8202;1&#8202;.&#8202;2</small>Execution tracing</a></h3>
 <p>If you run clox now, it executes the chunk we hand-authored in the last chapter
 and spits out <code>1.2</code> to your terminal. We can see that it&rsquo;s working, but that&rsquo;s
 only because our implementation of <code>OP_CONSTANT</code> has temporary code to log the
@@ -443,27 +469,35 @@ black box. That makes our lives as VM implementers harder.</p>
 <p>To help ourselves out, now is a good time to add some diagnostic logging to the
 VM like we did with chunks themselves. In fact, we&rsquo;ll even reuse the same code.
 We don&rsquo;t want this logging enabled all the time<span class="em">&mdash;</span>it&rsquo;s just for us VM hackers,
-not Lox users<span class="em">&mdash;</span>so first we create a flag to hide it behind:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;          </span><span class="cp"></span>
+not Lox users<span class="em">&mdash;</span>so first we create a flag to hide it behind.</p>
+<div class="codehilite"><pre class="insert-before">
+#include &lt;stdint.h&gt;
 </pre><div class="source-file"><em>common.h</em></div>
-<pre class="insert"><br><span></span><span class="cp">#define DEBUG_TRACE_EXECUTION</span>
-</pre><pre class="insert-after"><br><span></span><span class="cp">#endif                       </span>
-</pre></div>
+<pre class="insert">
 
+<span class="a">#define DEBUG_TRACE_EXECUTION</span>
+</pre><pre class="insert-after">
+
+#endif
+</pre></div>
 <div class="source-file-narrow"><em>common.h</em></div>
 
 <p>When this flag is defined, the VM disassembles and prints each instruction right
 before executing it. Where our previous disassembler walked an entire chunk
-once, statically, this disassembles instructions dynamically, on the fly:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>                                                        
+once, statically, this disassembles instructions dynamically, on the fly.</p>
+<div class="codehilite"><pre class="insert-before">
+  for (;;) {
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span><span class="cp">#ifdef DEBUG_TRACE_EXECUTION                                        </span>
-    <span class="n">disassembleInstruction</span><span class="p">(</span><span class="n">vm</span><span class="p">.</span><span class="n">chunk</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">vm</span><span class="p">.</span><span class="n">ip</span> <span class="o">-</span> <span class="n">vm</span><span class="p">.</span><span class="n">chunk</span><span class="o">-&gt;</span><span class="n">code</span><span class="p">));</span>
-<span class="cp">#endif                                                              </span>
-<br></pre><pre class="insert-after"><span></span>    <span class="kt">uint8_t</span> <span class="n">instruction</span><span class="p">;</span>                                            
-</pre></div>
+<pre class="insert">
+<span class="a">#ifdef DEBUG_TRACE_EXECUTION</span>
+    <span class="i">disassembleInstruction</span>(<span class="i">vm</span>.<span class="i">chunk</span>,
+                           (<span class="t">int</span>)(<span class="i">vm</span>.<span class="i">ip</span> - <span class="i">vm</span>.<span class="i">chunk</span>-&gt;<span class="i">code</span>));
+<span class="a">#endif</span>
 
+</pre><pre class="insert-after">
+    uint8_t instruction;
+</pre></div>
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>Since <code>disassembleInstruction()</code> takes an integer byte <em>offset</em> and we store the
@@ -471,31 +505,32 @@ current instruction reference as a direct pointer, we first do a little pointer
 math to convert <code>ip</code> back to a relative offset from the beginning of the
 bytecode. Then we disassemble the instruction that begins at that byte.</p>
 <p>As ever, we need to bring in the declaration of the function before we can call
-it:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;common.h&quot;</span><span class="cp"></span>
+it.</p>
+<div class="codehilite"><pre class="insert-before">
+#include &quot;common.h&quot;
 </pre><div class="source-file"><em>vm.c</em></div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;debug.h&quot; </span><span class="cp"></span>
-</pre><pre class="insert-after"><span></span><span class="cp">#include</span> <span class="cpf">&quot;vm.h&quot;    </span><span class="cp"></span>
+<pre class="insert">
+<span class="a">#include &quot;debug.h&quot;</span>
+</pre><pre class="insert-after">
+#include &quot;vm.h&quot;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em></div>
 
 <p>I know this code isn&rsquo;t super impressive so far<span class="em">&mdash;</span>it&rsquo;s literally a switch
-statement wrapped in a for loop but, believe it or not, this is one of the two
+statement wrapped in a <code>for</code> loop but, believe it or not, this is one of the two
 major components of our VM. With this, we can imperatively execute instructions.
 Its simplicity is a virtue<span class="em">&mdash;</span>the less work it does, the faster it can do it.
 Contrast this with all of the complexity and overhead we had in jlox with the
 Visitor pattern for walking the AST.</p>
-<h2><a href="#a-value-stack-manipulator" name="a-value-stack-manipulator"><small>15&#8202;.&#8202;2</small> A Value Stack Manipulator</a></h2>
+<h2><a href="#a-value-stack-manipulator" name="a-value-stack-manipulator"><small>15&#8202;.&#8202;2</small>A Value Stack Manipulator</a></h2>
 <p>In addition to imperative side effects, Lox has expressions that produce,
 modify, and consume values. Thus, our compiled bytecode needs a way to shuttle
 values around between the different instructions that need them. For example,
 in:</p>
-<div class="codehilite"><pre><span></span><span class="k">print</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span><span class="p">;</span>
+<div class="codehilite"><pre>
+<span class="k">print</span> <span class="n">3</span> - <span class="n">2</span>;
 </pre></div>
-
-
-<p>We obviously need instructions for the constants 3 and 2, the print statement,
+<p>We obviously need instructions for the constants 3 and 2, the <code>print</code> statement,
 and the subtraction. But how does the subtraction instruction know that 3 is
 the <span name="word">minuend</span> and 2 is the subtrahend? How does the print
 instruction know to print the result of that?</p>
@@ -505,15 +540,14 @@ aren&rsquo;t they delightful words? &ldquo;Minuend&rdquo; sounds like a kind of 
 and &ldquo;subtrahend&rdquo; might be some sort of underground Paleolithic monument.</p>
 </aside>
 <p>To put a finer point on it, look at this thing right here:</p>
-<div class="codehilite"><pre><span></span><span class="k">fun</span> <span class="n">echo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">print</span> <span class="n">n</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="codehilite"><pre>
+<span class="k">fun</span> <span class="i">echo</span>(<span class="i">n</span>) {
+  <span class="k">print</span> <span class="i">n</span>;
+  <span class="k">return</span> <span class="i">n</span>;
+}
 
-<span class="k">print</span> <span class="n">echo</span><span class="p">(</span><span class="n">echo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">echo</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">echo</span><span class="p">(</span><span class="n">echo</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="n">echo</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+<span class="k">print</span> <span class="i">echo</span>(<span class="i">echo</span>(<span class="n">1</span>) + <span class="i">echo</span>(<span class="n">2</span>)) + <span class="i">echo</span>(<span class="i">echo</span>(<span class="n">4</span>) + <span class="i">echo</span>(<span class="n">5</span>));
 </pre></div>
-
-
 <p>I wrapped each subexpression in a call to <code>echo()</code> that prints and returns its
 argument. That side effect means we can see the exact order of operations.</p>
 <p>Don&rsquo;t worry about the VM for a minute. Think about just the semantics of Lox
@@ -533,12 +567,12 @@ expressions are not evaluated in the order users intuit<span class="em">&mdash;<
 orders across different implementations!<span class="em">&mdash;</span>it can be a burning hellscape of
 pain to figure out what&rsquo;s going on.</p>
 </aside>
-<p>Here is the syntax tree for the print statement:</p>
+<p>Here is the syntax tree for the <code>print</code> statement:</p>
 <p><img src="image/a-virtual-machine/ast.png" alt="The AST for the example
 statement, with numbers marking the order that the nodes are evaluated." /></p>
 <p>Given left-to-right evaluation, and the way the expressions are nested, any
 correct Lox implementation <em>must</em> print these numbers in this order:</p>
-<div class="codehilite"><pre><span></span>1  // from echo(1)
+<div class="codehilite"><pre>1  // from echo(1)
 2  // from echo(2)
 3  // from echo(1 + 2)
 4  // from echo(4)
@@ -546,8 +580,6 @@ correct Lox implementation <em>must</em> print these numbers in this order:</p>
 9  // from echo(4 + 5)
 12 // from print 3 + 9
 </pre></div>
-
-
 <p>Our old jlox interpreter accomplishes this by recursively traversing the AST. It
 does a post-order traversal. First it recurses down the left operand branch,
 then the right operand, then finally it evaluates the node itself.</p>
@@ -581,7 +613,7 @@ expression.</p>
 <p>In the above diagram, I gave each unique number its own visual column. Let&rsquo;s be
 a little more parsimonious. Once a number is consumed, we allow its column to be
 reused for another later value. In other words, we take all of those gaps
-up there and fill them in with numbers from the right:</p>
+up there and fill them in pushing in numbers from the right:</p>
 <p><img src="image/a-virtual-machine/bars-stacked.png" alt="Like the previous
 diagram, but with number bars pushed to the left, forming a stack." /></p>
 <p>There&rsquo;s some interesting stuff going on here. When we shift everything over,
@@ -591,8 +623,7 @@ another, then it will live at least as long as that second one. The first number
 to appear is the last to be consumed. Hmm&hellip; last-in, first-out&hellip; Why, that&rsquo;s a
 <span name="pancakes">stack</span>!</p>
 <aside name="pancakes">
-<p>This is also a stack:</p>
-<p><img src="image/a-virtual-machine/pancakes.png" alt="A stack... of pancakes." /></p>
+<p>This is also a stack:</p><img src="image/a-virtual-machine/pancakes.png" alt="A stack... of pancakes." />
 </aside>
 <p>In the second diagram, each time we introduce a number, we push it onto the
 stack from the right. When numbers are consumed, they are always popped off from
@@ -601,7 +632,7 @@ rightmost to left.</p>
 our VM will use a stack to manage them. When an instruction &ldquo;produces&rdquo; a value,
 it pushes it onto the stack. When it needs to consume one or more values, it
 gets them by popping them off the stack.</p>
-<h3><a href="#the-vm's-stack" name="the-vm's-stack"><small>15&#8202;.&#8202;2&#8202;.&#8202;1</small> The VM&rsquo;s Stack</a></h3>
+<h3><a href="#the-vm's-stack" name="the-vm's-stack"><small>15&#8202;.&#8202;2&#8202;.&#8202;1</small>The VM&rsquo;s Stack</a></h3>
 <p>Maybe this doesn&rsquo;t seem like a revelation, but I <em>love</em> stack-based VMs. When
 you first see a magic trick, it feels like something actually magical. But then
 you learn how it works<span class="em">&mdash;</span>usually some mechanical gimmick or misdirection<span class="em">&mdash;</span>and
@@ -626,16 +657,18 @@ JavaScript all use sophisticated <a href="https://en.wikipedia.org/wiki/Just-in-
 pipelines to generate <em>much</em> faster native code on the fly.</p>
 </aside>
 <p>Alrighty, it&rsquo;s codin&rsquo; time! Here&rsquo;s the stack:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>         
-  <span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">;</span>          
-  <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">ip</span><span class="p">;</span>           
+<div class="codehilite"><pre class="insert-before">
+typedef struct {
+  Chunk* chunk;
+  uint8_t* ip;
 </pre><div class="source-file"><em>vm.h</em><br>
 in struct <em>VM</em></div>
-<pre class="insert"><span></span>  <span class="n">Value</span> <span class="n">stack</span><span class="p">[</span><span class="n">STACK_MAX</span><span class="p">];</span>
-  <span class="n">Value</span><span class="o">*</span> <span class="n">stackTop</span><span class="p">;</span>       
-</pre><pre class="insert-after"><span></span><span class="p">}</span> <span class="n">VM</span><span class="p">;</span>                    
+<pre class="insert">
+  <span class="t">Value</span> <span class="i">stack</span>[<span class="a">STACK_MAX</span>];
+  <span class="t">Value</span>* <span class="i">stackTop</span>;
+</pre><pre class="insert-after">
+} VM;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.h</em>, in struct <em>VM</em></div>
 
 <p>We implement the stack semantics ourselves on top of a raw C array. The bottom
@@ -674,44 +707,53 @@ zero." /></p>
 <p>I remember it like this: <code>stackTop</code> points to where the next value to be pushed
 will go. The maximum number of values we can store on the stack (for now, at
 least) is:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;chunk.h&quot;   </span><span class="cp"></span>
+<div class="codehilite"><pre class="insert-before">
+#include &quot;chunk.h&quot;
 </pre><div class="source-file"><em>vm.h</em></div>
-<pre class="insert"><br><span></span><span class="cp">#define STACK_MAX 256</span>
-</pre><pre class="insert-after"><br><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>     
-</pre></div>
+<pre class="insert">
 
+<span class="a">#define STACK_MAX 256</span>
+</pre><pre class="insert-after">
+
+typedef struct {
+</pre></div>
 <div class="source-file-narrow"><em>vm.h</em></div>
 
 <p>Giving our VM a fixed stack size means it&rsquo;s possible for some sequence of
 instructions to push too many values and run out of stack space<span class="em">&mdash;</span>the classic
 &ldquo;stack overflow&rdquo;. We could grow the stack dynamically as needed, but for now
-we&rsquo;ll keep it simple. Since VM uses Value, we need to include its declaration:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#include</span> <span class="cpf">&quot;chunk.h&quot;   </span><span class="cp"></span>
+we&rsquo;ll keep it simple. Since VM uses Value, we need to include its declaration.</p>
+<div class="codehilite"><pre class="insert-before">
+#include &quot;chunk.h&quot;
 </pre><div class="source-file"><em>vm.h</em></div>
-<pre class="insert"><span></span><span class="cp">#include</span> <span class="cpf">&quot;value.h&quot;   </span><span class="cp"></span>
-</pre><pre class="insert-after"><br><span></span><span class="cp">#define STACK_MAX 256</span>
-</pre></div>
+<pre class="insert">
+<span class="a">#include &quot;value.h&quot;</span>
+</pre><pre class="insert-after">
 
+#define STACK_MAX 256
+</pre></div>
 <div class="source-file-narrow"><em>vm.h</em></div>
 
-<p>Now that VM has some interesting state, we get to initialize it:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="kt">void</span> <span class="nf">initVM</span><span class="p">()</span> <span class="p">{</span>
+<p>Now that VM has some interesting state, we get to initialize it.</p>
+<div class="codehilite"><pre class="insert-before">
+void initVM() {
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>initVM</em>()</div>
-<pre class="insert"><span></span>  <span class="n">resetStack</span><span class="p">();</span>
-</pre><pre class="insert-after"><span></span><span class="p">}</span>              
+<pre class="insert">
+  <span class="i">resetStack</span>();
+</pre><pre class="insert-after">
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>initVM</em>()</div>
 
 <p>That uses this helper function:</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add after variable <em>VM</em></div>
-<pre><span></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">resetStack</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span> <span class="o">=</span> <span class="n">vm</span><span class="p">.</span><span class="n">stack</span><span class="p">;</span> 
-<span class="p">}</span>                         
+<pre>
+<span class="k">static</span> <span class="t">void</span> <span class="i">resetStack</span>() {
+  <span class="i">vm</span>.<span class="i">stackTop</span> = <span class="i">vm</span>.<span class="i">stack</span>;
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, add after variable <em>VM</em></div>
 
 <p>Since the stack array is declared directly inline in the VM struct, we don&rsquo;t
@@ -720,67 +762,74 @@ array<span class="em">&mdash;</span>we simply won&rsquo;t access them until afte
 them. The only initialization we need is to set <code>stackTop</code> to point to the
 beginning of the array to indicate that the stack is empty.</p>
 <p>The stack protocol supports two operations:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="n">InterpretResult</span> <span class="nf">interpret</span><span class="p">(</span><span class="n">Chunk</span><span class="o">*</span> <span class="n">chunk</span><span class="p">);</span>
+<div class="codehilite"><pre class="insert-before">
+InterpretResult interpret(Chunk* chunk);
 </pre><div class="source-file"><em>vm.h</em><br>
 add after <em>interpret</em>()</div>
-<pre class="insert"><span></span><span class="kt">void</span> <span class="nf">push</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">);</span>                 
-<span class="n">Value</span> <span class="nf">pop</span><span class="p">();</span>                            
-</pre><pre class="insert-after"><br><span></span><span class="cp">#endif                                  </span>
-</pre></div>
+<pre class="insert">
+<span class="t">void</span> <span class="i">push</span>(<span class="t">Value</span> <span class="i">value</span>);
+<span class="t">Value</span> <span class="i">pop</span>();
+</pre><pre class="insert-after">
 
+#endif
+</pre></div>
 <div class="source-file-narrow"><em>vm.h</em>, add after <em>interpret</em>()</div>
 
 <p>You can push a new value onto the top of the stack, and you can pop the most
 recently pushed value back off. Here&rsquo;s the first function:</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add after <em>freeVM</em>()</div>
-<pre><span></span><span class="kt">void</span> <span class="nf">push</span><span class="p">(</span><span class="n">Value</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
-  <span class="o">*</span><span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span> 
-  <span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span><span class="o">++</span><span class="p">;</span>        
-<span class="p">}</span>                       
+<pre>
+<span class="t">void</span> <span class="i">push</span>(<span class="t">Value</span> <span class="i">value</span>) {
+  *<span class="i">vm</span>.<span class="i">stackTop</span> = <span class="i">value</span>;
+  <span class="i">vm</span>.<span class="i">stackTop</span>++;
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, add after <em>freeVM</em>()</div>
 
 <p>If you&rsquo;re rusty on your C pointer syntax and operations, this is a good warm-up.
 The first line stores <code>value</code> in the array element at the top of the stack.
 Remember, <code>stackTop</code> points just <em>past</em> the last used element, at the next
-available one. This stores the value in that slot.</p>
-<p>Then we increment the pointer itself to point to the next unused slot in the
-array now that the previous slot is occupied. Popping is the mirror image:</p>
+available one. This stores the value in that slot. Then we increment the pointer
+itself to point to the next unused slot in the array now that the previous slot
+is occupied.</p>
+<p>Popping is the mirror image.</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
 add after <em>push</em>()</div>
-<pre><span></span><span class="n">Value</span> <span class="nf">pop</span><span class="p">()</span> <span class="p">{</span>         
-  <span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span><span class="o">--</span><span class="p">;</span>      
-  <span class="k">return</span> <span class="o">*</span><span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span><span class="p">;</span>
-<span class="p">}</span>                     
+<pre>
+<span class="t">Value</span> <span class="i">pop</span>() {
+  <span class="i">vm</span>.<span class="i">stackTop</span>--;
+  <span class="k">return</span> *<span class="i">vm</span>.<span class="i">stackTop</span>;
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, add after <em>push</em>()</div>
 
 <p>First, we move the stack pointer <em>back</em> to get to the most recent used slot in
 the array. Then we look up the value at that index and return it. We don&rsquo;t need
 to explicitly &ldquo;remove&rdquo; it from the array<span class="em">&mdash;</span>moving <code>stackTop</code> down is enough to
 mark that slot as no longer in use.</p>
+<h3><a href="#stack-tracing" name="stack-tracing"><small>15&#8202;.&#8202;2&#8202;.&#8202;2</small>Stack tracing</a></h3>
 <p>We have a working stack, but it&rsquo;s hard to <em>see</em> that it&rsquo;s working. When we start
 implementing more complex instructions and compiling and running larger pieces
 of code, we&rsquo;ll end up with a lot of values crammed into that array. It would
 make our lives as VM hackers easier if we had some visibility into the stack.</p>
 <p>To that end, whenever we&rsquo;re tracing execution, we&rsquo;ll also show the current
-contents of the stack before we interpret each instruction:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#ifdef DEBUG_TRACE_EXECUTION                                        </span>
+contents of the stack before we interpret each instruction.</p>
+<div class="codehilite"><pre class="insert-before">
+#ifdef DEBUG_TRACE_EXECUTION
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;          &quot;</span><span class="p">);</span>                                           
-    <span class="k">for</span> <span class="p">(</span><span class="n">Value</span><span class="o">*</span> <span class="n">slot</span> <span class="o">=</span> <span class="n">vm</span><span class="p">.</span><span class="n">stack</span><span class="p">;</span> <span class="n">slot</span> <span class="o">&lt;</span> <span class="n">vm</span><span class="p">.</span><span class="n">stackTop</span><span class="p">;</span> <span class="n">slot</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>      
-      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;[ &quot;</span><span class="p">);</span>                                                 
-      <span class="n">printValue</span><span class="p">(</span><span class="o">*</span><span class="n">slot</span><span class="p">);</span>                                            
-      <span class="n">printf</span><span class="p">(</span><span class="s">&quot; ]&quot;</span><span class="p">);</span>                                                 
-    <span class="p">}</span>                                                               
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>                                                   
-</pre><pre class="insert-after"><span></span>    <span class="n">disassembleInstruction</span><span class="p">(</span><span class="n">vm</span><span class="p">.</span><span class="n">chunk</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">vm</span><span class="p">.</span><span class="n">ip</span> <span class="o">-</span> <span class="n">vm</span><span class="p">.</span><span class="n">chunk</span><span class="o">-&gt;</span><span class="n">code</span><span class="p">));</span>
+<pre class="insert">
+    <span class="i">printf</span>(<span class="s">&quot;          &quot;</span>);
+    <span class="k">for</span> (<span class="t">Value</span>* <span class="i">slot</span> = <span class="i">vm</span>.<span class="i">stack</span>; <span class="i">slot</span> &lt; <span class="i">vm</span>.<span class="i">stackTop</span>; <span class="i">slot</span>++) {
+      <span class="i">printf</span>(<span class="s">&quot;[ &quot;</span>);
+      <span class="i">printValue</span>(*<span class="i">slot</span>);
+      <span class="i">printf</span>(<span class="s">&quot; ]&quot;</span>);
+    }
+    <span class="i">printf</span>(<span class="s">&quot;</span><span class="e">\n</span><span class="s">&quot;</span>);
+</pre><pre class="insert-after">
+    disassembleInstruction(vm.chunk,
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>We loop, printing each value in the array, starting at the first (bottom of the
@@ -788,152 +837,170 @@ stack) and ending when we reach the top. This lets us observe the effect of each
 instruction on the stack. The output is pretty verbose, but it&rsquo;s useful when
 we&rsquo;re surgically extracting a nasty bug from the bowels of the interpreter.</p>
 <p>Stack in hand, let&rsquo;s revisit our two instructions. First up:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="k">case</span> <span class="nl">OP_CONSTANT</span><span class="p">:</span> <span class="p">{</span>                
-        <span class="n">Value</span> <span class="n">constant</span> <span class="o">=</span> <span class="n">READ_CONSTANT</span><span class="p">();</span>
+<div class="codehilite"><pre class="insert-before">
+      case OP_CONSTANT: {
+        Value constant = READ_CONSTANT();
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()<br>
 replace 2 lines</div>
-<pre class="insert"><span></span>        <span class="n">push</span><span class="p">(</span><span class="n">constant</span><span class="p">);</span>                  
-</pre><pre class="insert-after"><span></span>        <span class="k">break</span><span class="p">;</span>                           
+<pre class="insert">
+        <span class="i">push</span>(<span class="i">constant</span>);
+</pre><pre class="insert-after">
+        break;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>(), replace 2 lines</div>
 
 <p>In the last chapter, I was hand-wavey about how the <code>OP_CONSTANT</code> instruction
 &ldquo;loads&rdquo; a constant. Now that we have a stack you know what it means to actually
 produce a value: it gets pushed onto the stack.</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="k">case</span> <span class="nl">OP_RETURN</span><span class="p">:</span> <span class="p">{</span>     
+<div class="codehilite"><pre class="insert-before">
+      case OP_RETURN: {
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span>        <span class="n">printValue</span><span class="p">(</span><span class="n">pop</span><span class="p">());</span>  
-        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>       
-</pre><pre class="insert-after"><span></span>        <span class="k">return</span> <span class="n">INTERPRET_OK</span><span class="p">;</span>
+<pre class="insert">
+        <span class="i">printValue</span>(<span class="i">pop</span>());
+        <span class="i">printf</span>(<span class="s">&quot;</span><span class="e">\n</span><span class="s">&quot;</span>);
+</pre><pre class="insert-after">
+        return INTERPRET_OK;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>Then we make <code>OP_RETURN</code> pop the stack and print the top value before exiting.
 When we add support for real functions to clox, we&rsquo;ll change this code. But, for
 now, it gives us a way to get the VM executing simple instruction sequences and
 displaying the result.</p>
-<h2><a href="#an-arithmetic-calculator" name="an-arithmetic-calculator"><small>15&#8202;.&#8202;3</small> An Arithmetic Calculator</a></h2>
+<h2><a href="#an-arithmetic-calculator" name="an-arithmetic-calculator"><small>15&#8202;.&#8202;3</small>An Arithmetic Calculator</a></h2>
 <p>The heart and soul of our VM are in place now. The bytecode loop dispatches and
 executes instructions. The stack grows and shrinks as values flow through it.
 The two halves work, but it&rsquo;s hard to get a feel for how cleverly they interact
 with only the two rudimentary instructions we have so far. So let&rsquo;s teach our
 interpreter to do arithmetic.</p>
 <p>We&rsquo;ll start with the simplest arithmetic operation, unary negation:</p>
-<div class="codehilite"><pre><span></span><span class="k">var</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">;</span>
-<span class="k">print</span> <span class="o">-</span><span class="n">a</span><span class="p">;</span> <span class="c1">// -1.2.</span>
+<div class="codehilite"><pre>
+<span class="k">var</span> <span class="i">a</span> = <span class="n">1.2</span>;
+<span class="k">print</span> -<span class="i">a</span>; <span class="c">// -1.2.</span>
 </pre></div>
-
-
 <p>The prefix <code>-</code> operator takes one operand, the value to negate. It produces a
 single result. We aren&rsquo;t fussing with a parser yet, but we can add the
-bytecode instruction that the above syntax will compile to:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">OP_CONSTANT</span><span class="p">,</span>
+bytecode instruction that the above syntax will compile to.</p>
+<div class="codehilite"><pre class="insert-before">
+  OP_CONSTANT,
 </pre><div class="source-file"><em>chunk.h</em><br>
 in enum <em>OpCode</em></div>
-<pre class="insert"><span></span>  <span class="n">OP_NEGATE</span><span class="p">,</span>  
-</pre><pre class="insert-after"><span></span>  <span class="n">OP_RETURN</span><span class="p">,</span>  
+<pre class="insert">
+  <span class="a">OP_NEGATE</span>,
+</pre><pre class="insert-after">
+  OP_RETURN,
 </pre></div>
-
 <div class="source-file-narrow"><em>chunk.h</em>, in enum <em>OpCode</em></div>
 
 <p>We execute it like so:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="p">}</span>                                     
+<div class="codehilite"><pre class="insert-before">
+      }
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span>      <span class="k">case</span> <span class="nl">OP_NEGATE</span><span class="p">:</span>   <span class="n">push</span><span class="p">(</span><span class="o">-</span><span class="n">pop</span><span class="p">());</span> <span class="k">break</span><span class="p">;</span>
-</pre><pre class="insert-after"><span></span>      <span class="k">case</span> <span class="nl">OP_RETURN</span><span class="p">:</span> <span class="p">{</span>                     
+<pre class="insert">
+      <span class="k">case</span> <span class="a">OP_NEGATE</span>:   <span class="i">push</span>(-<span class="i">pop</span>()); <span class="k">break</span>;
+</pre><pre class="insert-after">
+      case OP_RETURN: {
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
-<p>It needs a value to operate on, so it gets it by popping it from the stack. It
-negates that, then pushes the result back on for later instructions to use.
-Doesn&rsquo;t get much easier than that. We can disassemble it too:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">case</span> <span class="nl">OP_CONSTANT</span><span class="p">:</span>                                          
-      <span class="k">return</span> <span class="n">constantInstruction</span><span class="p">(</span><span class="s">&quot;OP_CONSTANT&quot;</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
+<p>The instruction needs a value to operate on which it gets by popping from the
+stack. It negates that, then pushes the result back on for later instructions to
+use. Doesn&rsquo;t get much easier than that. We can disassemble it too.</p>
+<div class="codehilite"><pre class="insert-before">
+    case OP_CONSTANT:
+      return constantInstruction(&quot;OP_CONSTANT&quot;, chunk, offset);
 </pre><div class="source-file"><em>debug.c</em><br>
 in <em>disassembleInstruction</em>()</div>
-<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">OP_NEGATE</span><span class="p">:</span>                                            
-      <span class="k">return</span> <span class="n">simpleInstruction</span><span class="p">(</span><span class="s">&quot;OP_NEGATE&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>           
-</pre><pre class="insert-after"><span></span>    <span class="k">case</span> <span class="nl">OP_RETURN</span><span class="p">:</span>                                            
+<pre class="insert">
+    <span class="k">case</span> <span class="a">OP_NEGATE</span>:
+      <span class="k">return</span> <span class="i">simpleInstruction</span>(<span class="s">&quot;OP_NEGATE&quot;</span>, <span class="i">offset</span>);
+</pre><pre class="insert-after">
+    case OP_RETURN:
 </pre></div>
-
 <div class="source-file-narrow"><em>debug.c</em>, in <em>disassembleInstruction</em>()</div>
 
-<p>And we can try it out in our test chunk:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">constant</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span> 
+<p>And we can try it out in our test chunk.</p>
+<div class="codehilite"><pre class="insert-before">
+  writeChunk(&amp;chunk, constant, 123);
 </pre><div class="source-file"><em>main.c</em><br>
 in <em>main</em>()</div>
-<pre class="insert"><span></span>  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_NEGATE</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>
-</pre><pre class="insert-after"><br><span></span>  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_RETURN</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>
-</pre></div>
+<pre class="insert">
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="a">OP_NEGATE</span>, <span class="n">123</span>);
+</pre><pre class="insert-after">
 
+  writeChunk(&amp;chunk, OP_RETURN, 123);
+</pre></div>
 <div class="source-file-narrow"><em>main.c</em>, in <em>main</em>()</div>
 
 <p>After loading the constant, but before returning, we execute the negate
 instruction. That replaces the constant on the stack with its negation. Then the
 return instruction prints that out:</p>
-<div class="codehilite"><pre><span></span>-1.2
+<div class="codehilite"><pre>-1.2
 </pre></div>
-
-
 <p>Magical!</p>
-<h3><a href="#binary-operators" name="binary-operators"><small>15&#8202;.&#8202;3&#8202;.&#8202;1</small> Binary operators</a></h3>
+<h3><a href="#binary-operators" name="binary-operators"><small>15&#8202;.&#8202;3&#8202;.&#8202;1</small>Binary operators</a></h3>
 <p>OK, unary operators aren&rsquo;t <em>that</em> impressive. We still only ever have a single
 value on the stack. To really see some depth, we need binary operators. Lox has
 four binary <span name="ops">arithmetic</span> operators: addition, subtraction,
 multiplication, and division. We&rsquo;ll go ahead and implement them all at the same
-time:</p>
+time.</p>
 <aside name="ops">
 <p>Lox has some other binary operators<span class="em">&mdash;</span>comparison and equality<span class="em">&mdash;</span>but those
 don&rsquo;t produce numbers as a result, so we aren&rsquo;t ready for them yet.</p>
 </aside>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="n">OP_CONSTANT</span><span class="p">,</span>
+<div class="codehilite"><pre class="insert-before">
+  OP_CONSTANT,
 </pre><div class="source-file"><em>chunk.h</em><br>
 in enum <em>OpCode</em></div>
-<pre class="insert"><span></span>  <span class="n">OP_ADD</span><span class="p">,</span>     
-  <span class="n">OP_SUBTRACT</span><span class="p">,</span>
-  <span class="n">OP_MULTIPLY</span><span class="p">,</span>
-  <span class="n">OP_DIVIDE</span><span class="p">,</span>  
-</pre><pre class="insert-after"><span></span>  <span class="n">OP_NEGATE</span><span class="p">,</span>  
+<pre class="insert">
+  <span class="a">OP_ADD</span>,
+  <span class="a">OP_SUBTRACT</span>,
+  <span class="a">OP_MULTIPLY</span>,
+  <span class="a">OP_DIVIDE</span>,
+</pre><pre class="insert-after">
+  OP_NEGATE,
 </pre></div>
-
 <div class="source-file-narrow"><em>chunk.h</em>, in enum <em>OpCode</em></div>
 
-<p>Back in the bytecode loop, they look like:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>      <span class="p">}</span>                                     
+<p>Back in the bytecode loop, they are executed like this:</p>
+<div class="codehilite"><pre class="insert-before">
+      }
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span>      <span class="k">case</span> <span class="nl">OP_ADD</span><span class="p">:</span>      <span class="n">BINARY_OP</span><span class="p">(</span><span class="o">+</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
-      <span class="k">case</span> <span class="nl">OP_SUBTRACT</span><span class="p">:</span> <span class="n">BINARY_OP</span><span class="p">(</span><span class="o">-</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
-      <span class="k">case</span> <span class="nl">OP_MULTIPLY</span><span class="p">:</span> <span class="n">BINARY_OP</span><span class="p">(</span><span class="o">*</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
-      <span class="k">case</span> <span class="nl">OP_DIVIDE</span><span class="p">:</span>   <span class="n">BINARY_OP</span><span class="p">(</span><span class="o">/</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
-</pre><pre class="insert-after"><span></span>      <span class="k">case</span> <span class="nl">OP_NEGATE</span><span class="p">:</span>   <span class="n">push</span><span class="p">(</span><span class="o">-</span><span class="n">pop</span><span class="p">());</span> <span class="k">break</span><span class="p">;</span>
+<pre class="insert">
+      <span class="k">case</span> <span class="a">OP_ADD</span>:      <span class="a">BINARY_OP</span>(+); <span class="k">break</span>;
+      <span class="k">case</span> <span class="a">OP_SUBTRACT</span>: <span class="a">BINARY_OP</span>(-); <span class="k">break</span>;
+      <span class="k">case</span> <span class="a">OP_MULTIPLY</span>: <span class="a">BINARY_OP</span>(*); <span class="k">break</span>;
+      <span class="k">case</span> <span class="a">OP_DIVIDE</span>:   <span class="a">BINARY_OP</span>(/); <span class="k">break</span>;
+</pre><pre class="insert-after">
+      case OP_NEGATE:   push(-pop()); break;
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>The only difference between these four instructions is which underlying C
 operator they ultimately use to combine the two operands. Surrounding that core
 arithmetic expression is some boilerplate code to pull values off the stack and
 push the result. When we later add dynamic typing, that boilerplate will grow.
-To avoid repeating that code four times, I wrapped it up in a macro:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#define READ_CONSTANT() (vm.chunk-&gt;constants.values[READ_BYTE()])</span>
+To avoid repeating that code four times, I wrapped it up in a macro.</p>
+<div class="codehilite"><pre class="insert-before">
+#define READ_CONSTANT() (vm.chunk-&gt;constants.values[READ_BYTE()])
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><br><span></span><span class="cp">#define BINARY_OP(op) \                                          </span>
-    <span class="k">do</span> <span class="p">{</span> <span class="err">\</span>                                                       
-      <span class="kt">double</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pop</span><span class="p">();</span> <span class="err">\</span>                                        
-      <span class="kt">double</span> <span class="n">a</span> <span class="o">=</span> <span class="n">pop</span><span class="p">();</span> <span class="err">\</span>                                        
-      <span class="n">push</span><span class="p">(</span><span class="n">a</span> <span class="n">op</span> <span class="n">b</span><span class="p">);</span> <span class="err">\</span>                                            
-    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nb">false</span><span class="p">)</span>                                              
-</pre><pre class="insert-after"><br><span></span>
-</pre></div>
+<pre class="insert">
 
+<span class="a">#define BINARY_OP(op) \</span>
+<span class="a">    do { \</span>
+<span class="a">      double b = pop(); \</span>
+<span class="a">      double a = pop(); \</span>
+<span class="a">      push(a op b); \</span>
+<span class="a">    } while (false)</span>
+</pre><pre class="insert-after">
+
+  for (;;) {
+</pre></div>
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
 <p>I admit this is a fairly <span name="operator">adventurous</span> use of the C
@@ -946,42 +1013,37 @@ do. The preprocessor doesn&rsquo;t care that operators aren&rsquo;t first class 
 as it&rsquo;s concerned, it&rsquo;s all just text tokens.</p>
 <p>I know, you can just <em>feel</em> the temptation to abuse this, can&rsquo;t you?</p>
 </aside>
-<p>If you aren&rsquo;t familiar with the trick already, that outer do-while loop probably
-looks really weird. This macro needs to expand to a series of statements. To be
-careful macro authors, we want to ensure those statements all end up in the same
-scope when the macro is expanded. Imagine if you defined:</p>
-<div class="codehilite"><pre><span></span><span class="cp">#define WAKE_UP() makeCoffee(); drinkCoffee();</span>
+<p>If you aren&rsquo;t familiar with the trick already, that outer <code>do while</code> loop
+probably looks really weird. This macro needs to expand to a series of
+statements. To be careful macro authors, we want to ensure those statements all
+end up in the same scope when the macro is expanded. Imagine if you defined:</p>
+<div class="codehilite"><pre>
+<span class="a">#define WAKE_UP() makeCoffee(); drinkCoffee();</span>
 </pre></div>
-
-
 <p>And then used it like:</p>
-<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">morning</span><span class="p">)</span> <span class="n">WAKE_UP</span><span class="p">();</span>
+<div class="codehilite"><pre>
+<span class="k">if</span> (<span class="i">morning</span>) <span class="a">WAKE_UP</span>();
 </pre></div>
-
-
 <p>The intent is to execute both statements of the macro body only if <code>morning</code> is
 true. But it expands to:</p>
-<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">morning</span><span class="p">)</span> <span class="n">makeCoffee</span><span class="p">();</span> <span class="n">drinkCoffee</span><span class="p">();</span>
+<div class="codehilite"><pre>
+<span class="k">if</span> (<span class="i">morning</span>) <span class="i">makeCoffee</span>(); <span class="i">drinkCoffee</span>();;
 </pre></div>
-
-
 <p>Oops. The <code>if</code> only attaches to the <em>first</em> statement. You might think you could
-fix this using a block:</p>
-<div class="codehilite"><pre><span></span><span class="cp">#define WAKE_UP() { makeCoffee(); drinkCoffee(); }</span>
+fix this using a block.</p>
+<div class="codehilite"><pre>
+<span class="a">#define WAKE_UP() { makeCoffee(); drinkCoffee(); }</span>
 </pre></div>
-
-
 <p>That&rsquo;s better, but you still risk:</p>
-<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">morning</span><span class="p">)</span>
-  <span class="n">WAKE_UP</span><span class="p">();</span>
+<div class="codehilite"><pre>
+<span class="k">if</span> (<span class="i">morning</span>)
+  <span class="a">WAKE_UP</span>();
 <span class="k">else</span>
-  <span class="nf">sleepIn</span><span class="p">();</span>
+  <span class="i">sleepIn</span>();
 </pre></div>
-
-
 <p>Now you get a compile error on the <code>else</code> because of that trailing <code>;</code> after the
-macro&rsquo;s block. Using a do-while loop in the macro looks funny, but it gives you
-a way to contain multiple statements inside a block that <em>also</em> permits a
+macro&rsquo;s block. Using a <code>do while</code> loop in the macro looks funny, but it gives
+you a way to contain multiple statements inside a block that <em>also</em> permits a
 semicolon at the end.</p>
 <p>Where were we? Right, so what the body of that macro does is straightforward. A
 binary operator takes two operands, so it pops twice. It performs the operation
@@ -997,35 +1059,39 @@ like so:</p>
 with the stack for each showing how pushing and then popping values reverses
 their order." /></p>
 <p>As we did with the other macros inside <code>run()</code>, we clean up after ourselves at
-the end of the function:</p>
-<div class="codehilite"><pre class="insert-before"><span></span><span class="cp">#undef READ_CONSTANT</span>
+the end of the function.</p>
+<div class="codehilite"><pre class="insert-before">
+#undef READ_CONSTANT
 </pre><div class="source-file"><em>vm.c</em><br>
 in <em>run</em>()</div>
-<pre class="insert"><span></span><span class="cp">#undef BINARY_OP    </span>
-</pre><pre class="insert-after"><span></span><span class="p">}</span>                   
+<pre class="insert">
+<span class="a">#undef BINARY_OP</span>
+</pre><pre class="insert-after">
+}
 </pre></div>
-
 <div class="source-file-narrow"><em>vm.c</em>, in <em>run</em>()</div>
 
-<p>Last is disassembler support:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>    <span class="k">case</span> <span class="nl">OP_CONSTANT</span><span class="p">:</span>                                          
-      <span class="k">return</span> <span class="n">constantInstruction</span><span class="p">(</span><span class="s">&quot;OP_CONSTANT&quot;</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
+<p>Last is disassembler support.</p>
+<div class="codehilite"><pre class="insert-before">
+    case OP_CONSTANT:
+      return constantInstruction(&quot;OP_CONSTANT&quot;, chunk, offset);
 </pre><div class="source-file"><em>debug.c</em><br>
 in <em>disassembleInstruction</em>()</div>
-<pre class="insert"><span></span>    <span class="k">case</span> <span class="nl">OP_ADD</span><span class="p">:</span>                                               
-      <span class="k">return</span> <span class="n">simpleInstruction</span><span class="p">(</span><span class="s">&quot;OP_ADD&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>              
-    <span class="k">case</span> <span class="nl">OP_SUBTRACT</span><span class="p">:</span>                                          
-      <span class="k">return</span> <span class="n">simpleInstruction</span><span class="p">(</span><span class="s">&quot;OP_SUBTRACT&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>         
-    <span class="k">case</span> <span class="nl">OP_MULTIPLY</span><span class="p">:</span>                                          
-      <span class="k">return</span> <span class="n">simpleInstruction</span><span class="p">(</span><span class="s">&quot;OP_MULTIPLY&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>         
-    <span class="k">case</span> <span class="nl">OP_DIVIDE</span><span class="p">:</span>                                            
-      <span class="k">return</span> <span class="n">simpleInstruction</span><span class="p">(</span><span class="s">&quot;OP_DIVIDE&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>           
-</pre><pre class="insert-after"><span></span>    <span class="k">case</span> <span class="nl">OP_NEGATE</span><span class="p">:</span>                                            
+<pre class="insert">
+    <span class="k">case</span> <span class="a">OP_ADD</span>:
+      <span class="k">return</span> <span class="i">simpleInstruction</span>(<span class="s">&quot;OP_ADD&quot;</span>, <span class="i">offset</span>);
+    <span class="k">case</span> <span class="a">OP_SUBTRACT</span>:
+      <span class="k">return</span> <span class="i">simpleInstruction</span>(<span class="s">&quot;OP_SUBTRACT&quot;</span>, <span class="i">offset</span>);
+    <span class="k">case</span> <span class="a">OP_MULTIPLY</span>:
+      <span class="k">return</span> <span class="i">simpleInstruction</span>(<span class="s">&quot;OP_MULTIPLY&quot;</span>, <span class="i">offset</span>);
+    <span class="k">case</span> <span class="a">OP_DIVIDE</span>:
+      <span class="k">return</span> <span class="i">simpleInstruction</span>(<span class="s">&quot;OP_DIVIDE&quot;</span>, <span class="i">offset</span>);
+</pre><pre class="insert-after">
+    case OP_NEGATE:
 </pre></div>
-
 <div class="source-file-narrow"><em>debug.c</em>, in <em>disassembleInstruction</em>()</div>
 
-<p>The arithmetic instructions are simple, like <code>OP_RETURN</code>. Even though the
+<p>The arithmetic instruction formats are simple, like <code>OP_RETURN</code>. Even though the
 arithmetic <em>operators</em> take operands<span class="em">&mdash;</span>which are found on the stack<span class="em">&mdash;</span>the
 arithmetic <em>bytecode instructions</em> do not.</p>
 <p>Let&rsquo;s put some of our new instructions through their paces by evaluating a
@@ -1033,28 +1099,31 @@ larger expression:</p>
 <p><img src="image/a-virtual-machine/chunk.png" alt="The expression being
 evaluated: -((1.2 + 3.4) / 5.6)" /></p>
 <p>Building on our existing example chunk, here&rsquo;s the additional instructions we
-need:</p>
-<div class="codehilite"><pre class="insert-before"><span></span>  <span class="kt">int</span> <span class="n">constant</span> <span class="o">=</span> <span class="n">addConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">);</span>
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_CONSTANT</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>   
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">constant</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>      
+need to hand-compile that AST to bytecode:</p>
+<div class="codehilite"><pre class="insert-before">
+  int constant = addConstant(&amp;chunk, 1.2);
+  writeChunk(&amp;chunk, OP_CONSTANT, 123);
+  writeChunk(&amp;chunk, constant, 123);
 </pre><div class="source-file"><em>main.c</em><br>
 in <em>main</em>()</div>
-<pre class="insert"><br><span></span>  <span class="n">constant</span> <span class="o">=</span> <span class="n">addConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">);</span>    
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_CONSTANT</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>   
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">constant</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>
+<pre class="insert">
 
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_ADD</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>        
+  <span class="i">constant</span> = <span class="i">addConstant</span>(&amp;<span class="i">chunk</span>, <span class="n">3.4</span>);
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="a">OP_CONSTANT</span>, <span class="n">123</span>);
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="i">constant</span>, <span class="n">123</span>);
 
-  <span class="n">constant</span> <span class="o">=</span> <span class="n">addConstant</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">);</span>    
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_CONSTANT</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>   
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">constant</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>      
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="a">OP_ADD</span>, <span class="n">123</span>);
 
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_DIVIDE</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>     
-</pre><pre class="insert-after"><span></span>  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_NEGATE</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>     
+  <span class="i">constant</span> = <span class="i">addConstant</span>(&amp;<span class="i">chunk</span>, <span class="n">5.6</span>);
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="a">OP_CONSTANT</span>, <span class="n">123</span>);
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="i">constant</span>, <span class="n">123</span>);
 
-  <span class="n">writeChunk</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunk</span><span class="p">,</span> <span class="n">OP_RETURN</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>     
+  <span class="i">writeChunk</span>(&amp;<span class="i">chunk</span>, <span class="a">OP_DIVIDE</span>, <span class="n">123</span>);
+</pre><pre class="insert-after">
+  writeChunk(&amp;chunk, OP_NEGATE, 123);
+
+  writeChunk(&amp;chunk, OP_RETURN, 123);
 </pre></div>
-
 <div class="source-file-narrow"><em>main.c</em>, in <em>main</em>()</div>
 
 <p>The addition goes first. The instruction for the left constant, 1.2, is already
@@ -1077,29 +1146,26 @@ build by hand. When we next revisit bytecode, we will be writing a compiler to
 generate it for us.</p>
 <div class="challenges">
 <h2><a href="#challenges" name="challenges">Challenges</a></h2>
-
 <ol>
 <li>
 <p>What bytecode instruction sequences would you generate for the following
-    expressions:</p>
-<div class="codehilite"><pre><span></span><span class="mi">1</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span>
-<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span>
-<span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
-<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">/</span> <span class="o">-</span><span class="mi">5</span>
+expressions:</p>
+<div class="codehilite"><pre>
+<span class="n">1</span> * <span class="n">2</span> + <span class="n">3</span>
+<span class="n">1</span> + <span class="n">2</span> * <span class="n">3</span>
+<span class="n">3</span> - <span class="n">2</span> - <span class="n">1</span>
+<span class="n">1</span> + <span class="n">2</span> * <span class="n">3</span> - <span class="n">4</span> / -<span class="n">5</span>
 </pre></div>
-
-
 <p>(Remember that Lox does not have a syntax for negative number literals, so
 the <code>-5</code> is negating the number 5.)</p>
 </li>
 <li>
 <p>If we really wanted a minimal instruction set, we could eliminate either
-    <code>OP_NEGATE</code> or <code>OP_SUBTRACT</code>. Show the bytecode instruction sequence you
-    would generate for:</p>
-<div class="codehilite"><pre><span></span><span class="mi">4</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="o">-</span><span class="mi">2</span>
+<code>OP_NEGATE</code> or <code>OP_SUBTRACT</code>. Show the bytecode instruction sequence you
+would generate for:</p>
+<div class="codehilite"><pre>
+<span class="n">4</span> - <span class="n">3</span> * -<span class="n">2</span>
 </pre></div>
-
-
 <p>First, without using <code>OP_NEGATE</code>. Then, without using <code>OP_SUBTRACT</code>.</p>
 <p>Given the above, do you think it makes sense to have both instructions? Why
 or why not? Are there any other redundant instructions you would consider
@@ -1107,17 +1173,24 @@ including?</p>
 </li>
 <li>
 <p>Our VM&rsquo;s stack has a fixed size, and we don&rsquo;t check if pushing a value
-    overflows it. This means the wrong series of instructions could cause our
-    interpreter to crash or go into undefined behavior. Avoid that by
-    dynamically growing the stack as needed.</p>
+overflows it. This means the wrong series of instructions could cause our
+interpreter to crash or go into undefined behavior. Avoid that by
+dynamically growing the stack as needed.</p>
 <p>What are the costs and benefits of doing so?</p>
+</li>
+<li>
+<p>To interpret <code>OP_NEGATE</code>, we pop the operand, negate the value, and then
+push the result. That&rsquo;s a simple implementation, but it increments and
+decrements <code>stackTop</code> unnecessarily, since the stack ends up the same height
+in the end. It might be faster to simply negate the value in place on the
+stack and leave <code>stackTop</code> alone. Try that and see if you can measure a
+performance difference.</p>
+<p>Are there other instructions where you can do a similar optimization?</p>
 </li>
 </ol>
 </div>
 <div class="design-note">
-<h2><a href="#design-note" name="design-note">Design Note: Register-Based Bytecode
-</a></h2>
-
+<h2><a href="#design-note" name="design-note">Design Note: Register-Based Bytecode</a></h2>
 <p>For the remainder of this book, we&rsquo;ll meticulously implement an interpreter
 around a stack-based bytecode instruction set. There&rsquo;s another family of
 bytecode architectures out there<span class="em">&mdash;</span><em>register-based</em>. Despite the name, these
@@ -1135,20 +1208,18 @@ pushed onto it and popped when no longer needed. The main difference is that
 instructions can read their inputs from anywhere in the stack and can store
 their outputs into specific stack slots.</p>
 <p>Take this little Lox script:</p>
-<div class="codehilite"><pre><span></span><span class="k">var</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="k">var</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-<span class="k">var</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+<div class="codehilite"><pre>
+<span class="k">var</span> <span class="i">a</span> = <span class="n">1</span>;
+<span class="k">var</span> <span class="i">b</span> = <span class="n">2</span>;
+<span class="k">var</span> <span class="i">c</span> = <span class="i">a</span> + <span class="i">b</span>;
 </pre></div>
-
-
 <p>In our stack-based VM, the last statement will get compiled to something like:</p>
-<div class="codehilite"><pre><span></span><span class="n">load</span> <span class="o">&lt;</span><span class="n">a</span><span class="o">&gt;</span>  <span class="c1">// Read local variable a and push onto stack.</span>
-<span class="n">load</span> <span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span>  <span class="c1">// Read local variable b and push onto stack.</span>
-<span class="n">add</span>       <span class="c1">// Pop two values, add, push result.</span>
-<span class="n">store</span> <span class="o">&lt;</span><span class="n">c</span><span class="o">&gt;</span> <span class="c1">// Pop value and store in local variable c.</span>
+<div class="codehilite"><pre>
+<span class="i">load</span> &lt;<span class="i">a</span>&gt;  <span class="c">// Read local variable a and push onto stack.</span>
+<span class="i">load</span> &lt;<span class="i">b</span>&gt;  <span class="c">// Read local variable b and push onto stack.</span>
+<span class="i">add</span>       <span class="c">// Pop two values, add, push result.</span>
+<span class="i">store</span> &lt;<span class="i">c</span>&gt; <span class="c">// Pop value and store in local variable c.</span>
 </pre></div>
-
-
 <p>(Don&rsquo;t worry if you don&rsquo;t fully understand the load and store instructions yet.
 We&rsquo;ll go over them in much greater detail <a href="global-variables.html">when we implement
 variables</a>.) We have four separate instructions. That means four
@@ -1159,10 +1230,9 @@ and three pops. A lot of work!</p>
 <p>In a register-based instruction set, instructions can read from and store
 directly into local variables. The bytecode for the last statement above looks
 like:</p>
-<div class="codehilite"><pre><span></span><span class="n">add</span> <span class="o">&lt;</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">b</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">c</span><span class="o">&gt;</span> <span class="c1">// Read values from a and b, add, store in c.</span>
+<div class="codehilite"><pre>
+<span class="i">add</span> &lt;<span class="i">a</span>&gt; &lt;<span class="i">b</span>&gt; &lt;<span class="i">c</span>&gt; <span class="c">// Read values from a and b, add, store in c.</span>
 </pre></div>
-
-
 <p>The add instruction is bigger<span class="em">&mdash;</span>it has three instruction operands that define
 where in the stack it reads its inputs from and writes the result to. But since
 local variables live on the stack, it can read directly from <code>a</code> and <code>b</code> and

@@ -37,31 +37,31 @@ static Obj* allocateObject(size_t size, ObjType type) {
   return object;
 }
 //< allocate-object
-//> Methods and Initializers not-yet
-
-ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
+//> Methods and Initializers new-bound-method
+ObjBoundMethod* newBoundMethod(Value receiver,
+                               ObjClosure* method) {
   ObjBoundMethod* bound = ALLOCATE_OBJ(ObjBoundMethod,
                                        OBJ_BOUND_METHOD);
-
   bound->receiver = receiver;
   bound->method = method;
   return bound;
 }
-//< Methods and Initializers not-yet
+//< Methods and Initializers new-bound-method
 //> Classes and Instances new-class
 ObjClass* newClass(ObjString* name) {
   ObjClass* klass = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
   klass->name = name; // [klass]
-//> Methods and Initializers not-yet
+//> Methods and Initializers init-methods
   initTable(&klass->methods);
-//< Methods and Initializers not-yet
+//< Methods and Initializers init-methods
   return klass;
 }
 //< Classes and Instances new-class
 //> Closures new-closure
 ObjClosure* newClosure(ObjFunction* function) {
 //> allocate-upvalue-array
-  ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*, function->upvalueCount);
+  ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*,
+                                   function->upvalueCount);
   for (int i = 0; i < function->upvalueCount; i++) {
     upvalues[i] = NULL;
   }
@@ -218,11 +218,11 @@ void printObject(Value value) {
       printf("%s", AS_CLASS(value)->name->chars);
       break;
 //< Classes and Instances print-class
-//> Methods and Initializers not-yet
+//> Methods and Initializers print-bound-method
     case OBJ_BOUND_METHOD:
       printFunction(AS_BOUND_METHOD(value)->method->function);
       break;
-//< Methods and Initializers not-yet
+//< Methods and Initializers print-bound-method
 //> Closures print-closure
     case OBJ_CLOSURE:
       printFunction(AS_CLOSURE(value)->function);
@@ -235,7 +235,8 @@ void printObject(Value value) {
 //< Calls and Functions print-function
 //> Classes and Instances print-instance
     case OBJ_INSTANCE:
-      printf("%s instance", AS_INSTANCE(value)->klass->name->chars);
+      printf("%s instance",
+             AS_INSTANCE(value)->klass->name->chars);
       break;
 //< Classes and Instances print-instance
 //> Calls and Functions print-native

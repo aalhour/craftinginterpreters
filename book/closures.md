@@ -1,8 +1,6 @@
-^title Closures
-^part A Bytecode Virtual Machine
-
 > As the man said, for every complex problem there's a simple solution, and it's
 > wrong.
+>
 > <cite>Umberto Eco, <em>Foucault's Pendulum</em></cite>
 
 Thanks to our diligent labor in [the last chapter][last], we have a virtual
@@ -16,13 +14,12 @@ reference a variable declared outside of its own body:
 var x = "global";
 fun outer() {
   var x = "outer";
-
   fun inner() {
     print x;
   }
-
   inner();
 }
+outer();
 ```
 
 Run this example now and it prints "global". It's supposed to print "outer". To
@@ -254,7 +251,7 @@ we'll be adding to it. This code here anticipates that future.
 Most of the work we need to do is in the runtime. We have to handle the new
 instruction, naturally. But we also need to touch every piece of code in the VM
 that works with ObjFunction and change it to use ObjClosure instead -- function
-calls, callframes, etc. We'll start with the instruction, though:
+calls, call frames, etc. We'll start with the instruction, though:
 
 ^code interpret-closure (2 before, 1 after)
 
@@ -798,6 +795,7 @@ fun outer() {
   inner();
   print x;
 }
+outer();
 ```
 
 This program should print "assigned" even though the closure assigns to `x` and
@@ -954,6 +952,7 @@ fun outer() {
   }
   inner();
 }
+outer();
 ```
 
 Run this and it correctly prints "outside".
@@ -1169,7 +1168,7 @@ variable, the other closure sees the change.
 
 Right now, if two closures capture the same <span name="indirect">local</span>
 variable, the VM creates a separate Upvalue for each one. That breaks that
-sharing. When we move the variable off the heap, if we move it into only one of
+sharing. When we move the variable off the stack, if we move it into only one of
 the upvalues, the other upvalue will have an orphaned value.
 
 <aside name="indirect">
@@ -1317,7 +1316,7 @@ pointer is the VM's head pointer.
 There is a shorter implementation that handles updating either the head pointer
 or the previous upvalue's `next` pointer uniformly by using a pointer to a
 pointer, but that kind of code confuses almost everyone who hasn't reached some
-Zen master level of pointer expertise. I went with the basic if statement
+Zen master level of pointer expertise. I went with the basic `if` statement
 approach.
 
 </aside>
@@ -1330,8 +1329,8 @@ stack now.
 ### Closing upvalues at runtime
 
 The compiler helpfully emits an `OP_CLOSE_UPVALUE` instruction to tell the VM
-exactly when it should hoist a local variable onto the heap. Now is the
-interpreter's responsibility:
+exactly when a local variable should be hoisted onto the heap. Executing that is
+the interpreter's responsibility:
 
 ^code interpret-close-upvalue (2 before, 1 after)
 
@@ -1398,7 +1397,7 @@ immediately inside the function. Those need to get closed too.
 There's nothing *preventing* us from closing the outermost function scope in the
 compiler and emitting `OP_POP` and `OP_CLOSE_UPVALUE` instructions. Doing so was
 just unnecessary because the runtime discards all of the stack slots used by the
-function implicitly when it pops the callframe.
+function implicitly when it pops the call frame.
 
 </aside>
 
@@ -1547,7 +1546,7 @@ globalTwo();
 ```
 
 The code is convoluted because Lox has no collection types. The important part
-is that the `main()` function does two iterations of a for loop. Each time
+is that the `main()` function does two iterations of a `for` loop. Each time
 through the loop, it creates a closure that captures the loop variable. It
 stores the first closure in `globalOne` and the second in `globalTwo`.
 
@@ -1628,7 +1627,9 @@ closures[1]()
 
 Python doesn't really have block scope. Variables are implicitly declared and
 are automatically scoped to the surrounding function. Kind of like hoisting in
-JS, now that I think about it. So this prints "3" twice.
+JS, now that I think about it. So both closures capture the same variable.
+Unlike C, though, we don't exit the loop by incrementing `i` *past* the last
+value, so this prints "2" twice.
 
 What about Ruby? Ruby has two typical ways to iterate numerically. Here's the
 classic imperative style:
@@ -1643,7 +1644,7 @@ closures[0].call
 closures[1].call
 ```
 
-This, like Python, prints "3" twice. But the more idiomatic Ruby style is using
+This, like Python, prints "2" twice. But the more idiomatic Ruby style is using
 a higher-order `each()` method on range objects:
 
 ```ruby
@@ -1679,7 +1680,7 @@ iteration of a `foreach` loop. This was such a frequent source of user confusion
 that they took the very rare step of shipping a breaking change to the language.
 In C# 5, each iteration creates a fresh variable.
 
-Old C-style for loops are harder. The increment clause really does look like
+Old C-style `for` loops are harder. The increment clause really does look like
 mutation. That implies there is a single variable that's getting updated each
 step. But it's almost never *useful* for each iteration to share a loop
 variable. The only time you can even detect this is when closures capture it.
@@ -1687,7 +1688,7 @@ And it's rarely helpful to have a closure that references a variable whose value
 is whatever value caused you to exit the loop.
 
 The pragmatically useful answer is probably to do what JavaScript does with
-`let` in for loops. Make it look like mutation but actually create a new
+`let` in `for` loops. Make it look like mutation but actually create a new
 variable each time because that's what users want. It is kind of weird when you
 think about it, though.
 
