@@ -210,7 +210,7 @@ match those to get every combination.
 
 If you've ever wondered how [GCC][] supports so many crazy languages and
 architectures, like Modula-3 on Motorola 68k, now you know. Language front ends
-target one of a handful of IRs, mainly [GIMPLE][] and [RTL][]. Target backends
+target one of a handful of IRs, mainly [GIMPLE][] and [RTL][]. Target back ends
 like the one for 68k then take those IRs and produce native code.
 
 [gcc]: https://en.wikipedia.org/wiki/GNU_Compiler_Collection
@@ -565,10 +565,10 @@ vegetables, like tomatoes.
 
 <aside name="veg">
 
-Peanuts (which are not even nuts) and cereals like wheat are actually fruit, but
-I got this drawing wrong. What can I say, I'm a software engineer, not a
-botanist. I should probably erase the little peanut guy, but he's so cute that I
-can't bear to.
+Peanuts (which are not even true nuts) and cereals like wheat are actually
+fruit, but I got this drawing wrong. What can I say, I'm a software engineer,
+not a botanist. I should probably erase the little peanut guy, but he's so cute
+that I can't bear to.
 
 Now *pine nuts*, on the other hand, are plant-based foods that are neither
 fruits nor vegetables. At least as far as I can tell.

@@ -414,8 +414,8 @@ to get the performance we want, the important part is that it *scales* based on
 the old size. We grow by a factor of two, which is pretty typical. 1.5&times; is
 another common choice.
 
-We also handle the when the current capacity is zero. In that case, we jump
-straight to eight elements instead of starting at one. That <span
+We also handle when the current capacity is zero. In that case, we jump straight
+to eight elements instead of starting at one. That <span
 name="profile">avoids</span> a little extra memory churn when the array is very
 small, at the expense of wasting a few bytes on very small chunks.
 
@@ -985,7 +985,7 @@ in some -- arbitrary at this point -- line number.
 
 ^code main-chunk-line (1 before, 2 after)
 
-Once we have a read front end, of course, the compiler will track the current
+Once we have a real front end, of course, the compiler will track the current
 line as it parses and pass that in.
 
 Now that we have line information for every instruction, let's put it to good

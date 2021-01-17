@@ -748,13 +748,13 @@ in <em>initVM</em>()</div>
 
 <p>That uses this helper function:</p>
 <div class="codehilite"><div class="source-file"><em>vm.c</em><br>
-add after variable <em>VM</em></div>
+add after variable <em>vm</em></div>
 <pre>
 <span class="k">static</span> <span class="t">void</span> <span class="i">resetStack</span>() {
   <span class="i">vm</span>.<span class="i">stackTop</span> = <span class="i">vm</span>.<span class="i">stack</span>;
 }
 </pre></div>
-<div class="source-file-narrow"><em>vm.c</em>, add after variable <em>VM</em></div>
+<div class="source-file-narrow"><em>vm.c</em>, add after variable <em>vm</em></div>
 
 <p>Since the stack array is declared directly inline in the VM struct, we don&rsquo;t
 need to allocate it. We don&rsquo;t even need to clear the unused cells in the
@@ -1265,7 +1265,7 @@ share with the rest of your language hacker peers.</p>
 <a href="scanning-on-demand.html" class="next">
   Next Chapter: &ldquo;Scanning on Demand&rdquo; &rarr;
 </a>
-Hand-crafted by Robert Nystrom&ensp;&mdash;&ensp;<a href="https://github.com/munificent/craftinginterpreters/blob/master/LICENSE" target="_blank">&copy; 2015&hairsp;&ndash;&hairsp;2020</a>
+Handcrafted by Robert Nystrom&ensp;&mdash;&ensp;<a href="https://github.com/munificent/craftinginterpreters/blob/master/LICENSE" target="_blank">&copy; 2015&hairsp;&ndash;&hairsp;2020</a>
 </footer>
 </article>
 
